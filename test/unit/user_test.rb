@@ -8,6 +8,7 @@ class UserTest < ActiveSupport::TestCase
   should have_many(:deletions)
   should have_many(:subscriptions).dependent(:destroy)
   should have_many(:web_hooks).dependent(:destroy)
+  should have_many(:security_keys).dependent(:destroy)
 
   context "validations" do
     context "handle" do
