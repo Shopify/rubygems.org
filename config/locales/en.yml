@@ -332,6 +332,7 @@ en:
   settings:
     edit:
       title: Edit settings
+      security_keys: Security keys
       api_access:
         confirm_reset: Are you sure? This cannot be undone.
         credentials_html: 'If you want to use %{gem_commands_link} from the command line, you''ll need a %{gem_credentials_file} file, which you can generate using the following command:'
@@ -508,3 +509,14 @@ en:
         one: Displaying <b>1</b> %{model}
         other: Displaying <b>all&nbsp;%{count}</b> %{model}
         zero: No %{model} found
+  security_keys:
+    index:
+      title: Security keys
+      none: You don't have any security key
+      add: Add a security key
+    security_key:
+      delete: Delete
+    new:
+      title: New security key
+      nickname: Nickname
+      submit: Add security key

@@ -1,0 +1,11 @@
+<% @title = t(".title") %>
+
+<div class="t-body">
+  <%= render @security_keys %>
+
+  <% if @security_keys.none? %>
+    <p><%= t(".none") %></p>
+  <% end %>
+
+  <p><%= link_to t(".add"), new_security_key_path %></p>
+</div>

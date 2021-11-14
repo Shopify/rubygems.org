@@ -59,6 +59,10 @@ class User < ApplicationRecord
 
   enum mfa_level: { disabled: 0, ui_only: 1, ui_and_api: 2, ui_and_gem_signin: 3 }, _prefix: :mfa
 
+  after_initialize do
+    self.webauthn_id ||= WebAuthn.generate_user_id
+  end
+
   def self.authenticate(who, password)
     user = find_by(email: who.downcase) || find_by(handle: who)
     user if user&.authenticated?(password)
@@ -254,6 +258,16 @@ class User < ApplicationRecord
       )
       api_keys.delete_all
     end
+  end
+
+  def webauthn_options_for_create
+    WebAuthn::Credential.options_for_create(
+      user: {
+        id: webauthn_id,
+        name: handle
+      },
+      exclude: security_keys.pluck(:external_id)
+    )
   end
 
   private

@@ -16,6 +16,12 @@
 .l-colspan {
   max-width: 640px; }
 
+.l-inline-block {
+  display: inline-block; }
+
+.l-mb-4 {
+  margin-bottom: 1rem; }
+
 @media (min-width: 780px) {
   .l-colspan--l, .l-colspan--r {
     width: 75%;
