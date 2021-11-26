@@ -1,6 +1,7 @@
 class ApiKeysController < ApplicationController
   include ApiKeyable
   before_action :redirect_to_signin, unless: :signed_in?
+  before_action :redirect_to_mfa, if: :mfa_required?
   before_action :redirect_to_verify, unless: :password_session_active?
 
   def index

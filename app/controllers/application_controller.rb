@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_to_mfa
-    redirect_to new_multifactor_auth_path if current_user&.mfa_required?
+    redirect_to new_multifactor_auth_path
   end
 
   def find_rubygem

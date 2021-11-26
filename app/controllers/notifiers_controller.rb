@@ -1,5 +1,6 @@
 class NotifiersController < ApplicationController
   before_action :redirect_to_signin, unless: :signed_in?
+  before_action :redirect_to_mfa, if: :mfa_required?
 
   def show
     @ownerships = current_user.ownerships.by_indexed_gem_name
