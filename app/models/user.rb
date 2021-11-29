@@ -233,6 +233,13 @@ class User < ApplicationRecord
     owner_of_most_downloaded_gem?
   end
 
+  # NOTE:
+  # Do we want to differentiate the concept of mfa required for an acct where mfa is not enabled vs.
+  # Identifying which accounts require mfa, regardless whether it's enabled or not
+  def owner_of_most_downloaded_gem?
+    (rubygems & Rubygem.by_downloads.limit(Rubygem::MOST_DOWNLOADED)).any?
+  end
+
   def otp_verified?(otp)
     otp = otp.to_s
     return true if verify_digit_otp(mfa_seed, otp)
@@ -294,9 +301,5 @@ class User < ApplicationRecord
     toxic = toxic_domains_path.exist? && toxic_domains_path.readlines.grep(/^#{Regexp.escape(domain)}$/).any?
 
     errors.add(:email, I18n.t("activerecord.errors.messages.blocked", domain: domain)) if toxic
-  end
-
-  def owner_of_most_downloaded_gem?
-    (rubygems & Rubygem.by_downloads.limit(Rubygem::MOST_DOWNLOADED)).any?
   end
 end
