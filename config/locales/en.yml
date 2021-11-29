@@ -332,7 +332,7 @@ en:
   settings:
     edit:
       title: Edit settings
-      security_keys: Security keys
+      webauthn_credentials: Web credentials
       api_access:
         confirm_reset: Are you sure? This cannot be undone.
         credentials_html: 'If you want to use %{gem_commands_link} from the command line, you''ll need a %{gem_credentials_file} file, which you can generate using the following command:'
@@ -509,14 +509,14 @@ en:
         one: Displaying <b>1</b> %{model}
         other: Displaying <b>all&nbsp;%{count}</b> %{model}
         zero: No %{model} found
-  security_keys:
+  webauthn_credentials:
     index:
-      title: Security keys
-      none: You don't have any security key
-      add: Add a security key
-    security_key:
-      delete: Delete security key
+      title: Web credentials
+      none: You don't have any web credentials
+      add: Add a web credential
+    webauthn_credential:
+      delete: Delete
     new:
-      title: New security key
+      title: New web credential
       nickname: Nickname
-      submit: Add security key
+      submit: Add web credential

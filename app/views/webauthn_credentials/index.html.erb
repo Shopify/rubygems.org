@@ -1,0 +1,11 @@
+<% @title = t(".title") %>
+
+<div class="t-body">
+  <%= render @webauthn_credentials %>
+
+  <% if @webauthn_credentials.none? %>
+    <p><%= t(".none") %></p>
+  <% end %>
+
+  <p><%= link_to t(".add"), new_webauthn_credential_path %></p>
+</div>

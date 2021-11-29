@@ -200,7 +200,7 @@ Rails.application.routes.draw do
     get '/sign_up' => 'users#new', as: 'sign_up' if Clearance.configuration.allow_sign_up?
   end
 
-  resources :security_keys, only: [:index, :new, :create, :destroy] do
+  resources :webauthn_credentials, only: [:index, :new, :create, :destroy] do
     post :callback, on: :collection
   end
 

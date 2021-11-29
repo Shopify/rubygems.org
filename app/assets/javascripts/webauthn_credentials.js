@@ -1,6 +1,6 @@
 $(() => {
-  const FORM_SELECTOR = ".js-new-security-key-form"
-  const NICKNAME_INPUT_SELECTOR = `${FORM_SELECTOR} #security_key_nickname`
+  const FORM_SELECTOR = ".js-new-webauthn-credential-form"
+  const NICKNAME_INPUT_SELECTOR = `${FORM_SELECTOR} #webauthn_credential_nickname`
   const SUBMIT_SELECTOR = `${FORM_SELECTOR} input[type=submit]`
   const csrfToken = document.querySelector("[name='csrf-token']").content
 
@@ -106,7 +106,7 @@ $(() => {
               ),
             },
           },
-          security_key: { nickname: nickname },
+          webauthn_credential: { nickname: nickname },
         }),
       })
 

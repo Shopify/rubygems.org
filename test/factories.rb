@@ -169,7 +169,7 @@ FactoryBot.define do
     name
   end
 
-  factory :security_key do
+  factory :webauthn_credential do
     user
     sequence(:external_id) { |n| "security-key-#{n}" }
     public_key { "abc" }

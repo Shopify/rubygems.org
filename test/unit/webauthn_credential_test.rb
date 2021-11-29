@@ -1,7 +1,7 @@
 require "test_helper"
 
-class SecurityKeyTest < ActiveSupport::TestCase
-  subject { build(:security_key) }
+class WebauthnCredentialTest < ActiveSupport::TestCase
+  subject { build(:webauthn_credential) }
 
   should belong_to :user
   should validate_presence_of(:external_id)

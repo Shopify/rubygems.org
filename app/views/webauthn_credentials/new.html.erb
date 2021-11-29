@@ -1,7 +1,7 @@
 <% @title = t('.title') %>
 
 <div class="t-body">
-  <%= form_for @security_key, html: { class: "js-new-security-key-form" } do |f| %>
+  <%= form_for @webauthn_credential, html: { class: "js-new-webauthn-credential-form" } do |f| %>
     <div class="text_field">
       <%= f.label :nickname, t('.nickname'), class: 'form__label' %>
       <%= f.text_field :nickname, class: 'form__input', required: true %>

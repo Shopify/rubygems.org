@@ -1,4 +1,4 @@
-class SecurityKey < ApplicationRecord
+class WebauthnCredential < ApplicationRecord
   belongs_to :user
 
   validates :external_id, uniqueness: true, presence: true

@@ -1,6 +1,6 @@
-class CreateSecurityKeys < ActiveRecord::Migration[6.1]
+class CreateWebauthnCredentials < ActiveRecord::Migration[6.1]
   def change
-    create_table :security_keys do |t|
+    create_table :webauthn_credentials do |t|
       t.references :user, null: false, foreign_key: true
       t.string :external_id, null: false
       t.string :public_key, null: false
