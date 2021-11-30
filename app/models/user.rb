@@ -217,10 +217,14 @@ class User < ApplicationRecord
     end
   end
 
+  def generate_mfa_recovery_codes
+    self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
+  end
+
   def enable_mfa!(seed, level)
     self.mfa_level = level
     self.mfa_seed = seed
-    self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
+    generate_mfa_recovery_codes
     save!(validate: false)
   end
 
@@ -264,9 +268,15 @@ class User < ApplicationRecord
     WebAuthn::Credential.options_for_create(
       user: {
         id: webauthn_id,
-        name: handle
+        name: display_id
       },
       exclude: webauthn_credentials.pluck(:external_id)
+    )
+  end
+
+  def webauthn_options_for_get
+    WebAuthn::Credential.options_for_get(
+      allow: webauthn_credentials.pluck(:external_id)
     )
   end
 

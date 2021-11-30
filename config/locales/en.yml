@@ -332,7 +332,11 @@ en:
   settings:
     edit:
       title: Edit settings
-      webauthn_credentials: Web credentials
+      webauthn_credentials: Credentials
+      no_webauthn_credentials: You don't have any credentials
+      add_webauthn_credential: Add credential
+      webauthn_credential_note: A credential can be a security key, a fingerprint (e.g. Touch ID), etc.
+      otp_code: OTP code or recovery code
       api_access:
         confirm_reset: Are you sure? This cannot be undone.
         credentials_html: 'If you want to use %{gem_commands_link} from the command line, you''ll need a %{gem_credentials_file} file, which you can generate using the following command:'
@@ -475,6 +479,10 @@ en:
       notice: Please confirm your password to continue.
     create:
       account_blocked: Your account was blocked by rubygems team. Please email support@rubygems.org to recover your account.
+    prompt:
+      webauthn_credential_note: A credential can be a security key, a fingerprint (e.g. Touch ID), etc.
+      sign_in_with_weauthn_credential: Sign in with a credential
+      recovery_code: Recovery code
   stats:
     index:
       title: Stats
@@ -510,13 +518,8 @@ en:
         other: Displaying <b>all&nbsp;%{count}</b> %{model}
         zero: No %{model} found
   webauthn_credentials:
-    index:
-      title: Web credentials
-      none: You don't have any web credentials
-      add: Add a web credential
     webauthn_credential:
       delete: Delete
-    new:
-      title: New web credential
+    form:
       nickname: Nickname
-      submit: Add web credential
+      submit: Add credential

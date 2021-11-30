@@ -1,6 +1,15 @@
 .l-relative {
   position: relative; }
 
+.l-flex {
+  display: flex; }
+
+.l-mb-4 {
+  margin-bottom: 1rem; }
+
+.l-mr-2 {
+  margin-right: 0.5rem; }
+
 .l-wrap--b {
   margin-right: auto;
   margin-left: auto;
@@ -15,12 +24,6 @@
 
 .l-colspan {
   max-width: 640px; }
-
-.l-inline-block {
-  display: inline-block; }
-
-.l-mb-4 {
-  margin-bottom: 1rem; }
 
 @media (min-width: 780px) {
   .l-colspan--l, .l-colspan--r {

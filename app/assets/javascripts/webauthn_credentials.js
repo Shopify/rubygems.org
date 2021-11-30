@@ -2,6 +2,8 @@ $(() => {
   const FORM_SELECTOR = ".js-new-webauthn-credential-form"
   const NICKNAME_INPUT_SELECTOR = `${FORM_SELECTOR} #webauthn_credential_nickname`
   const SUBMIT_SELECTOR = `${FORM_SELECTOR} input[type=submit]`
+  const SESSION_FORM_SELECTOR = ".js-webauthn-create-session-form"
+  const SESSION_SUBMIT_SELECTOR = `${SESSION_FORM_SELECTOR} input[type=submit]`
   const csrfToken = document.querySelector("[name='csrf-token']").content
 
   // base64urlToBuffer and bufferToBase64url are from @github/webauthn-json
@@ -62,7 +64,7 @@ $(() => {
       const form = event.target
       const nickname = document.querySelector(NICKNAME_INPUT_SELECTOR).value
 
-      let createResponse = await fetch(form.action, {
+      let createResponse = await fetch(`${form.action}.json`, {
         method: "POST",
         credentials: "same-origin",
         headers: { "X-CSRF-Token": csrfToken },
@@ -84,7 +86,7 @@ $(() => {
         publicKey: createResponse,
       })
 
-      const callbackResponse = await fetch(`${form.action}/callback`, {
+      let callbackResponse = await fetch(`${form.action}/callback.json`, {
         method: "POST",
         credentials: "same-origin",
         headers: {
@@ -111,14 +113,75 @@ $(() => {
       })
 
       if (callbackResponse.status == 200) {
-        window.location = form.action
+        callbackResponse = await callbackResponse.json()
+        window.location.href = callbackResponse.location
       } else {
-        const callbackResponseJSON = await callbackResponse.json()
-        alert(callbackResponseJSON.message)
+        callbackResponse = await callbackResponse.json()
+        alert(callbackResponse.message)
       }
     } catch (e) {
       document.querySelector(SUBMIT_SELECTOR).disabled = false
-      throw(e)
+      throw e
+    }
+  })
+
+  $(SESSION_FORM_SELECTOR).submit(async (e) => {
+    try {
+      event.preventDefault()
+
+      const form = event.target
+      const options = JSON.parse(form.dataset.options)
+      options.challenge = base64urlToBuffer(options.challenge)
+      options.userVerification = "preferred"
+      options.allowCredentials = options.allowCredentials.map(
+        (allowCredential) => {
+          return {
+            id: base64urlToBuffer(allowCredential.id),
+            type: allowCredential.type,
+          }
+        }
+      )
+
+      const credentials = await navigator.credentials.get({
+        publicKey: options,
+      })
+
+      let callbackResponse = await fetch(`${form.action}.json`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "X-CSRF-Token": csrfToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credentials: {
+            type: credentials.type,
+            id: credentials.id,
+            rawId: bufferToBase64url(credentials.rawId),
+            clientExtensionResults: credentials.clientExtensionResults,
+            response: {
+              authenticatorData: bufferToBase64url(
+                credentials.response.authenticatorData
+              ),
+              clientDataJSON: bufferToBase64url(
+                credentials.response.clientDataJSON
+              ),
+              signature: bufferToBase64url(credentials.response.signature),
+            },
+          },
+        }),
+      })
+
+      if (callbackResponse.status == 200) {
+        callbackResponse = await callbackResponse.json()
+        window.location.href = callbackResponse.location
+      } else {
+        callbackResponse = await callbackResponse.json()
+        alert(callbackResponse.message)
+      }
+    } catch (e) {
+      document.querySelector(SESSION_SUBMIT_SELECTOR).disabled = false
+      throw e
     }
   })
 })

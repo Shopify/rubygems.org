@@ -171,6 +171,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :webauthn_credentials, only: :destroy
+
     ################################################################################
     # Clearance Overrides and Additions
 
@@ -200,8 +202,16 @@ Rails.application.routes.draw do
     get '/sign_up' => 'users#new', as: 'sign_up' if Clearance.configuration.allow_sign_up?
   end
 
-  resources :webauthn_credentials, only: [:index, :new, :create, :destroy] do
-    post :callback, on: :collection
+  ################################################################################
+  # UI API
+  scope constraints: { format: :json }, defaults: { format: 'json' } do
+    resource :session, only: [] do
+      post 'webauthn_create', to: 'sessions#webauthn_create', as: :webauthn_create
+    end
+
+    resources :webauthn_credentials, only: :create do
+      post :callback, on: :collection
+    end
   end
 
   ################################################################################
