@@ -217,14 +217,10 @@ class User < ApplicationRecord
     end
   end
 
-  def generate_mfa_recovery_codes
-    self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
-  end
-
   def enable_mfa!(seed, level)
     self.mfa_level = level
     self.mfa_seed = seed
-    generate_mfa_recovery_codes
+    self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
     save!(validate: false)
   end
 
