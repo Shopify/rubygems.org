@@ -132,6 +132,10 @@ $(() => {
       const form = event.target
       const options = JSON.parse(form.dataset.options)
       options.challenge = base64urlToBuffer(options.challenge)
+      // From: https://developers.yubico.com/WebAuthn/WebAuthn_Developer_Guide/User_Presence_vs_User_Verification.html
+      // PREFERRED: This value indicates that the RP prefers user verification
+      // for the operation if possible, but will not fail the operation if
+      // the response does not have the ``AuthenticatorDataFlags.UV`` flag set.
       options.userVerification = "preferred"
       options.allowCredentials = options.allowCredentials.map(
         (allowCredential) => {
