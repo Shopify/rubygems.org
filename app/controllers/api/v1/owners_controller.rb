@@ -4,6 +4,7 @@ class Api::V1::OwnersController < Api::BaseController
   before_action :verify_gem_ownership, except: %i[show gems]
   before_action :verify_mfa_requirement, except: %i[show gems]
   before_action :verify_with_otp, except: %i[show gems]
+  before_action :check_user_mfa_requirement, except: %i[show gems]
 
   def show
     respond_to do |format|

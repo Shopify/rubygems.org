@@ -20,6 +20,7 @@ en:
   none: None
   not_found: Not Found
   api_key_forbidden: The API key doesn't have access
+  user_mfa_required: For protection of your account and your gems, please setup multi-factor authentication at https://rubygems.org/multifactor_auth/new
   please_sign_up: Access Denied. Please sign up for an account at https://rubygems.org
   please_sign_in: Please sign in to continue.
   otp_incorrect: Your OTP code is incorrect. Please check it and retry.

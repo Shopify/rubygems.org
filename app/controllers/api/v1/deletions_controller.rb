@@ -5,6 +5,7 @@ class Api::V1::DeletionsController < Api::BaseController
   before_action :verify_with_otp
   before_action :render_api_key_forbidden, if: :api_key_unauthorized?
   before_action :verify_mfa_requirement
+  before_action :check_user_mfa_requirement
 
   def create
     @deletion = @api_key.user.deletions.build(version: @version)
