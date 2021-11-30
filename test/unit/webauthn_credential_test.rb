@@ -9,5 +9,5 @@ class WebauthnCredentialTest < ActiveSupport::TestCase
   should validate_presence_of(:public_key)
   should validate_presence_of(:nickname)
   should validate_presence_of(:sign_count)
-  should validate_numericality_of(:sign_count)
+  should validate_numericality_of(:sign_count).is_greater_than(0)
 end
