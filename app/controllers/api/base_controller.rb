@@ -25,6 +25,11 @@ class Api::BaseController < ApplicationController
     end
   end
 
+  def check_user_mfa_requirement
+    return unless @api_key.user&.mfa_required?
+    render plain: t(:user_mfa_required), status: :forbidden
+  end
+
   def verify_with_otp
     otp = request.headers["HTTP_OTP"]
     return if @api_key.user.mfa_api_authorized?(otp)
