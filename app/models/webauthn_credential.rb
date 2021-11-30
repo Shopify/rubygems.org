@@ -7,8 +7,6 @@ class WebauthnCredential < ApplicationRecord
   validates :sign_count, presence: true, numericality: true
 
   validate do
-    if user.mfa_disabled?
-      errors.add(:user, I18n.t("webauthn_credentials.errors.mfa_disabled"))
-    end
+    errors.add(:user, I18n.t("webauthn_credentials.errors.mfa_disabled")) if user.mfa_disabled?
   end
 end
