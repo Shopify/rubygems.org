@@ -51,7 +51,11 @@ class SessionsController < Clearance::SessionsController
     sign_in(@user) do |status|
       if status.success?
         StatsD.increment "login.success"
-        redirect_back_or(url_after_create)
+        if @user.mfa_enabled?
+          redirect_back_or(url_after_create)
+        else
+          redirect_to new_multifactor_auth_path
+        end
       else
         login_failure(status.failure_message)
       end
