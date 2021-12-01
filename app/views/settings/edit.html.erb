@@ -10,7 +10,8 @@
          <%= select_tag :level, options_for_select([
           [t(".mfa.level.ui_and_api"), "ui_and_api"],
           [t(".mfa.level.ui_and_gem_signin"), "ui_and_gem_signin"],
-          [t(".mfa.level.ui_only"), "ui_only"]], @user.mfa_level), class: "form__input form__select" %>
+          [t(".mfa.level.ui_only"), "ui_only"],
+          ["Deregister device", "disabled"]], @user.mfa_level), class: "form__input form__select" %>
       <% else %>
         <%= select_tag :level, options_for_select([
           [t(".mfa.level.ui_and_api"), "ui_and_api"],
@@ -22,7 +23,16 @@
         <%= label_tag :otp, "OTP code", class: "form__label" %>
         <%= text_field_tag :otp, "", class: "form__input", autocomplete: :off %>
       </div>
-      <%= submit_tag t(".mfa.update"), class: "form__submit" %>
+
+      <%# Note: Scrappy version ... this can obviously be DRY'd up %>
+      <% if @user.owner_of_most_downloaded_gem? %>
+        <%= submit_tag
+          t(".mfa.update"),
+          class: "form__submit",
+          data: { confirm: "✋ You will need to register a new device if you deregister the current device.\n\nDo you want to proceed?" } %>
+      <% else %>
+        <%= submit_tag t(".mfa.update"), class: "form__submit" %>
+      <% end %>
     <% end %>
   <% else %>
     <p>
