@@ -228,6 +228,19 @@ class User < ApplicationRecord
     otp_verified?(otp)
   end
 
+  # Copied from https://github.com/Shopify/rubygems.org/pull/2/files
+  def mfa_required?
+    return false if mfa_enabled?
+    owner_of_most_downloaded_gem?
+  end
+
+  # NOTE:
+  # Do we want to differentiate the concept of mfa required for an acct where mfa is not enabled vs.
+  # Identifying which accounts require mfa, regardless whether it's enabled or not
+  def owner_of_most_downloaded_gem?
+    (rubygems & Rubygem.by_downloads.limit(Rubygem::MOST_DOWNLOADED)).any?
+  end
+
   def otp_verified?(otp)
     otp = otp.to_s
     return true if verify_digit_otp(mfa_seed, otp)
