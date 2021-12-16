@@ -11,8 +11,7 @@ class Api::V1::DeletionsController < Api::BaseController
     if @deletion.save
       StatsD.increment "yank.success"
       enqueue_web_hook_jobs(@version)
-      response_with_mfa_warning("Successfully deleted gem: #{@version.to_title}")
-      render plain: message
+      render plain: response_with_mfa_warning("Successfully deleted gem: #{@version.to_title}")
     else
       StatsD.increment "yank.failure"
       render plain: response_with_mfa_warning(@deletion.errors.full_messages.to_sentence),

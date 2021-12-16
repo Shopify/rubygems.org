@@ -43,8 +43,8 @@ class Api::BaseController < ApplicationController
 
   def response_with_mfa_warning(response)
     return response unless should_setup_mfa? 
-    message = "[WARNING] For protection of your account and gems, we encourage you to setup multifactor authentication at https://rubygems.org/multifactor_auth/new. Your account will be required have MFA enabled in the future.\n\n"
-    message + response
+    message = "\n\n[WARNING] For protection of your account and gems, it is encouraged that you to set up multi-factor authentication at https://rubygems.org/multifactor_auth/new.\nYour account will be required have MFA enabled in the future."
+    response + message
   end
 
   def authenticate_with_api_key
