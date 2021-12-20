@@ -148,6 +148,24 @@ class UserTest < ActiveSupport::TestCase
         assert_contains user.errors[:password], "has previously appeared in a data breach and should not be used"
       end
     end
+
+    context "two factor authentication" do
+      context "ui only" do
+        should "be invalid when user owns a most popular gem" do
+          user = create(:user)
+          my_rubygem = create(:rubygem)
+          create(:ownership, user: user, rubygem: my_rubygem)
+          assert_equal [my_rubygem], user.rubygems
+
+          GemDownload.increment(1, rubygem_id: my_rubygem.id)
+
+          assert user.owner_of_most_downloaded_gem?
+
+          refute user.update(mfa_level: "ui_only")
+          assert_contains user.errors[:mfa_level], "'UI only' MFA is not acceptable for owners of top-most downloaded gems"
+        end
+      end
+    end
   end
 
   context "with a user" do
