@@ -54,6 +54,7 @@ class User < ApplicationRecord
     unless: :skip_password_validation?
   validate :unconfirmed_email_uniqueness
   validate :toxic_email_domain, on: :create
+  validate :minimum_acceptable_mfa_level, if: :mfa_level_changed?
 
   enum mfa_level: { disabled: 0, ui_only: 1, ui_and_api: 2, ui_and_gem_signin: 3 }, _prefix: :mfa
 
@@ -302,4 +303,15 @@ class User < ApplicationRecord
 
     errors.add(:email, I18n.t("activerecord.errors.messages.blocked", domain: domain)) if toxic
   end
+
+  def minimum_acceptable_mfa_level
+    if owner_of_most_downloaded_gem?
+      acceptable_levels = User.mfa_levels.keys - [ "ui_only" ]
+
+      unless acceptable_levels.include?(mfa_level)
+        errors.add(:mfa_level, "'UI only' MFA is not acceptable for owners of top-most downloaded gems")
+      end
+    end
+  end
+
 end
