@@ -1,8 +1,6 @@
 require "digest/sha2"
 
 class Version < ApplicationRecord
-  MAX_TEXT_FIELD_LENGTH = 64_000
-
   belongs_to :rubygem, touch: true
   has_many :dependencies, -> { order("rubygems.name ASC").includes(:rubygem) }, dependent: :destroy, inverse_of: "version"
   has_one :gem_download, inverse_of: :version, dependent: :destroy
@@ -24,7 +22,9 @@ class Version < ApplicationRecord
   validates :full_name, presence: true, uniqueness: { case_sensitive: false }
   validates :rubygem, presence: true
   validates :required_rubygems_version, :licenses, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, allow_blank: true
-  validates :description, :summary, :authors, :requirements, :cert_chain, length: { minimum: 0, maximum: MAX_TEXT_FIELD_LENGTH }, allow_blank: true
+  validates :description, :summary, :authors, :requirements, :cert_chain,
+    length: { minimum: 0, maximum: Gemcutter::MAX_TEXT_FIELD_LENGTH },
+    allow_blank: true
 
   validate :unique_canonical_number, on: :create
   validate :platform_and_number_are_unique, on: :create
@@ -140,10 +140,12 @@ class Version < ApplicationRecord
   end
 
   def self.just_updated(limit = 5)
+    six_months_ago_ts = 6.months.ago
     subquery = <<~SQL.squish
       versions.rubygem_id IN (SELECT versions.rubygem_id
                                 FROM versions
-                            WHERE versions.indexed = 'true'
+                            WHERE versions.indexed = 'true' AND
+                                  versions.created_at > '#{six_months_ago_ts}'
                             GROUP BY versions.rubygem_id
                               HAVING COUNT(versions.id) > 1
                               ORDER BY MAX(created_at) DESC LIMIT :limit)
