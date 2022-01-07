@@ -34,6 +34,9 @@ class Api::V1::ProfilesControllerTest < ActionController::TestCase
         end
 
         should respond_with :success
+        should "not return owner mfa information by default" do
+          refute_match I18n.t("settings.edit.mfa.level.disabled"), @response.body
+        end
       end
 
       context "on GET to show with handle" do
@@ -45,6 +48,10 @@ class Api::V1::ProfilesControllerTest < ActionController::TestCase
         should "hide the user email by default" do
           refute response_body.key?("email")
         end
+
+        should "not return owner mfa information by default" do
+          refute_match I18n.t("settings.edit.mfa.level.disabled"), @response.body
+        end
       end
 
       context "on GET to show with authentication" do
@@ -55,6 +62,9 @@ class Api::V1::ProfilesControllerTest < ActionController::TestCase
         end
 
         should respond_with :success
+        should "return owner mfa information" do
+          assert_match I18n.t("settings.edit.mfa.level.disabled"), @response.body
+        end
       end
 
       context "on GET to show with bad creds" do

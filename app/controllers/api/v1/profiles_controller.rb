@@ -16,7 +16,9 @@ class Api::V1::ProfilesController < Api::BaseController
         User.find_by_slug!(params[:id])
       else
         authenticate_or_request_with_http_basic do |username, password|
-          User.authenticate(username.strip, password)
+          if (user = User.authenticate(username.strip, password))
+            user.private_payload
+          end
         end
       end
   end

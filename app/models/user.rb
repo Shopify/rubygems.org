@@ -123,14 +123,13 @@ class User < ApplicationRecord
   end
 
   def payload
-    attrs = {
-      "id" => id,
-      "handle" => handle,
-      "mfa" => I18n.t("settings.mfa.level.#{mfa_level}")
-    }
-
+    attrs = { "id" => id, "handle" => handle }
     attrs["email"] = email unless hide_email
     attrs
+  end
+
+  def private_payload
+    payload.merge("mfa" => I18n.t("settings.edit.mfa.level.#{mfa_level}"))
   end
 
   def as_json(*)
