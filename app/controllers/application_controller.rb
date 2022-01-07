@@ -49,8 +49,8 @@ class ApplicationController < ActionController::Base
     redirect_to sign_in_path, alert: t("please_sign_in")
   end
 
-  def mfa_required?
-    current_user&.mfa_required?
+  def mfa_non_compliant?
+    current_user&.mfa_non_compliant?
   end
 
   def redirect_to_mfa

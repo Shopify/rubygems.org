@@ -229,9 +229,8 @@ class User < ApplicationRecord
     otp_verified?(otp)
   end
 
-  def mfa_required?
-    return false if mfa_enabled?
-    owner_of_most_downloaded_gem?
+  def mfa_non_compliant?
+    mfa_required? && !mfa_enabled?
   end
 
   # NOTE:

@@ -6,7 +6,7 @@
     <%= form_tag multifactor_auth_path, method: :put, id: "mfa-edit" do %>
       <%= label_tag :level, t(".mfa.level.title"), class: "form__label" %>
       <%# Note: Scrappy version ... this can obviously be DRY'd up %>
-      <% if @user.owner_of_most_downloaded_gem? %>
+      <% if @user.mfa_required? %>
          <%= select_tag :level, options_for_select([
           [t(".mfa.level.ui_and_api"), "ui_and_api"],
           [t(".mfa.level.ui_and_gem_signin"), "ui_and_gem_signin"],
@@ -24,7 +24,7 @@
       </div>
 
       <%# Note: Scrappy version ... this can obviously be DRY'd up %>
-      <% if @user.owner_of_most_downloaded_gem? %>
+      <% if @user.mfa_required? %>
         <%= submit_tag
           t(".mfa.update"),
           class: "form__submit",

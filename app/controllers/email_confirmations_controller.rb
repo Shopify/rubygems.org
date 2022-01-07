@@ -1,7 +1,7 @@
 class EmailConfirmationsController < ApplicationController
   before_action :redirect_to_signin, unless: :signed_in?, only: :unconfirmed
   # TODO: THINK ABOUT THE UNCONFIRMED FLOW
-  before_action :redirect_to_mfa, if: :mfa_required?
+  before_action :redirect_to_mfa, if: :mfa_non_compliant?
   before_action :validate_confirmation_token, only: %i[update mfa_update]
 
   def update
