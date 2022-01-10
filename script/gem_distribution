@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require_relative "../config/environment"
+require "csv"
+
+# https://github.com/eLocal/pg_histogram/
+histogram = PgHistogram::Histogram.new(Rubygem.joins(:gem_download).order("gem_downloads.count DESC"), 'count', bucket_size: 10000)
+
+CSV.open("data/histogram.csv", "w", headers: histogram.results.keys) do |csv|
+  histogram.results.each do |k, v|
+   csv << [k, v]
+  end
+end
