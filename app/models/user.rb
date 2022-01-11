@@ -230,8 +230,8 @@ class User < ApplicationRecord
   end
 
   def mfa_required?
-    return false if mfa_enabled?
-    owner_of_most_downloaded_gem?
+    return false unless require_mfa_at && !mfa_enabled?
+    require_mfa_at < Time.now.utc 
   end
 
   # NOTE:

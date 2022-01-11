@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require_relative "../config/environment"
+
+owners = User.joins(rubygems: :gem_download).order("gem_downloads.count DESC").limit(100).uniq
+
+owners.each do |owner|
+  next if owner.require_mfa_at
+
+  # time can be set to whenever we want to enforce this policy
+  owner.update!(require_mfa_at: Time.now.utc) 
+  puts "update #{owner.email} to require mfa"
+end

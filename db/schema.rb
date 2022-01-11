@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_09_134738) do
+ActiveRecord::Schema.define(version: 2022_01_11_011544) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -184,6 +184,7 @@ ActiveRecord::Schema.define(version: 2021_10_09_134738) do
     t.string "mfa_recovery_codes", default: [], array: true
     t.integer "mail_fails", default: 0
     t.string "blocked_email"
+    t.datetime "require_mfa_at"
     t.index ["email"], name: "index_users_on_email"
     t.index ["handle"], name: "index_users_on_handle"
     t.index ["id", "confirmation_token"], name: "index_users_on_id_and_confirmation_token"
