@@ -238,7 +238,7 @@ class User < ApplicationRecord
   # Do we want to differentiate the concept of mfa required for an acct where mfa is not enabled vs.
   # Identifying which accounts require mfa, regardless whether it's enabled or not
   def owner_of_most_downloaded_gem?
-    (rubygems & Rubygem.by_downloads.limit(Rubygem::MOST_DOWNLOADED)).any?
+    (rubygems & Rubygem.by_downloads.limit(Rubygem::TOP_N_MOST_DOWNLOADED)).any?
   end
 
   def otp_verified?(otp)

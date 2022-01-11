@@ -2,7 +2,7 @@ class Rubygem < ApplicationRecord
   include Patterns
   include RubygemSearchable
 
-  MOST_DOWNLOADED = 100
+  TOP_N_MOST_DOWNLOADED = 100
 
   has_many :ownerships, -> { confirmed }, dependent: :destroy, inverse_of: :rubygem
   has_many :ownerships_including_unconfirmed, dependent: :destroy, class_name: "Ownership"
