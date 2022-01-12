@@ -230,13 +230,28 @@ class User < ApplicationRecord
   end
 
   def mfa_required?
-    return false unless require_mfa_at && !mfa_enabled?
+    return false unless require_mfa_at
     require_mfa_at < Time.now.utc 
   end
 
   def recommend_mfa_setup?
     return false unless require_mfa_at && !mfa_enabled?
     require_mfa_at > Time.now.utc 
+  end
+
+  # Alt implementation approach to #recommend_mfa_setup 
+  def recommend_setup_for_mfa?
+    mfa_recommeded? && !mfa_enabled?
+  end
+
+  def mfa_recommended?
+    return false if mfa_required? # If mfa is required, it's no longer simply recommended 
+    require_mfa_at?
+  end
+
+  def mfa_compliant?
+    return true if !mfa_required? # If mfa is not required, then user is compliant either way (whether mfa is enabled or not)
+    mfa_required? && mfa_enabled?
   end
 
   # NOTE:
