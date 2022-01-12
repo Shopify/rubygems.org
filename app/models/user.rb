@@ -234,6 +234,11 @@ class User < ApplicationRecord
     require_mfa_at < Time.now.utc 
   end
 
+  def recommend_mfa_setup?
+    return false unless require_mfa_at && !mfa_enabled?
+    require_mfa_at > Time.now.utc 
+  end
+
   # NOTE:
   # Do we want to differentiate the concept of mfa required for an acct where mfa is not enabled vs.
   # Identifying which accounts require mfa, regardless whether it's enabled or not
