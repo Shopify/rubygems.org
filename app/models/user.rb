@@ -123,7 +123,7 @@ class User < ApplicationRecord
   end
 
   def private_payload
-    payload.merge("mfa" => mfa_level)
+    payload.merge("mfa" => mfa_level, "warnings" => profile_warnings)
   end
 
   def as_json(*)
@@ -277,6 +277,14 @@ class User < ApplicationRecord
   end
 
   private
+
+  def profile_warnings
+    warnings = []
+    if recommend_mfa_setup?
+      warnings << "\n\n[WARNING] For protection of your account and your gems, you are encouraged to set up multi-factor authentication at https://rubygems.org/multifactor_auth/new. Your account will be required have MFA enabled in the future."
+    end
+    warnings
+  end
 
   def verify_digit_otp(seed, otp)
     totp = ROTP::TOTP.new(seed)
