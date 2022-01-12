@@ -1,7 +1,6 @@
 class SessionsController < Clearance::SessionsController
   before_action :redirect_to_signin, unless: :signed_in?, only: %i[verify authenticate]
-  # TODO: VERIFY WHAT SESSIONS CONTROLLER DOES!
-  before_action :redirect_to_mfa, if: :mfa_required?
+  before_action :redirect_to_mfa, if: :mfa_setup_requested?
   before_action :ensure_not_blocked, only: :create
 
   def create

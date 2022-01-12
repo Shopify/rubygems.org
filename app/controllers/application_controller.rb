@@ -53,6 +53,14 @@ class ApplicationController < ActionController::Base
     current_user&.mfa_required?
   end
 
+  def mfa_compliant?
+    current_user&.mfa_compliant?
+  end
+
+  def mfa_setup_requested?
+    current_user&.recommend_setup_for_mfa? || !mfa_compliant?
+  end
+
   def redirect_to_mfa
     redirect_to new_multifactor_auth_path
   end
