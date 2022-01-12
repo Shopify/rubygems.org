@@ -11,10 +11,10 @@ class Api::V1::DeletionsController < Api::BaseController
     if @deletion.save
       StatsD.increment "yank.success"
       enqueue_web_hook_jobs(@version)
-      render plain: "Successfully deleted gem: #{@version.to_title}"
+      render plain: response_with_mfa_warning("Successfully deleted gem: #{@version.to_title}")
     else
       StatsD.increment "yank.failure"
-      render plain: @deletion.errors.full_messages.to_sentence,
+      render plain: response_with_mfa_warning(@deletion.errors.full_messages.to_sentence),
              status: :unprocessable_entity
     end
   end

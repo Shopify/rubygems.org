@@ -37,6 +37,16 @@ class Api::BaseController < ApplicationController
     render plain: "Gem requires MFA enabled; You do not have MFA enabled yet.", status: :forbidden
   end
 
+  def should_setup_mfa?
+    @api_key.user&.recommend_mfa_setup?
+  end
+
+  def response_with_mfa_warning(response)
+    return response unless should_setup_mfa? 
+    message = "\n\n[WARNING] For protection of your account and your gems, you are encouraged to set up multi-factor authentication at https://rubygems.org/multifactor_auth/new.\nYour account will be required have MFA enabled in the future."
+    response + message
+  end
+
   def authenticate_with_api_key
     params_key = request.headers["Authorization"] || ""
     hashed_key = Digest::SHA256.hexdigest(params_key)

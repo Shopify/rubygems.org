@@ -31,10 +31,10 @@ class Api::V1::RubygemsController < Api::BaseController
 
     gemcutter = Pusher.new(@api_key.user, request.body, request.remote_ip)
     enqueue_web_hook_jobs(gemcutter.version) if gemcutter.process
-    render plain: gemcutter.message, status: gemcutter.code
+    render plain: response_with_mfa_warning(gemcutter.message), status: gemcutter.code
   rescue => e
     Honeybadger.notify(e)
-    render plain: "Server error. Please try again.", status: :internal_server_error
+    render plain: response_with_mfa_warning("Server error. Please try again."), status: :internal_server_error
   end
 
   def reverse_dependencies
