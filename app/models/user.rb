@@ -241,7 +241,7 @@ class User < ApplicationRecord
 
   # Alt implementation approach to #recommend_mfa_setup 
   def recommend_setup_for_mfa?
-    mfa_recommeded? && !mfa_enabled?
+    mfa_recommended? && !mfa_enabled?
   end
 
   def mfa_recommended?

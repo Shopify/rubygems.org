@@ -25,8 +25,7 @@
 
       <%# Note: Scrappy version ... this can obviously be DRY'd up %>
       <% if @user.owner_of_most_downloaded_gem? %>
-        <%= submit_tag
-          t(".mfa.update"),
+        <%= submit_tag t(".mfa.update"),
           class: "form__submit",
           data: { confirm: "✋ You will need to register a new device if you deregister the current device.\n\nDo you want to proceed?" } %>
       <% else %>

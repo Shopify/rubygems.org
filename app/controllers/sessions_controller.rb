@@ -1,6 +1,5 @@
 class SessionsController < Clearance::SessionsController
   before_action :redirect_to_signin, unless: :signed_in?, only: %i[verify authenticate]
-  before_action :redirect_to_mfa, if: :mfa_setup_requested?
   before_action :ensure_not_blocked, only: :create
 
   def create
@@ -52,6 +51,8 @@ class SessionsController < Clearance::SessionsController
     sign_in(@user) do |status|
       if status.success?
         StatsD.increment "login.success"
+        return redirect_to_mfa if mfa_setup_requested?
+
         redirect_back_or(url_after_create)
       else
         login_failure(status.failure_message)
