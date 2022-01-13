@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+ENV["RAILS_ENV"] ||= "production"
+require_relative "../config/environment"
+
+mfa_required_at_date = Date.new(2022, 12, 31)
+owners = User.joins(rubygems: :gem_download).order("gem_downloads.count DESC").limit(100).uniq
+
+owners.each do |owner|
+  next if owner.mfa_required_at
+
+  owner.update(mfa_required_at: mfa_required_at_date) 
+  puts "✅ updated #{owner.email} to require mfa enrollment by #{mfa_required_at_date}"
+end
