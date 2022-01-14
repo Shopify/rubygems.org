@@ -239,6 +239,22 @@ class User < ApplicationRecord
     save!(validate: false)
   end
 
+  def mfa_required?
+    return false unless mfa_required_at
+
+    mfa_required_at < Time.now.utc 
+  end
+
+  def mfa_setup_recommended?
+    mfa_recommended? && !mfa_enabled?
+  end
+
+  def mfa_recommended?
+    return false if mfa_required?
+
+    mfa_required_at?
+  end
+
   def block!
     original_email = email
     transaction do

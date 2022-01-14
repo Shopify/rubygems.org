@@ -49,6 +49,14 @@ class ApplicationController < ActionController::Base
     redirect_to sign_in_path, alert: t("please_sign_in")
   end
 
+  def mfa_setup_requested?
+    current_user&.mfa_setup_recommended?
+  end
+
+  def redirect_to_mfa
+    redirect_to new_multifactor_auth_path, notice: "⚠️ #{t("multifactor_auths.setup_recommended")}"
+  end
+
   def find_rubygem
     @rubygem = Rubygem.find_by_name(params[:rubygem_id] || params[:id])
     return if @rubygem
