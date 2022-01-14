@@ -49,12 +49,18 @@ class ApplicationController < ActionController::Base
     redirect_to sign_in_path, alert: t("please_sign_in")
   end
 
+  def mfa_compliant?
+    current_user&.mfa_compliant?
+  end
+
   def mfa_setup_requested?
-    current_user&.mfa_setup_recommended?
+    current_user&.mfa_setup_recommended? || !mfa_compliant?
   end
 
   def redirect_to_mfa
-    redirect_to new_multifactor_auth_path, notice: "⚠️ #{t("multifactor_auths.setup_recommended")}"
+    message = !mfa_compliant? ? t("multifactor_auths.compliance_required") : t("multifactor_auths.setup_recommended")
+
+    redirect_to new_multifactor_auth_path, notice: "⚠️ #{message}"
   end
 
   def find_rubygem

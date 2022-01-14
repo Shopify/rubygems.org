@@ -282,6 +282,7 @@ en:
     incorrect_otp: Your OTP code is incorrect.
     otp_code: OTP code
     setup_recommended: For protection of your account and your gems, we encourage you to set up multi-factor authentication.
+    compliance_required: For protection of your account and your gems, you are required to set up multi-factor authentication.
     require_mfa_disabled: Your multifactor authentication has been enabled. You have to disable it first.
     require_mfa_enabled: Your multifactor authentication has not been enabled. You have to enable it first.
     new:

@@ -255,6 +255,12 @@ class User < ApplicationRecord
     mfa_required_at?
   end
 
+  def mfa_compliant?
+    return true if !mfa_required? 
+
+    mfa_required? && mfa_enabled?
+  end
+
   def block!
     original_email = email
     transaction do

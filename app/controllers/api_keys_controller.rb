@@ -2,6 +2,7 @@ class ApiKeysController < ApplicationController
   include ApiKeyable
   before_action :redirect_to_signin, unless: :signed_in?
   before_action :redirect_to_verify, unless: :password_session_active?
+  before_action :redirect_to_mfa, unless: :mfa_compliant?
 
   def index
     @api_key  = session.delete(:api_key)
