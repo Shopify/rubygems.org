@@ -17,7 +17,8 @@ class ApiKeysController < ApplicationController
     key = generate_unique_rubygems_key
     rubygem = api_key_params.dig(:rubygem)
     if rubygem
-      rubygem = current_user.rubygems.find_by(name: rubygem)
+      # rubygem = current_user.rubygems.find_by(name: rubygem)
+      rubygem = current_user.rubygems.find(rubygem)
     end
 
     create_hash = api_key_params.merge(hashed_key: hashed_key(key), rubygem: rubygem)

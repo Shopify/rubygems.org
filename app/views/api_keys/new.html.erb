@@ -26,7 +26,7 @@
     <% end %>
 
     <%= label_tag :rubygem, "Gem", class: "form__label" %>
-    <%= f.text_field :rubygem, class: "form__input", autocomplete: :off %>
+    <%= f.collection_select :rubygem, current_user.rubygems.order(:name).limit(100),:id,:name, prompt: "All gems", class: "form__input" %>
 
     <%= f.submit "Create", class: "form__submit" %>
   <% end %>
