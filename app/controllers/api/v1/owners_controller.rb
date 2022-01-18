@@ -4,6 +4,7 @@ class Api::V1::OwnersController < Api::BaseController
   before_action :verify_gem_ownership, except: %i[show gems]
   before_action :verify_mfa_requirement, except: %i[show gems]
   before_action :verify_with_otp, except: %i[show gems]
+  before_action :verify_gem_scope, except: %i[show gems]
 
   def show
     respond_to do |format|
@@ -65,5 +66,11 @@ class Api::V1::OwnersController < Api::BaseController
   def verify_gem_ownership
     return if @api_key.user.rubygems.find_by_name(params[:rubygem_id])
     render plain: "You do not have permission to manage this gem.", status: :unauthorized
+  end
+
+  def verify_gem_scope
+    return if @api_key.rubygem.nil? || @api_key.rubygem == @rubygem
+    render plain: "You do not have permission to manage this gem, api key is scoped to #{@api_key.rubygem}",
+      status: :forbidden
   end
 end

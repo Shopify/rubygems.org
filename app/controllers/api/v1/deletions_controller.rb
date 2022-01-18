@@ -25,6 +25,9 @@ class Api::V1::DeletionsController < Api::BaseController
     if !@rubygem.hosted?
       render plain: t(:this_rubygem_could_not_be_found),
              status: :not_found
+    elsif !@api_key.rubygem.nil? && @api_key.rubygem != @rubygem
+      render plain: "You do not have permission to delete this gem, api key is scoped to #{@api_key.rubygem}",
+        status: :forbidden
     elsif !@rubygem.owned_by?(@api_key.user)
       render plain: "You do not have permission to delete this gem.",
              status: :forbidden
