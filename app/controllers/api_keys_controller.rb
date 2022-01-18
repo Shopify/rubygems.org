@@ -15,7 +15,14 @@ class ApiKeysController < ApplicationController
 
   def create
     key = generate_unique_rubygems_key
-    @api_key = current_user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
+    rubygem = api_key_params.dig(:rubygem)
+    if rubygem
+      rubygem = current_user.rubygems.find_by(name: rubygem)
+    end
+
+    create_hash = api_key_params.merge(hashed_key: hashed_key(key), rubygem: rubygem)
+    @api_key = current_user.api_keys.build(create_hash)
+    # @api_key = current_user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
 
     if @api_key.save
       Mailer.delay.api_key_created(@api_key.id)
@@ -66,7 +73,8 @@ class ApiKeysController < ApplicationController
   private
 
   def api_key_params
-    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa)
+    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem)
+    # params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa)
   end
 
   def redirect_to_verify

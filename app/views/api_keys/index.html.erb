@@ -42,6 +42,9 @@
         </td>
         <td class="owners__cell" data-title="Scopes">
           <%= i18n_api_scopes api_key %>
+          <% if api_key.rubygem %>
+            Gem: <%= api_key.rubygem.name %>
+          <% end %>
         </td>
         <td class="owners__cell" data-title="Age">
           <%= time_ago_in_words(api_key.created_at) %>
