@@ -43,7 +43,11 @@
         <td class="owners__cell" data-title="Scopes">
           <%= i18n_api_scopes api_key %>
           <% if api_key.rubygem %>
+            <br>
             Gem: <%= api_key.rubygem.name %>
+            <% unless api_key.valid? && self.errors[:rubygem].blank? %>
+            (ownership removed)
+            <% end %>
           <% end %>
         </td>
         <td class="owners__cell" data-title="Age">

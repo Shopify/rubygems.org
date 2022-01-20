@@ -25,6 +25,10 @@
       </div>
     <% end %>
 
+
+    <%= label_tag :rubygem, "Gem", class: "form__label" %>
+    <%= f.collection_select :rubygem, current_user.rubygems.order(:name).limit(100),:id,:name, prompt: "All gems", class: "form__input" %>
+
     <%= f.submit "Update", class: "form__submit" %>
   <% end %>
 </div>

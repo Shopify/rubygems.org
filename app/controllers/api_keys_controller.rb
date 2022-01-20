@@ -16,9 +16,11 @@ class ApiKeysController < ApplicationController
   def create
     key = generate_unique_rubygems_key
     rubygem = api_key_params.dig(:rubygem)
-    if rubygem
+    rubygem = if rubygem.present?
       # rubygem = current_user.rubygems.find_by(name: rubygem)
-      rubygem = current_user.rubygems.find(rubygem)
+       current_user.rubygems.find(rubygem)
+    else
+      nil
     end
 
     create_hash = api_key_params.merge(hashed_key: hashed_key(key), rubygem: rubygem)
@@ -42,8 +44,17 @@ class ApiKeysController < ApplicationController
 
   def update
     @api_key = current_user.api_keys.find(params.require(:id))
+    rubygem = api_key_params.dig(:rubygem)
+    rubygem = if rubygem.present?
+      # rubygem = current_user.rubygems.find_by(name: rubygem)
+       current_user.rubygems.find(rubygem)
+    else
+      nil
+    end
 
-    if @api_key.update(api_key_params)
+    update_hash = api_key_params.merge(rubygem: rubygem)
+
+    if @api_key.update(update_hash)
       redirect_to profile_api_keys_path, flash: { notice: t(".success") }
     else
       flash[:error] = @api_key.errors.full_messages.to_sentence
