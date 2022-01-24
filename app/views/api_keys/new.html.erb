@@ -15,6 +15,21 @@
       <% end %>
     </div>
 
+    <div class="form__group">
+      <%= label_tag :rubygem, "Gem Scope", class: "form__label" %>
+      <p>What gem do you want to apply the selected scope to?</p>
+      <div class = "form__checkbox__item">
+        <%# f.check_box :gem_scope, { class: "form__checkbox__input" }, @api_key.rubygem %>
+        <%# label_tag :gem_scope, "Scope to a gem?", class: "form__checkbox__label" %>
+      </div>
+
+      <%= f.search_field :rubygem, :placeholder => "Enter Gem", :id => 'user_gem_query', :class => "form__input", :autocomplete => "off"%>
+      <ul id="suggest-home" class="suggest-list"></ul>
+      <%= label_tag :home_query do %>
+        <span class="t-hidden"><%= t('layouts.application.header.search_gem_html') %></span>
+      <% end %>
+    </div>
+
     <% unless current_user.mfa_disabled? || current_user.mfa_ui_and_api? %>
       <div class="form__group">
         <%= label_tag :mfa, t(".multifactor_auth"), class: "form__label" %>
@@ -24,9 +39,6 @@
         </div>
       </div>
     <% end %>
-
-    <%= label_tag :rubygem, "Gem", class: "form__label" %>
-    <%= f.collection_select :rubygem, current_user.rubygems.order(:name).limit(100),:id,:name, prompt: "All gems", class: "form__input" %>
 
     <%= f.submit "Create", class: "form__submit" %>
   <% end %>

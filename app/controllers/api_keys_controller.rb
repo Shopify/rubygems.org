@@ -15,18 +15,20 @@ class ApiKeysController < ApplicationController
 
   def create
     key = generate_unique_rubygems_key
-    rubygem = api_key_params.dig(:rubygem)
-    rubygem = if rubygem.present?
-      # rubygem = current_user.rubygems.find_by(name: rubygem)
-       current_user.rubygems.find(rubygem)
-    else
-      nil
-    end
-
-    create_hash = api_key_params.merge(hashed_key: hashed_key(key), rubygem: rubygem)
+    create_hash = api_key_params.except(:rubygem, :gem_scope).merge(hashed_key: hashed_key(key))
     @api_key = current_user.api_keys.build(create_hash)
-    # @api_key = current_user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
 
+    # byebug
+    # if api_key_params.dig(:gem_scope).present?
+      rubygem = api_key_params.dig(:rubygem)
+      if rubygem.present?
+        rubygem = current_user.rubygems.find_by(name: rubygem)
+        #  current_user.rubygems.find(rubygem)
+        @api_key.rubygem = rubygem
+      end
+    # end
+    # @api_key = current_user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
+    # add error if gem is not found
     if @api_key.save
       Mailer.delay.api_key_created(@api_key.id)
 
@@ -85,7 +87,7 @@ class ApiKeysController < ApplicationController
   private
 
   def api_key_params
-    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem)
+    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem, :gem_scope)
     # params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa)
   end
 

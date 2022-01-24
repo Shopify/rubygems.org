@@ -46,6 +46,16 @@ class ProfilesController < ApplicationController
     @ownership_requests = current_user.ownership_requests.includes(:rubygem)
   end
 
+  def gem_autocomplete
+    if params[:query].empty?
+      results = current_user.rubygems.limit(10).map{|gem| gem.name }
+      render json: results
+    else
+      results = current_user.rubygems.where('name LIKE ?', "%#{params[:query]}%").limit(10).map{|gem| gem.name }
+      render json: results
+    end
+  end
+
   private
 
   def params_user

@@ -146,6 +146,8 @@ Rails.application.routes.draw do
       resources :api_keys do
         delete :reset, on: :collection
       end
+
+      get :gem_autocomplete, constraints: { format: :json }
     end
     resources :stats, only: :index
     get "/news" => 'news#show', as: 'legacy_news_path'

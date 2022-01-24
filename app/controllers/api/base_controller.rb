@@ -41,7 +41,9 @@ class Api::BaseController < ApplicationController
     params_key = request.headers["Authorization"] || ""
     hashed_key = Digest::SHA256.hexdigest(params_key)
     @api_key   = ApiKey.find_by_hashed_key(hashed_key)
-    render_unauthorized unless @api_key
+
+    return render_unauthorized unless @api_key
+    render_invalid unless @api_key.valid?
   end
 
   def render_unauthorized
@@ -54,5 +56,9 @@ class Api::BaseController < ApplicationController
       format.json { render json: { error: t(:api_key_forbidden) }, status: :forbidden }
       format.yaml { render yaml: { error: t(:api_key_forbidden) }, status: :forbidden }
     end
+  end
+
+  def render_invalid
+    render plain: @api_key.errors.full_messages.to_sentence, status: :unauthorized
   end
 end

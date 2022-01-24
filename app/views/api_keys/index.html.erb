@@ -45,7 +45,7 @@
           <% if api_key.rubygem %>
             <br>
             Gem: <%= api_key.rubygem.name %>
-            <% unless api_key.valid? && self.errors[:rubygem].blank? %>
+            <% unless api_key.valid? && api_key.errors[:rubygem].blank? %>
             (ownership removed)
             <% end %>
           <% end %>
