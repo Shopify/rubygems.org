@@ -47,13 +47,14 @@ class ProfilesController < ApplicationController
   end
 
   def gem_autocomplete
-    if params[:query].empty?
-      results = current_user.rubygems.limit(10).map{|gem| gem.name }
-      render json: results
+    results = if params[:query].empty?
+      current_user.rubygems
     else
-      results = current_user.rubygems.where('name LIKE ?', "%#{params[:query]}%").limit(10).map{|gem| gem.name }
-      render json: results
-    end
+      results = current_user.rubygems.where('name LIKE ?', "%#{params[:query]}%")
+    end.limit(10).map{|gem| { name: gem.name, id: gem.id } }
+
+    results.unshift({ name: "All gems", id: nil })
+    render json: results
   end
 
   private

@@ -15,18 +15,19 @@ class ApiKeysController < ApplicationController
 
   def create
     key = generate_unique_rubygems_key
-    create_hash = api_key_params.except(:rubygem, :gem_scope).merge(hashed_key: hashed_key(key))
+    create_hash = api_key_params.except(:rubygem_id).merge(hashed_key: hashed_key(key))
     @api_key = current_user.api_keys.build(create_hash)
 
-    # byebug
-    # if api_key_params.dig(:gem_scope).present?
-      rubygem = api_key_params.dig(:rubygem)
-      if rubygem.present?
-        rubygem = current_user.rubygems.find_by(name: rubygem)
-        #  current_user.rubygems.find(rubygem)
-        @api_key.rubygem = rubygem
+    rubygem_id = api_key_params.dig(:rubygem_id)
+    if rubygem_id.present?
+      @api_key.rubygem_id = rubygem_id
+      if rubygem_id == "-1"
+        flash[:error] = "Please select a gem scope"
+        render :new
+        return
       end
-    # end
+    # rubygem = current_user.rubygems.find_by(name: rubygem)
+    end
     # @api_key = current_user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
     # add error if gem is not found
     if @api_key.save
@@ -87,7 +88,7 @@ class ApiKeysController < ApplicationController
   private
 
   def api_key_params
-    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem, :gem_scope)
+    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem_id)
     # params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa)
   end
 

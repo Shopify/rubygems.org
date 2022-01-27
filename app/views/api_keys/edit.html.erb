@@ -15,6 +15,19 @@
       <% end %>
     </div>
 
+    <div class="form__group">
+      <p>What gem do you want to apply the selected scope to?</p>
+
+      <ul id="selected-gem">
+        <%= f.text_field :rubygem_id, readonly: true, autocomplete: :off, type: "hidden", class: "#{@api_key.rubygem&.name}" %>
+      </ul>
+      <%= search_field_tag :rubygem, params[:query], :placeholder => "Enter Gem", :id => 'user_gem_query', :class => "form__input", :autocomplete => "off", :focus => "false" %>
+      <ul id="suggest-home" class="suggest-list"></ul>
+      <%= label_tag :home_query do %>
+        <span class="t-hidden"><%= t('layouts.application.header.search_gem_html') %></span>
+      <% end %>
+    </div>
+
     <% unless current_user.mfa_disabled? || current_user.mfa_ui_and_api? %>
       <div class="form__group">
         <%= label_tag :mfa, t(".multifactor_auth"), class: "form__label" %>
