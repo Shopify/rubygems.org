@@ -2,6 +2,8 @@ class ApiKey < ApplicationRecord
   API_SCOPES = %i[index_rubygems push_rubygem yank_rubygem add_owner remove_owner access_webhooks show_dashboard].freeze
 
   belongs_to :user
+  has_one :api_keys_rubygems, dependent: :destroy
+  has_one :rubygem, through: :api_keys_rubygems
   validates :user, :name, :hashed_key, presence: true
   validate :exclusive_show_dashboard_scope, if: :can_show_dashboard?
   validate :scope_presence
