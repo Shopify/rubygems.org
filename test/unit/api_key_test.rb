@@ -42,6 +42,22 @@ class ApiKeyTest < ActiveSupport::TestCase
     end
   end
 
+  context "gem scope" do
+    setup do
+      @ownership = create(:ownership)
+      @api_key = create(:api_key, index_rubygems: true, user: @ownership.user, rubygem: @ownership.rubygem)
+    end
+
+    should "be valid when user owns the rubygem" do
+      assert @api_key.valid?
+    end
+
+    should "be invalid when ownership is removed" do
+      @ownership.delete
+      refute @api_key.valid?
+    end
+  end
+
   context "#mfa_enabled?" do
     setup do
       @api_key = create(:api_key, index_rubygems: true)

@@ -7,6 +7,7 @@ class ApiKey < ApplicationRecord
   validate :exclusive_show_dashboard_scope, if: :can_show_dashboard?
   validate :scope_presence
   validates :name, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }
+  validate :gem_ownership
 
   def enabled_scopes
     API_SCOPES.filter_map { |scope| scope if send(scope) }
@@ -42,5 +43,12 @@ class ApiKey < ApplicationRecord
 
   def scope_presence
     errors.add :base, "Please enable at least one scope" unless enabled_scopes.any?
+  end
+
+  def gem_ownership
+    return unless rubygem_id
+    return if user.rubygems.find_by_id(rubygem_id)
+    errors.add :rubygem, "#{Rubygem.find_by_id(rubygem_id)&.name} cannot be scoped to this key." \
+                         " Please change the scope to a gem that you own."
   end
 end
