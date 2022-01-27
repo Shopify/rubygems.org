@@ -30,6 +30,8 @@ class ApiKeysController < ApplicationController
 
   def edit
     @api_key = current_user.api_keys.find(params.require(:id))
+
+    flash[:error] = @api_key.errors.full_messages.to_sentence unless @api_key.valid?
   end
 
   def update
@@ -66,7 +68,7 @@ class ApiKeysController < ApplicationController
   private
 
   def api_key_params
-    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa)
+    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem_name)
   end
 
   def redirect_to_verify

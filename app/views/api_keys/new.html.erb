@@ -15,6 +15,12 @@
       <% end %>
     </div>
 
+    <div class="form__group">
+      <%= label_tag :rubygem, t(".rubygem_scope"), class: "form__label" %>
+      <p><%= t(".rubygem_scope_info") %></p>
+      <%= f.text_field :rubygem_name, value: @api_key.rubygem&.name, placeholder: t(".all_gems"), class: "form__input" %>
+    </div>
+
     <% unless current_user.mfa_disabled? || current_user.mfa_ui_and_api? %>
       <div class="form__group">
         <%= label_tag :mfa, t(".multifactor_auth"), class: "form__label" %>

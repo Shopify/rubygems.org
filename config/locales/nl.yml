@@ -61,6 +61,8 @@ nl:
       api_keys:
       name:
       scopes:
+      gem:
+      ownership_removed:
       age:
       last_access:
       action:
@@ -82,6 +84,9 @@ nl:
       new_api_key:
       multifactor_auth:
       enable_mfa:
+      rubygem_scope:
+      rubygem_scope_info:
+      all_gems:
     reset:
       success:
     update:
@@ -90,6 +95,9 @@ nl:
       edit_api_key:
       multifactor_auth:
       enable_mfa:
+      rubygem_scope:
+      rubygem_scope_info:
+      all_gems:
   clearance_mailer:
     change_password:
       title:
