@@ -40,6 +40,7 @@ gem "rack-attack"
 gem "rqrcode"
 gem "rotp"
 gem "unpwn"
+gem "pg_histogram"
 
 # Logging
 gem "lograge"
