@@ -31,6 +31,10 @@ class ApiKey < ApplicationRecord
     user.mfa_ui_and_api? || mfa
   end
 
+  def valid_for_api?
+    gem_ownership
+  end
+
   private
 
   def exclusive_show_dashboard_scope
@@ -46,9 +50,10 @@ class ApiKey < ApplicationRecord
   end
 
   def gem_ownership
-    return unless rubygem_id
-    return if user.rubygems.find_by_id(rubygem_id)
-    errors.add :rubygem, "#{Rubygem.find_by_id(rubygem_id)&.name} cannot be scoped to this key." \
+    return true unless rubygem_id
+    return true if user.rubygems.find_by_id(rubygem_id)
+    errors.add :rubygem, "#{Rubygem.find_by_id(rubygem_id)&.name} cannot be scoped to this API key." \
                          " Please change the scope to a gem that you own."
+    false
   end
 end

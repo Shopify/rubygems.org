@@ -3,16 +3,17 @@ require "digest/sha2"
 class Pusher
   attr_reader :user, :spec, :message, :code, :rubygem, :body, :version, :version_id, :size
 
-  def initialize(user, body, remote_ip = "")
+  def initialize(user, body, remote_ip = "", scoped_rubygem = nil)
     @user = user
     @body = StringIO.new(body.read)
     @size = @body.size
     @indexer = Indexer.new
     @remote_ip = remote_ip
+    @scoped_rubygem = scoped_rubygem
   end
 
   def process
-    pull_spec && find && authorize && verify_mfa_requirement && validate && save
+    pull_spec && find && authorize && verify_gem_scope && verify_mfa_requirement && validate && save
   end
 
   def authorize
@@ -22,6 +23,12 @@ class Pusher
   def verify_mfa_requirement
     user.mfa_enabled? || !(version_mfa_required? || rubygem.mfa_required?) ||
       notify("Rubygem requires owners to enable MFA. You must enable MFA before pushing new version.", 403)
+  end
+
+  def verify_gem_scope
+    return true unless @scoped_rubygem && rubygem != @scoped_rubygem
+
+    notify("You do not have permission to push this gem, this API key is scoped to #{@scoped_rubygem.name}.", 403)
   end
 
   def validate

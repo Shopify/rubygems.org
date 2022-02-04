@@ -50,11 +50,13 @@ class ApiKeyTest < ActiveSupport::TestCase
 
     should "be valid when user owns the rubygem" do
       assert @api_key.valid?
+      assert @api_key.valid_for_api?
     end
 
     should "be invalid when ownership is removed" do
       @ownership.delete
       refute @api_key.valid?
+      refute @api_key.valid_for_api?
     end
   end
 
