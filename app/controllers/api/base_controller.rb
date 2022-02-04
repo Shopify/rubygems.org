@@ -37,11 +37,18 @@ class Api::BaseController < ApplicationController
     render plain: "Gem requires MFA enabled; You do not have MFA enabled yet.", status: :forbidden
   end
 
+  def verify_api_key_gem_scope
+    return unless @api_key.rubygem && @api_key.rubygem != @rubygem
+
+    render plain: "Rubygem #{@rubygem} cannot be scoped to this API key", status: :forbidden
+  end
+
   def authenticate_with_api_key
     params_key = request.headers["Authorization"] || ""
     hashed_key = Digest::SHA256.hexdigest(params_key)
     @api_key   = ApiKey.find_by_hashed_key(hashed_key)
-    render_unauthorized unless @api_key
+    return render_unauthorized unless @api_key
+    render_invalid_api_key unless @api_key.api_authorized?
   end
 
   def render_unauthorized
@@ -54,5 +61,9 @@ class Api::BaseController < ApplicationController
       format.json { render json: { error: t(:api_key_forbidden) }, status: :forbidden }
       format.yaml { render yaml: { error: t(:api_key_forbidden) }, status: :forbidden }
     end
+  end
+
+  def render_invalid_api_key
+    render plain: @api_key.errors.full_messages.to_sentence, status: :forbidden
   end
 end

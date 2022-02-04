@@ -528,6 +528,51 @@ class Api::V1::RubygemsControllerTest < ActionController::TestCase
     end
   end
 
+  context "push with api key with gem scoped" do
+    context "to a gem with ownership removed" do
+      setup do
+        ownership = create(:ownership, user: create(:user), rubygem: create(:rubygem, name: "test-gem123"))
+        @api_key = create(:api_key, key: "12343", user: ownership.user, rubygem: ownership.rubygem, push_rubygem: true)
+        ownership.destroy!
+        @request.env["HTTP_AUTHORIZATION"] = "12343"
+
+        post :create, body: gem_file("test-1.0.0.gem").read
+      end
+
+      should respond_with :forbidden
+      should "return false for #api_authorized? and display an error" do
+        assert_equal "Rubygem #{@api_key.rubygem.name} cannot be scoped to this API key", @response.body
+      end
+    end
+
+    context "to not the gem being pushed" do
+      setup do
+        ownership = create(:ownership, user: create(:user), rubygem: create(:rubygem, name: "test-gem"))
+        create(:api_key, key: "12343", user: ownership.user, rubygem: ownership.rubygem, push_rubygem: true)
+        @request.env["HTTP_AUTHORIZATION"] = "12343"
+
+        post :create, body: gem_file("test-1.0.0.gem").read
+      end
+
+      should respond_with :forbidden
+      should "say gem scope is invalid" do
+        assert_equal "Rubygem test cannot be scoped to this API key", @response.body
+      end
+    end
+
+    context "to the gem being pushed" do
+      setup do
+        ownership = create(:ownership, user: create(:user), rubygem: create(:rubygem, name: "test"))
+        create(:api_key, key: "12343", user: ownership.user, rubygem: ownership.rubygem, push_rubygem: true)
+        @request.env["HTTP_AUTHORIZATION"] = "12343"
+
+        post :create, body: gem_file("test-1.0.0.gem").read
+      end
+
+      should respond_with :ok
+    end
+  end
+
   context "with incorrect api key" do
     context "on GET to index with JSON for a list of gems without api key" do
       setup do
