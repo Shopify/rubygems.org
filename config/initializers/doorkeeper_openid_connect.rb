@@ -2,20 +2,17 @@
 
 Doorkeeper::OpenidConnect.configure do
   issuer do |resource_owner, application|
-    'issuer string'
+    "http://localhost:3000/oauth"
   end
 
-  signing_key <<~KEY
-    -----BEGIN RSA PRIVATE KEY-----
-    ....
-    -----END RSA PRIVATE KEY-----
-  KEY
+  signing_key File.read("private_id_token_key.pem")
+  # signing_algorithm = :rs256
 
   subject_types_supported [:public]
 
   resource_owner_from_access_token do |access_token|
     # Example implementation:
-    # User.find_by(id: access_token.resource_owner_id)
+    User.find_by(id: access_token.resource_owner_id)
   end
 
   auth_time_from_resource_owner do |resource_owner|
@@ -48,6 +45,8 @@ Doorkeeper::OpenidConnect.configure do
 
     # or if you need pairwise subject identifier, implement like below:
     # Digest::SHA256.hexdigest("#{resource_owner.id}#{URI.parse(application.redirect_uri).host}#{'your_secret_salt'}")
+    # profile_path(resource_owner.display_id)
+    "http://localhost:3000/profiles/#{resource_owner.display_id}"
   end
 
   # Protocol to use when generating URIs for the discovery endpoint,
