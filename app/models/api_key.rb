@@ -2,7 +2,8 @@ class ApiKey < ApplicationRecord
   API_SCOPES = %i[index_rubygems push_rubygem yank_rubygem add_owner remove_owner access_webhooks show_dashboard].freeze
 
   belongs_to :user
-  belongs_to :rubygem, optional: true
+  has_one :api_keys_rubygems, dependent: :destroy
+  has_one :rubygem, through: :api_keys_rubygems
   validates :user, :name, :hashed_key, presence: true
   validate :exclusive_show_dashboard_scope, if: :can_show_dashboard?
   validate :scope_presence
@@ -50,9 +51,9 @@ class ApiKey < ApplicationRecord
   end
 
   def gem_ownership
-    return true unless rubygem_id
-    return true if user.rubygems.find_by_id(rubygem_id)
-    errors.add :rubygem, "#{Rubygem.find_by_id(rubygem_id)&.name} cannot be scoped to this API key." \
+    return true unless rubygem
+    return true if rubygem.owned_by?(user)
+    errors.add :rubygem, "#{rubygem.name} cannot be scoped to this API key." \
                          " Please change the scope to a gem that you own."
     false
   end

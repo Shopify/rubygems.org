@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_27_003654) do
+ActiveRecord::Schema.define(version: 2022_02_04_145456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -31,10 +31,14 @@ ActiveRecord::Schema.define(version: 2022_01_27_003654) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "mfa", default: false, null: false
-    t.bigint "rubygem_id"
     t.index ["hashed_key"], name: "index_api_keys_on_hashed_key", unique: true
-    t.index ["rubygem_id"], name: "index_api_keys_on_rubygem_id"
     t.index ["user_id"], name: "index_api_keys_on_user_id"
+  end
+
+  create_table "api_keys_rubygems", force: :cascade do |t|
+    t.integer "api_key_id"
+    t.integer "rubygem_id"
+    t.index ["api_key_id"], name: "index_api_keys_rubygems_on_api_key_id"
   end
 
   create_table "delayed_jobs", id: :serial, force: :cascade do |t|
