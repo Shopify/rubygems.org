@@ -37,6 +37,35 @@ class ApiKeysTest < SystemTest
     assert_equal @ownership.rubygem, @user.api_keys.last.rubygem
   end
 
+  test "creating new api key scoped to gem that the user does not own" do
+    gem_input = "invalid-gem"
+    create(:rubygem, name: gem_input)
+    visit_profile_api_keys_path
+
+    fill_in "api_key[name]", with: "test"
+    check "api_key[index_rubygems]"
+    fill_in "api_key_rubygem_name", with: gem_input
+    click_button "Create"
+
+    assert page.has_css? ".flash"
+    assert page.has_content? "Rubygem #{gem_input} cannot be scoped to this API key"
+    assert_empty @user.api_keys
+  end
+
+  test "creating new api key scoped to a gem that does not exist" do
+    visit_profile_api_keys_path
+    gem_input = "#{@ownership.rubygem}123"
+
+    fill_in "api_key[name]", with: "test"
+    check "api_key[index_rubygems]"
+    fill_in "api_key_rubygem_name", with: gem_input
+    click_button "Create"
+
+    assert page.has_css? ".flash"
+    assert page.has_content? "Rubygem #{gem_input} could not be found"
+    assert_empty @user.api_keys
+  end
+
   test "creating new api key with MFA UI enabled" do
     @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
 
@@ -90,6 +119,41 @@ class ApiKeysTest < SystemTest
     click_button "Update"
 
     assert_nil api_key.reload.rubygem
+  end
+
+  test "update api key gem scope to a gem the user does not own" do
+    api_key = create(:api_key, user: @user, rubygem: @ownership.rubygem)
+    gem_input = "invalid-gem"
+    create(:rubygem, name: gem_input)
+
+    visit_profile_api_keys_path
+    click_button "Edit"
+
+    assert page.has_content? "Edit API key"
+    assert page.has_field? "api_key_rubygem_name", with: @ownership.rubygem.name
+    fill_in "api_key_rubygem_name", with: gem_input
+    click_button "Update"
+
+    assert page.has_css? ".flash"
+    assert page.has_content? "Rubygem #{gem_input} cannot be scoped to this API key"
+    assert_equal @ownership.rubygem, api_key.reload.rubygem
+  end
+
+  test "update api key gem scope to a gem that does not exist" do
+    api_key = create(:api_key, user: @user, rubygem: @ownership.rubygem)
+    gem_input = "#{@ownership.rubygem}123"
+
+    visit_profile_api_keys_path
+    click_button "Edit"
+
+    assert page.has_content? "Edit API key"
+    assert page.has_field? "api_key_rubygem_name", with: @ownership.rubygem.name
+    fill_in "api_key_rubygem_name", with: gem_input
+    click_button "Update"
+
+    assert page.has_css? ".flash"
+    assert page.has_content? "Rubygem #{gem_input} could not be found"
+    assert_equal @ownership.rubygem, api_key.reload.rubygem
   end
 
   test "update api key with MFA UI enabled" do

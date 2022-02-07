@@ -1,7 +1,7 @@
 class ApiKey < ApplicationRecord
   API_SCOPES = %i[index_rubygems push_rubygem yank_rubygem add_owner remove_owner access_webhooks show_dashboard].freeze
 
-  before_validation :set_rubygem_from_name, on: :save
+  before_validation :set_rubygem_from_name, on: %i[create update]
   belongs_to :user
   has_one :api_keys_rubygems, dependent: :destroy
   has_one :rubygem, through: :api_keys_rubygems
@@ -11,7 +11,7 @@ class ApiKey < ApplicationRecord
   validates :name, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }
   validate :gem_ownership
 
-  attr_writer :rubygem_name
+  attr_accessor :rubygem_name
 
   def enabled_scopes
     API_SCOPES.filter_map { |scope| scope if send(scope) }
@@ -55,7 +55,7 @@ class ApiKey < ApplicationRecord
 
   def set_rubygem_from_name
     return if rubygem_name.nil?
-    return self.rubygem = nil unless rubygem_name.present?
+    return self.rubygem = nil if rubygem_name.blank?
 
     self.rubygem = Rubygem.name_is(rubygem_name).first
     errors.add :rubygem, "#{rubygem_name} could not be found" unless rubygem
