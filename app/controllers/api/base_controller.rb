@@ -40,7 +40,7 @@ class Api::BaseController < ApplicationController
   def verify_api_key_gem_scope
     return unless @api_key.rubygem && @api_key.rubygem != @rubygem
 
-    render plain: "You do not have permission. This API key is scoped to #{@api_key.rubygem.name}.", status: :forbidden
+    render plain: "Rubygem #{@rubygem} cannot be scoped to this API key", status: :forbidden
   end
 
   def authenticate_with_api_key

@@ -58,14 +58,13 @@ class ApiKey < ApplicationRecord
     return self.rubygem = nil unless rubygem_name.present?
 
     self.rubygem = Rubygem.name_is(rubygem_name).first
-    errors.add :rubygem, "#{rubygem_name} cannot be found." unless rubygem
+    errors.add :rubygem, "#{rubygem_name} could not be found" unless rubygem
   end
 
   def gem_ownership
     return true unless rubygem
     return true if rubygem.owned_by?(user)
-    errors.add :rubygem, "#{rubygem.name} cannot be scoped to this API key." \
-                         " Please change the scope to a gem that you own."
+    errors.add :rubygem, "#{rubygem.name} cannot be scoped to this API key"
     false
   end
 end

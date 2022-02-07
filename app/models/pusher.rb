@@ -28,7 +28,7 @@ class Pusher
   def verify_gem_scope
     return true unless @scoped_rubygem && rubygem != @scoped_rubygem
 
-    notify("You do not have permission to push this gem, this API key is scoped to #{@scoped_rubygem.name}.", 403)
+    notify("Rubygem #{rubygem} cannot be scoped to this API key", 403)
   end
 
   def validate

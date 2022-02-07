@@ -447,7 +447,7 @@ class Api::V1::OwnersControllerTest < ActionController::TestCase
           should respond_with :forbidden
           should "not remove other user as gem owner" do
             assert_includes @rubygem.owners, @second_user
-            assert_equal "You do not have permission. This API key is scoped to test.", @response.body
+            assert_equal "Rubygem #{@rubygem.name} cannot be scoped to this API key", @response.body
           end
         end
 
