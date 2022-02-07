@@ -30,8 +30,7 @@ class ApiKeysTest < SystemTest
 
     fill_in "api_key[name]", with: "test"
     check "api_key[index_rubygems]"
-    assert page.has_select? "api_key_rubygem_id", selected: nil
-    page.select @ownership.rubygem.name
+    fill_in "api_key_rubygem_name", with: @ownership.rubygem.name
     click_button "Create"
 
     assert page.has_content? "Note that we won't be able to show the key to you again. New API key:"
@@ -86,8 +85,8 @@ class ApiKeysTest < SystemTest
     click_button "Edit"
 
     assert page.has_content? "Edit API key"
-    assert page.has_select? "api_key_rubygem_id", selected: @ownership.rubygem.name
-    page.select "All Gems"
+    assert page.has_field? "api_key_rubygem_name", with: @ownership.rubygem.name
+    fill_in "api_key_rubygem_name", with: ""
     click_button "Update"
 
     assert_nil api_key.reload.rubygem
@@ -158,7 +157,6 @@ class ApiKeysTest < SystemTest
     assert page.has_content? "(ownership removed)"
 
     click_button "Edit"
-    assert page.has_select? "api_key_rubygem_id", selected: nil
     assert page.has_css? ".flash"
   end
 

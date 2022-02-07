@@ -17,6 +17,12 @@ class ApiKeysController < ApplicationController
     key = generate_unique_rubygems_key
     @api_key = current_user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
 
+    # unless set_rubygem_from_params
+    #   flash[:error] = @api_key.errors.full_messages.to_sentence
+    #   render :new
+    #   return
+    # end
+
     if @api_key.save
       Mailer.delay.api_key_created(@api_key.id)
 
@@ -36,6 +42,12 @@ class ApiKeysController < ApplicationController
 
   def update
     @api_key = current_user.api_keys.find(params.require(:id))
+
+    # unless set_rubygem_from_params
+    #   flash[:error] = @api_key.errors.full_messages.to_sentence
+    #   render :edit
+    #   return
+    # end
 
     if @api_key.update(api_key_params)
       redirect_to profile_api_keys_path, flash: { notice: t(".success") }
@@ -67,8 +79,28 @@ class ApiKeysController < ApplicationController
 
   private
 
+  # def set_rubygem_from_params
+  #   rubygem_name = api_key_params.dig(:rubygem)
+  #   unless rubygem_name.present?
+  #     @api_key.rubygem = nil
+  #     return true
+  #   end
+
+  #   rubygem = Rubygem.name_is(rubygem_name).first
+  #   if rubygem
+  #     @api_key.rubygem = rubygem
+  #   else
+  #     @api_key.errors[:rubygem] << "#{rubygem_name} cannot be found."
+  #     false
+  #   end
+  # end
+
+  # def api_key_build_params
+  #   api_key_params.except(:rubygem)
+  # end
+
   def api_key_params
-    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem_id)
+    params.require(:api_key).permit(:name, *ApiKey::API_SCOPES, :mfa, :rubygem_name)
   end
 
   def redirect_to_verify
