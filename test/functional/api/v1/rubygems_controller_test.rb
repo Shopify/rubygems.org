@@ -540,7 +540,7 @@ class Api::V1::RubygemsControllerTest < ActionController::TestCase
       end
 
       should respond_with :forbidden
-      should "return false for #valid_for_api? and display an error" do
+      should "return false for #api_authorized? and display an error" do
         assert_equal "Rubygem #{@api_key.rubygem.name} cannot be scoped to this API key", @response.body
       end
     end

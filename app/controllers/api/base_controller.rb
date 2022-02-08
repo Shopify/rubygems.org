@@ -48,7 +48,7 @@ class Api::BaseController < ApplicationController
     hashed_key = Digest::SHA256.hexdigest(params_key)
     @api_key   = ApiKey.find_by_hashed_key(hashed_key)
     return render_unauthorized unless @api_key
-    render_invalid_api_key unless @api_key.valid_for_api?
+    render_invalid_api_key unless @api_key.api_authorized?
   end
 
   def render_unauthorized

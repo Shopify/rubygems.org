@@ -35,7 +35,7 @@ class ApiKey < ApplicationRecord
     user.mfa_ui_and_api? || mfa
   end
 
-  def valid_for_api?
+  def api_authorized?
     gem_ownership
   end
 
