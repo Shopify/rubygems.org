@@ -1,8 +1,10 @@
-<%= form_for webauthn_credential, html: { class: "js-new-webauthn-credential-form" } do |f| %>
+<%= form_for webauthn_credential, html: { class: "js-new-webauthn-credential--form" } do |f| %>
   <div class="text_field">
     <%= f.label :nickname, t('.nickname'), class: 'form__label' %>
     <%= f.text_field :nickname, class: 'form__input', required: true %>
   </div>
+
+  <p hidden class="l-text-red-600 js-new-webauthn-credential--error"></p>
 
   <%= f.submit t('.submit'), class: 'form__submit' %>
 <% end %>

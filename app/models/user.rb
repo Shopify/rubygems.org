@@ -227,7 +227,12 @@ class User < ApplicationRecord
   def enable_mfa!(seed, level)
     self.mfa_level = level
     self.mfa_seed = seed
-    self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
+    self.mfa_recovery_codes = generate_recovery_codes
+    save!(validate: false)
+  end
+
+  def enable_recovery_codes!
+    self.mfa_recovery_codes = generate_recovery_codes
     save!(validate: false)
   end
 
@@ -238,9 +243,9 @@ class User < ApplicationRecord
 
   def otp_verified?(otp)
     otp = otp.to_s
-    return true if verify_digit_otp(mfa_seed, otp)
+    return true if mfa_seed && verify_digit_otp(mfa_seed, otp)
 
-    return false unless mfa_recovery_codes.include? otp
+    return false unless mfa_recovery_codes.include?(otp)
     mfa_recovery_codes.delete(otp)
     save!(validate: false)
   end
@@ -317,5 +322,9 @@ class User < ApplicationRecord
     toxic = toxic_domains_path.exist? && toxic_domains_path.readlines.grep(/^#{Regexp.escape(domain)}$/).any?
 
     errors.add(:email, I18n.t("activerecord.errors.messages.blocked", domain: domain)) if toxic
+  end
+
+  def generate_recovery_codes
+   Array.new(10).map { SecureRandom.hex(6) }
   end
 end

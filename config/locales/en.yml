@@ -23,11 +23,11 @@ en:
   please_sign_up: Access Denied. Please sign up for an account at https://rubygems.org
   please_sign_in: Please sign in to continue.
   otp_incorrect: Your OTP code is incorrect. Please check it and retry.
-  otp_missing: You have enabled multifactor authentication but no OTP code provided. Please fill it and retry.
+  otp_missing: You have enabled Multi-Factor Authentication but no OTP code provided. Please fill it and retry.
   sign_in: Sign in
   sign_up: Sign up
   dependency_list: Show all transitive dependencies
-  multifactor_authentication: Multifactor authentication
+  multifactor_authentication: Multi-Factor Authentication
   subtitle: your community gem host
   this_rubygem_could_not_be_found: This rubygem could not be found.
   time_ago: "%{duration} ago"
@@ -85,19 +85,19 @@ en:
       show_dashboard: Show dashboard
       reset: Reset
       save_key: "Note that we won't be able to show the key to you again. New API key:"
-      mfa: MFA
+      mfa: Multi-Factor Authentication
     new:
       new_api_key: New API key
-      multifactor_auth: Multifactor authentication
-      enable_mfa: Enable MFA
+      multifactor_auth: Multi-Factor Authentication
+      enable_mfa: Enable Multi-Factor Authentication
     reset:
       success: "Deleted all API keys"
     update:
       success: "Successfully updated API key"
     edit:
       edit_api_key: "Edit API key"
-      multifactor_auth: Multifactor authentication
-      enable_mfa: Enable MFA
+      multifactor_auth: Multi-Factor Authentication
+      enable_mfa: Enable Multi-Factor Authentication
   clearance_mailer:
     change_password:
       title: CHANGE PASSWORD
@@ -279,13 +279,13 @@ en:
       title: Change your password
       will_email_notice: We will email you a link to change your password.
   multifactor_auths:
-    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your MFA device.'
+    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your Multi-Factor Authentication device or to your additional credentials.'
     incorrect_otp: Your OTP code is incorrect.
     otp_code: OTP code
-    require_mfa_disabled: Your multifactor authentication has been enabled. You have to disable it first.
-    require_mfa_enabled: Your multifactor authentication has not been enabled. You have to enable it first.
+    require_mfa_disabled: Your Multi-Factor Authentication has been enabled. You have to disable it first.
+    require_mfa_enabled: Your Multi-Factor Authentication has not been enabled. You have to enable it first.
     new:
-      title: Enabling multifactor auth
+      title: Enabling Multi-Factor Authentication
       scan_prompt: Please scan the qr-code with your authenticator app. If you cannot scan the code, add information below into your app manually.
       otp_prompt: Type digit code from auth app to continue.
       confirm: I have kept my recovery codes safe.
@@ -295,17 +295,18 @@ en:
       time_based: "Time based: Yes"
     create:
       qrcode_expired: The QR-code and key is expired. Please try registering a new device again.
-      success: You have successfully enabled multifactor authentication.
+      success: You have successfully enabled Multi-Factor Authentication.
     recovery:
+      copied: "[ copied ]"
       continue: Continue
       title: Recovery codes
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
-      note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your MFA if your lose your authentication device. Each of the code can be used once."
+      note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your Multi-Factor Authentication if your lose your authentication device. Each of the code can be used once."
     destroy:
-      success: You have successfully disabled multifactor authentication.
+      success: You have successfully disabled Multi-Factor Authentication.
     update:
-      success: You have successfully updated your multifactor authentication level.
+      success: You have successfully updated your Multi-Factor Authentication level.
   notifiers:
     update:
       success: You have successfully updated your email notification settings.
@@ -327,7 +328,7 @@ en:
     index:
       add_owner: ADD OWNER
       name: OWNER
-      mfa: MFA STATUS
+      mfa: MULTI-FACTOR AUTHENTICATION STATUS
       status: STATUS
       confirmed_at: CONFIRMED AT
       added_by: ADDED BY
@@ -345,14 +346,13 @@ en:
     destroy:
       removed_notice: "%{owner_name} was removed from the owners successfully"
       failed_notice: Can't remove the only owner of the gem
-    mfa_required: The gem has MFA requirement enabled, please setup MFA on your account.
+    mfa_required: The gem has Multi-Factor Authentication requirement enabled, please setup Multi-Factor Authentication on your account.
   settings:
     edit:
       title: Edit settings
-      webauthn_credentials: Credentials
-      no_webauthn_credentials: You don't have any credentials
-      add_webauthn_credential: Add credential
-      webauthn_credential_note: A credential can be a security key, a fingerprint (e.g. Touch ID), etc.
+      webauthn_credentials: Additional credentials
+      no_webauthn_credentials: You don't have any additional credentials
+      webauthn_credential_note: An additional credential can be a security key, a fingerprint, a face, or a pin
       otp_code: OTP code or recovery code
       api_access:
         confirm_reset: Are you sure? This cannot be undone.
@@ -364,14 +364,14 @@ en:
       reset_password:
         title: Reset password
       mfa:
-        multifactor_auth: Multifactor authentication
-        disabled_html: You have not yet enabled multifactor authentication. Please refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems MFA guide</a> for more information on these levels.
+        multifactor_auth: Multi-Factor Authentication
+        disabled_html: You have not yet enabled Multi-Factor Authentication. Please refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems Multi-Factor Authentication guide</a> for more information on these levels.
         go_settings: Register a new device
-        enabled_html: You have enabled multifactor authentication. Please input your OTP from your authenticator or one of your active recovery codes to change your MFA level or disable it.
-          Refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems MFA guide</a> for more information on these levels.
+        enabled_html: You have enabled Multi-Factor Authentication. Please input your OTP from your authenticator or one of your active recovery codes to change your Multi-Factor Authentication level or disable it.
+          Refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems Multi-Factor Authentication guide</a> for more information on these levels.
         update: Update
         level:
-          title: MFA Level
+          title: Multi-Factor Authentication Level
           disabled: Disabled
           ui_only: UI Only
           ui_and_api: UI and API (Recommended)
@@ -417,7 +417,7 @@ en:
       install: install
       required_ruby_version: Required Ruby Version
       required_rubygems_version: Required Rubygems Version
-      requires_mfa: Requires MFA accounts
+      requires_mfa: Requires Multi-Factor Authentication accounts
       since: "Since %{version}"
       links:
         badge: Badge
@@ -444,12 +444,12 @@ en:
       header: "%{title} Dependencies"
     gem_members:
       authors_header: Authors
-      self_no_mfa_warning_html: Please consider <a href="/settings/edit">enabling multifactor authentication (MFA)</a> to keep your account secure.
-      not_using_mfa_warning_show: "* Some owners are not using multifactor authentication (MFA). Click for the complete list."
-      not_using_mfa_warning_hide: "* The following owners are not using multifactor authentication (MFA). Click to hide."
+      self_no_mfa_warning_html: Please consider <a href="/settings/edit">enabling Multi-Factor Authentication</a> to keep your account secure.
+      not_using_mfa_warning_show: "* Some owners are not using Multi-Factor Authentication. Click for the complete list."
+      not_using_mfa_warning_hide: "* The following owners are not using Multi-Factor Authentication. Click to hide."
       owners_header: Owners
       pushed_by: Pushed by
-      using_mfa_info: "* All owners are using multifactor authentication (MFA)."
+      using_mfa_info: "* All owners are using Multi-Factor Authentication."
       yanked_by: Yanked by
       sha_256_checksum: SHA 256 checksum
       signature_period: Signature validity period
@@ -502,8 +502,8 @@ en:
     create:
       account_blocked: Your account was blocked by rubygems team. Please email support@rubygems.org to recover your account.
     prompt:
-      webauthn_credential_note: A credential can be a security key, a fingerprint (e.g. Touch ID), etc.
-      sign_in_with_weauthn_credential: Sign in with a credential
+      webauthn_credential_note: An additional credential can be a a fingerprint, a face, a security key or a pin.
+      sign_in_with_weauthn_credential: Sign in with an additional credential
       recovery_code: Recovery code
   stats:
     index:
@@ -581,8 +581,15 @@ en:
     create_req: Create ownership request
     signin_to_create_html: Please <a href="https://rubygems.org/sign_in">sign in</a> to create request ownership.
   webauthn_credentials:
+    recovery:
+      continue: Continue
+      title: You have successfully added an additional credential
+      notice_html: 'Please <strong class="recovery__bold">copy and paste</strong> these recovery codes. You can use these codes to login if you lose your additional credential. Each of the code can be used once.'
+      copied: "[ copied ]"
+      copy: "[ copy ]"
+      saved: I acknowledge that I have saved my recovery codes.
     webauthn_credential:
       delete: Delete
     form:
       nickname: Nickname
-      submit: Add credential
+      submit: Add additional credential

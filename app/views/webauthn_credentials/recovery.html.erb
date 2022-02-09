@@ -1,7 +1,7 @@
-<% @title = t(".title") %>
-
 <div class="t-body">
-  <p><%= t(".note_html") %></p>
+  <h2><%= t(".title") %></h2>
+
+  <p><%= t(".notice_html") %></p>
 
   <ul id="recovery-codes--list">
     <% current_user.mfa_recovery_codes.each do |code| %>

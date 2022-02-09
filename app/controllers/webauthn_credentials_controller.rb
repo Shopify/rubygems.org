@@ -22,10 +22,23 @@ class WebauthnCredentialsController < ApplicationController
     )
 
     if webauthn_credential.save
-      render json: { location: edit_settings_path }
+      if current_user.webauthn_credentials.one? && !current_user.mfa_enabled?
+        current_user.enable_recovery_codes!
+        render json: {
+          recovery_html: render_to_string(
+            "webauthn_credentials/recovery",
+            layout: false,
+            formats: :html
+          )
+        }
+      else
+        render json: { location: edit_settings_path }
+      end
     else
       render(
-        json: { message: webauthn_credential.errors.full_messages.to_sentence },
+        json: {
+          message: webauthn_credential.errors.full_messages.to_sentence
+        },
         status: :unprocessable_entity
       )
     end

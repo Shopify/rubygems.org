@@ -5,7 +5,7 @@ class SessionsController < Clearance::SessionsController
   def create
     @user = find_user
 
-    if @user&.mfa_enabled?
+    if @user && (@user.mfa_enabled? || @user.webauthn_credentials.any?)
       if @user.webauthn_credentials.any?
         @webauthn_options = @user.webauthn_options_for_get
 
@@ -51,7 +51,7 @@ class SessionsController < Clearance::SessionsController
     @user = User.find_by_slug(session[:mfa_user])
     session.delete(:mfa_user)
 
-    if @user&.mfa_enabled? && @user&.otp_verified?(params[:otp])
+    if (@user&.mfa_enabled? || @user.mfa_recovery_codes.any?) && @user&.otp_verified?(params[:otp])
       do_login
     else
       login_failure(t("multifactor_auths.incorrect_otp"))

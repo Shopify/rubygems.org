@@ -17,20 +17,6 @@
       </div>
       <%= submit_tag t(".mfa.update"), class: "form__submit" %>
     <% end %>
-
-    <h3><%= t(".webauthn_credentials") %></h3>
-
-    <% if @webauthn_credentials.none? %>
-      <p><%= t(".no_webauthn_credentials") %></p>
-    <% end %>
-
-    <%= render @webauthn_credentials %>
-
-    <h3><%= t(".add_webauthn_credential") %></h3>
-
-    <p><%= t(".webauthn_credential_note") %></p>
-
-    <%= render "webauthn_credentials/form", webauthn_credential: @webauthn_credential %>
   </div>
 <% else %>
   <div class="t-body">
@@ -42,6 +28,22 @@
     </p>
   </div>
 <% end %>
+
+<div class="t-body">
+  <h2><%= t(".webauthn_credentials") %></h2>
+
+  <p><%= t(".webauthn_credential_note") %></p>
+
+  <% if @webauthn_credentials.none? %>
+    <p><i><%= t(".no_webauthn_credentials") %></i></p>
+  <% else %>
+    <div class="l-mb-8">
+      <%= render @webauthn_credentials %>
+    </div>
+  <% end %>
+
+  <%= render "webauthn_credentials/form", webauthn_credential: @webauthn_credential %>
+</div>
 
 <div class="t-body">
   <h2><%= link_to t('.reset_password.title'), new_password_path %></h2>
