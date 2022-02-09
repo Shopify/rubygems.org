@@ -31,6 +31,9 @@ class User < ApplicationRecord
   has_many :unconfirmed_ownerships, -> { unconfirmed }, dependent: :destroy, inverse_of: :user, class_name: "Ownership"
   has_many :api_keys, dependent: :destroy
 
+  has_many :ownership_calls, -> { opened }, dependent: :destroy, inverse_of: :user
+  has_many :ownership_requests, -> { opened }, dependent: :destroy, inverse_of: :user
+
   has_many :webauthn_credentials, dependent: :destroy
 
   validates :email, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, format: { with: URI::MailTo::EMAIL_REGEXP }, presence: true
@@ -92,6 +95,10 @@ class User < ApplicationRecord
 
   def self.ownership_notifiable_owners
     where(ownerships: { owner_notifier: true })
+  end
+
+  def self.ownership_request_notifiable_owners
+    where(ownerships: { ownership_request_notifier: true })
   end
 
   def self.without_mfa
@@ -229,11 +236,6 @@ class User < ApplicationRecord
     otp_verified?(otp)
   end
 
-  def mfa_api_authorized?(otp)
-    return true unless mfa_ui_and_api?
-    otp_verified?(otp)
-  end
-
   def otp_verified?(otp)
     otp = otp.to_s
     return true if verify_digit_otp(mfa_seed, otp)
@@ -258,6 +260,10 @@ class User < ApplicationRecord
       )
       api_keys.delete_all
     end
+  end
+
+  def can_request_ownership?(rubygem)
+    !rubygem.owned_by?(self) && rubygem.ownership_requestable?
   end
 
   def webauthn_options_for_create

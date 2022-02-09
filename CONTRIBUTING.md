@@ -53,6 +53,7 @@ provide pass-through caching for RubyGems.org, as well as host private
 gems for your organization..**
 
 #### Environment (Docker)
+
 There is a `docker-compose.yml` file inside the project that easily lets you spin up
 services that the application depends on such as: postgresql, memcached & elasticsearch.
 
@@ -74,7 +75,7 @@ Follow the instructions below on how to install Bundler and setup the database.
   ```
   * Note that `-e "xpack.security.enabled=false"` disables authentication.
 
-* Install PostgreSQL (>= 9.6.x): `brew install postgres`
+* Install PostgreSQL (>= 11.13.x): `brew install postgres`
   * Setup information: `brew info postgresql`
 * Install memcached: `brew install memcached`
   * Show all memcached options: `memcached -h`
