@@ -40,6 +40,7 @@ FROM ruby:3.0-alpine
 ARG RUBYGEMS_VERSION
 
 RUN apk add --no-cache \
+  nodejs \
   libpq \
   ca-certificates \
   bash \
