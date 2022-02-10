@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   include Clearance::User
   include Gravtastic
+  include WebauthnConcern
   is_gravtastic default: "retro"
 
   PERMITTED_ATTRS = %i[
@@ -34,8 +35,6 @@ class User < ApplicationRecord
   has_many :ownership_calls, -> { opened }, dependent: :destroy, inverse_of: :user
   has_many :ownership_requests, -> { opened }, dependent: :destroy, inverse_of: :user
 
-  has_many :webauthn_credentials, dependent: :destroy
-
   validates :email, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, format: { with: URI::MailTo::EMAIL_REGEXP }, presence: true
   validates :unconfirmed_email, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
 
@@ -61,10 +60,6 @@ class User < ApplicationRecord
   validate :toxic_email_domain, on: :create
 
   enum mfa_level: { disabled: 0, ui_only: 1, ui_and_api: 2, ui_and_gem_signin: 3 }, _prefix: :mfa
-
-  after_initialize do
-    self.webauthn_id ||= WebAuthn.generate_user_id
-  end
 
   def self.authenticate(who, password)
     user = find_by(email: who.downcase) || find_by(handle: who)
@@ -227,12 +222,7 @@ class User < ApplicationRecord
   def enable_mfa!(seed, level)
     self.mfa_level = level
     self.mfa_seed = seed
-    self.mfa_recovery_codes = generate_recovery_codes
-    save!(validate: false)
-  end
-
-  def enable_recovery_codes!
-    self.mfa_recovery_codes = generate_recovery_codes
+    self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
     save!(validate: false)
   end
 
@@ -243,7 +233,7 @@ class User < ApplicationRecord
 
   def otp_verified?(otp)
     otp = otp.to_s
-    return true if mfa_seed && verify_digit_otp(mfa_seed, otp)
+    return true if verify_digit_otp(mfa_seed, otp)
 
     return false unless mfa_recovery_codes.include?(otp)
     mfa_recovery_codes.delete(otp)
@@ -269,22 +259,6 @@ class User < ApplicationRecord
 
   def can_request_ownership?(rubygem)
     !rubygem.owned_by?(self) && rubygem.ownership_requestable?
-  end
-
-  def webauthn_options_for_create
-    WebAuthn::Credential.options_for_create(
-      user: {
-        id: webauthn_id,
-        name: display_id
-      },
-      exclude: webauthn_credentials.pluck(:external_id)
-    )
-  end
-
-  def webauthn_options_for_get
-    WebAuthn::Credential.options_for_get(
-      allow: webauthn_credentials.pluck(:external_id)
-    )
   end
 
   private
@@ -322,9 +296,5 @@ class User < ApplicationRecord
     toxic = toxic_domains_path.exist? && toxic_domains_path.readlines.grep(/^#{Regexp.escape(domain)}$/).any?
 
     errors.add(:email, I18n.t("activerecord.errors.messages.blocked", domain: domain)) if toxic
-  end
-
-  def generate_recovery_codes
-    Array.new(10).map { SecureRandom.hex(6) }
   end
 end
