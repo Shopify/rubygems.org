@@ -325,6 +325,6 @@ class User < ApplicationRecord
   end
 
   def generate_recovery_codes
-   Array.new(10).map { SecureRandom.hex(6) }
+    Array.new(10).map { SecureRandom.hex(6) }
   end
 end

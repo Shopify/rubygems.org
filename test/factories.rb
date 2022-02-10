@@ -17,7 +17,7 @@ FactoryBot.define do
     trait :mfa_enabled do
       mfa_seed { "123abc" }
       mfa_level { User.mfa_levels["ui_and_api"] }
-      mfa_recovery_codes { ["aaa", "bbb", "ccc"] }
+      mfa_recovery_codes { %w[aaa bbb ccc] }
     end
   end
 
