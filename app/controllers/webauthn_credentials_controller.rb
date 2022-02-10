@@ -40,7 +40,7 @@ class WebauthnCredentialsController < ApplicationController
     params.require(:webauthn_credential).permit(:nickname)
   end
 
-  def build_webauth_credential
+  def build_webauthn_credential
     credential = WebAuthn::Credential.from_create(params.require(:credentials))
     credential.verify(session.dig(:webauthn_registration, "challenge"))
 
