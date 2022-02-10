@@ -45,11 +45,10 @@ gem "webauthn"
 # Logging
 gem "lograge"
 
-group :assets do
-  gem "sassc-rails"
-  gem "uglifier", ">= 1.0.3"
-  gem "autoprefixer-rails"
-end
+# assets
+gem "sassc-rails"
+gem "uglifier", ">= 1.0.3"
+gem "autoprefixer-rails"
 
 group :development, :test do
   gem "m", "~> 1.5", require: false
