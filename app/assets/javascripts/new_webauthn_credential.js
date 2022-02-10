@@ -66,15 +66,7 @@ $(() => {
       const callbackJson = await callbackResponse.json()
 
       if (callbackResponse.status == 200) {
-        if (callbackJson.recovery_html) {
-          $SUBMIT.attr("disabled", false)
-          $ERROR.attr("hidden", true)
-          $ERROR.text("")
-          $FORM.parent().html(callbackJson.recovery_html)
-          window.rubygems.setupRecoveryCodes()
-        } else {
-          window.location.href = callbackJson.location
-        }
+        window.location.href = callbackJson.location
       } else {
         $SUBMIT.attr("disabled", false)
         $ERROR.attr("hidden", false)

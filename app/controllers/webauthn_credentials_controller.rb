@@ -13,18 +13,7 @@ class WebauthnCredentialsController < ApplicationController
     webauthn_credential = build_webauthn_credential
 
     if webauthn_credential.save
-      if current_user.webauthn_credentials.one? && !current_user.mfa_enabled?
-        current_user.enable_recovery_codes!
-        render json: {
-          recovery_html: render_to_string(
-            "webauthn_credentials/recovery",
-            layout: false,
-            formats: :html
-          )
-        }
-      else
-        render json: { location: edit_settings_path }
-      end
+      render json: { location: edit_settings_path }
     else
       render(
         json: {
@@ -41,8 +30,6 @@ class WebauthnCredentialsController < ApplicationController
 
   def destroy
     current_user.webauthn_credentials.find(params[:id]).destroy!
-
-    current_user.update!(mfa_recovery_codes: []) if current_user.webauthn_credentials.none? && current_user.mfa_disabled?
 
     redirect_to edit_settings_path
   end
