@@ -130,17 +130,18 @@ class SessionsController < Clearance::SessionsController
   end
 
   def setup_webauthn_authentication
-    if @user.webauthn_credentials.any?
-      @webauthn_options = @user.webauthn_options_for_get
+    return if @user.webauthn_credentials.none?
 
-      session[:webauthn_authentication] = {
-        "challenge" => @webauthn_options.challenge,
-        "user" => @user.display_id
-      }
-    end
+    @webauthn_options = @user.webauthn_options_for_get
+
+    session[:webauthn_authentication] = {
+      "challenge" => @webauthn_options.challenge,
+      "user" => @user.display_id
+    }
   end
 
   def setup_mfa_authentication
-    session[:mfa_user] = @user.display_id if @user.mfa_enabled?
+    return if @user.mfa_disabled?
+    session[:mfa_user] = @user.display_id
   end
 end
