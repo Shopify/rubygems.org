@@ -15,7 +15,9 @@ class SessionsController < Clearance::SessionsController
         }
       end
 
-      session[:mfa_user] = @user.display_id
+      if @user.mfa_enabled?
+        session[:mfa_user] = @user.display_id
+      end
 
       render "sessions/prompt"
     else

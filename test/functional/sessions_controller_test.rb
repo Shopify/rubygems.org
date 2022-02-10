@@ -133,6 +133,93 @@ class SessionsControllerTest < ActionController::TestCase
 
       should respond_with :unauthorized
     end
+
+    context "when user has mfa enabled" do
+      setup do
+        @user = create(:user, :mfa_enabled)
+        post(
+          :create,
+          params: { session: { who: @user.handle, password: @user.password } }
+        )
+      end
+
+      should respond_with :ok
+
+      should "not set webauthn_authentication" do
+        assert_nil session[:webauthn_authentication]
+      end
+
+      should "set mfa_user" do
+        assert_equal @user.handle, session[:mfa_user]
+      end
+
+      should "have mfa forms and not webauthn credentials form" do
+        assert page.has_content?("Multi-Factor Authentication")
+        assert page.has_field?("OTP code")
+        assert page.has_button?("Sign in")
+        assert page.has_field?("Recovery code")
+        assert_not page.has_button?("Sign in with an additional credential")
+      end
+    end
+
+    context "when user has webauthn credentials" do
+      setup do
+        @user = create(:user)
+        create(:webauthn_credential, user: @user)
+        post(
+          :create,
+          params: { session: { who: @user.handle, password: @user.password } }
+        )
+      end
+
+      should respond_with :ok
+
+      should "set webauthn authentication" do
+        assert_equal @user.handle, session[:webauthn_authentication][:user]
+        assert_not_nil session[:webauthn_authentication][:challenge]
+      end
+
+      should "not set mfa_user" do
+        assert_nil session[:mfa_user]
+      end
+
+      should "not have mfa forms and have webauthn credentials form" do
+        assert page.has_content?("Multi-Factor Authentication")
+        assert_not page.has_field?("OTP code")
+        assert_not page.has_field?("Recovery code")
+        assert page.has_button?("Sign in with an additional credential")
+      end
+    end
+
+    context "when user has mfa enabled and webauthn credentials" do
+      setup do
+        @user = create(:user, :mfa_enabled)
+        create(:webauthn_credential, user: @user)
+        post(
+          :create,
+          params: { session: { who: @user.handle, password: @user.password } }
+        )
+      end
+
+      should respond_with :ok
+
+      should "set webauthn authentication" do
+        assert_equal @user.handle, session[:webauthn_authentication][:user]
+        assert_not_nil session[:webauthn_authentication][:challenge]
+      end
+
+      should "set mfa_user" do
+        assert_equal @user.handle, session[:mfa_user]
+      end
+
+      should "have mfa forms and webauthn credentials form" do
+        assert page.has_content?("Multi-Factor Authentication")
+        assert page.has_field?("OTP code")
+        assert page.has_button?("Sign in")
+        assert page.has_field?("Recovery code")
+        assert page.has_button?("Sign in with an additional credential")
+      end
+    end
   end
 
   context "on DELETE to destroy" do
