@@ -107,4 +107,3 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
     end
   end
 end
-

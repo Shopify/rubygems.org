@@ -1,11 +1,15 @@
 module WebauthnHelpers
   def self.create_result(client:, challenge: nil)
     rp_id = URI.parse(client.origin).host
+    challenge =
+      if challenge
+        Base64.urlsafe_decode64(challenge)
+      else
+        SecureRandom.random_bytes(32)
+      end
 
     result = client.create(
-      challenge: challenge ?
-        Base64.urlsafe_decode64(challenge) :
-        SecureRandom.random_bytes(32),
+      challenge: challenge,
       rp_id: rp_id
     )
 
@@ -18,7 +22,6 @@ module WebauthnHelpers
   end
 
   def self.create(webauthn_credential:, client:)
-    rp_id = URI.parse(client.origin).host
     credential = create_result(client: client)
     response = WebAuthn::Credential.from_create(credential)
     webauthn_credential.update!(
