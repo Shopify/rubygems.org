@@ -34,11 +34,11 @@
 
   <p><%= t(".webauthn_credential_note") %></p>
 
-  <% if @webauthn_credentials.none? %>
+  <% if @user.webauthn_credentials.none? %>
     <p><i><%= t(".no_webauthn_credentials") %></i></p>
   <% else %>
     <div class="l-mb-8">
-      <%= render @webauthn_credentials %>
+      <%= render @user.webauthn_credentials %>
     </div>
   <% end %>
 

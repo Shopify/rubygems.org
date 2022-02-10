@@ -4,7 +4,6 @@ class SettingsController < ApplicationController
 
   def edit
     @user = current_user
-    @webauthn_credentials = @user.webauthn_credentials
     @webauthn_credential = WebauthnCredential.new(user: @user)
   end
 end
