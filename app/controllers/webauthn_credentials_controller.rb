@@ -10,16 +10,7 @@ class WebauthnCredentialsController < ApplicationController
   end
 
   def callback
-    credential = WebAuthn::Credential.from_create(params.require(:credentials))
-    credential.verify(session.dig(:webauthn_registration, "challenge"))
-
-    webauthn_credential = current_user.webauthn_credentials.build(
-      webauthn_credential_params.merge(
-        external_id: credential.id,
-        public_key: credential.public_key,
-        sign_count: credential.sign_count
-      )
-    )
+    webauthn_credential = build_webauthn_credential
 
     if webauthn_credential.save
       if current_user.webauthn_credentials.one? && !current_user.mfa_enabled?
@@ -60,5 +51,18 @@ class WebauthnCredentialsController < ApplicationController
 
   def webauthn_credential_params
     params.require(:webauthn_credential).permit(:nickname)
+  end
+
+  def build_webauth_credential
+    credential = WebAuthn::Credential.from_create(params.require(:credentials))
+    credential.verify(session.dig(:webauthn_registration, "challenge"))
+
+    current_user.webauthn_credentials.build(
+      webauthn_credential_params.merge(
+        external_id: credential.id,
+        public_key: credential.public_key,
+        sign_count: credential.sign_count
+      )
+    )
   end
 end
