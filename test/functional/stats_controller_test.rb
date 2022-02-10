@@ -10,8 +10,9 @@ class StatsControllerTest < ActionController::TestCase
       Rubygem.expects(:total_count).returns(number_of_gems)
       User.expects(:count).returns(number_of_users)
 
+      create(:gem_download, count: number_of_downloads)
       rails_cinco = create(:rubygem, name: "rails_cinco", number: 1)
-      rails_cinco.gem_download.update(count: number_of_downloads)
+      rails_cinco.gem_download.update(count: 1)
 
       get :index
     end
