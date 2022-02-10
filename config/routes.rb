@@ -213,7 +213,7 @@ Rails.application.routes.draw do
 
   ################################################################################
   # UI API
-  scope constraints: { format: :json }, defaults: { format: 'json' } do
+  scope constraints: { format: :json }, defaults: { format: :json } do
     resource :session, only: [] do
       post 'webauthn_create', to: 'sessions#webauthn_create', as: :webauthn_create
     end

@@ -10,8 +10,8 @@ class SessionsController < Clearance::SessionsController
         @webauthn_options = @user.webauthn_options_for_get
 
         session[:webauthn_authentication] = {
-          challenge: @webauthn_options.challenge,
-          user: @user.display_id
+          "challenge" => @webauthn_options.challenge,
+          "user" => @user.display_id
         }
       end
 
@@ -28,6 +28,12 @@ class SessionsController < Clearance::SessionsController
   def webauthn_create
     @user = User.find_by_slug!(session.dig(:webauthn_authentication, "user"))
     @challenge = session.dig(:webauthn_authentication, "challenge")
+
+    if params[:credentials].blank?
+      login_failure("Credentials required")
+      return
+    end
+
     @credential = WebAuthn::Credential.from_get(params[:credentials])
 
     @webauthn_credential = @user.webauthn_credentials.find_by(
@@ -87,14 +93,7 @@ class SessionsController < Clearance::SessionsController
     sign_in(@user) do |status|
       if status.success?
         StatsD.increment "login.success"
-        respond_to do |format|
-          format.json do
-            render json: { location: url_after_create }
-          end
-          format.html do
-            redirect_back_or(url_after_create)
-          end
-        end
+        redirect_back_or(url_after_create)
       else
         login_failure(status.failure_message)
       end

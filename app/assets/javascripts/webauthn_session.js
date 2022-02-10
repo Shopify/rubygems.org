@@ -60,11 +60,10 @@ $(() => {
         }),
       })
 
-      const json = await response.json()
-
-      if (response.status == 200) {
-        window.location.href = json.location
+      if (response.redirected) {
+        window.location.href = response.url
       } else {
+        const json = await response.json()
         $SUBMIT.attr("disabled", false)
         $ERROR.attr("hidden", false)
         $ERROR.text(json.message)

@@ -12,11 +12,13 @@ require "mocha/minitest"
 require "capybara/rails"
 require "capybara/minitest"
 require "clearance/test_unit"
+require "webauthn/fake_client"
 require "shoulda"
 require "helpers/gem_helpers"
 require "helpers/email_helpers"
 require "helpers/es_helper"
 require "helpers/password_helpers"
+require "helpers/webauthn_helpers"
 
 RubygemFs.mock!
 Aws.config[:stub_responses] = true

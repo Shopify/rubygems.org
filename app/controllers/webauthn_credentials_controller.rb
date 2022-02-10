@@ -4,7 +4,7 @@ class WebauthnCredentialsController < ApplicationController
   def create
     @create_options = current_user.webauthn_options_for_create
 
-    session[:webauthn_registration] = { challenge: @create_options.challenge }
+    session[:webauthn_registration] = { "challenge" => @create_options.challenge }
 
     render json: @create_options
   end
@@ -13,7 +13,7 @@ class WebauthnCredentialsController < ApplicationController
     webauthn_credential = build_webauthn_credential
 
     if webauthn_credential.save
-      render json: { location: edit_settings_path }
+      redirect_to edit_settings_path
     else
       render(
         json: {
@@ -42,7 +42,7 @@ class WebauthnCredentialsController < ApplicationController
 
   def build_webauthn_credential
     credential = WebAuthn::Credential.from_create(params.require(:credentials))
-    credential.verify(session.dig(:webauthn_registration, "challenge"))
+    credential.verify(session.dig(:webauthn_registration, "challenge").to_s)
 
     current_user.webauthn_credentials.build(
       webauthn_credential_params.merge(

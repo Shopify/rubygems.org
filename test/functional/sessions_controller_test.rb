@@ -175,8 +175,8 @@ class SessionsControllerTest < ActionController::TestCase
       should respond_with :ok
 
       should "set webauthn authentication" do
-        assert_equal @user.handle, session[:webauthn_authentication][:user]
-        assert_not_nil session[:webauthn_authentication][:challenge]
+        assert_equal @user.handle, session[:webauthn_authentication]["user"]
+        assert_not_nil session[:webauthn_authentication]["challenge"]
       end
 
       should "not set mfa_user" do
@@ -204,8 +204,8 @@ class SessionsControllerTest < ActionController::TestCase
       should respond_with :ok
 
       should "set webauthn authentication" do
-        assert_equal @user.handle, session[:webauthn_authentication][:user]
-        assert_not_nil session[:webauthn_authentication][:challenge]
+        assert_equal @user.handle, session[:webauthn_authentication]["user"]
+        assert_not_nil session[:webauthn_authentication]["challenge"]
       end
 
       should "set mfa_user" do
@@ -300,6 +300,42 @@ class SessionsControllerTest < ActionController::TestCase
         post :authenticate, params: { user_id: user.id, verify_password: { password: PasswordHelpers::SECURE_TEST_PASSWORD } }
       end
       should redirect_to("sign in") { sign_in_path }
+    end
+  end
+
+  context "#webauthn_create" do
+    setup do
+      @user = create(:user)
+      @webauthn_credential = create(:webauthn_credential, user: @user)
+      post(
+        :create,
+        params: { session: { who: @user.handle, password: @user.password } }
+      )
+      @challenge = session[:webauthn_authentication]["challenge"]
+      @origin = "http://localhost:3000"
+      @rp_id = URI.parse(@origin).host
+      @client = WebAuthn::FakeClient.new(@origin, encoding: false)
+      WebauthnHelpers.create(
+        webauthn_credential: @webauthn_credential,
+        client: @client
+      )
+      post(
+        :webauthn_create,
+        params: {
+          credentials:
+            WebauthnHelpers.get_result(
+              client: @client,
+              challenge: @challenge
+            )
+        },
+        format: :json
+      )
+    end
+
+    should redirect_to :dashboard
+
+    should "log in the user" do
+      assert @controller.request.env[:clearance].signed_in?
     end
   end
 end

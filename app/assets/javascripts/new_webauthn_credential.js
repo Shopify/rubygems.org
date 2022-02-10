@@ -63,11 +63,10 @@ $(() => {
         }),
       })
 
-      const callbackJson = await callbackResponse.json()
-
-      if (callbackResponse.status == 200) {
-        window.location.href = callbackJson.location
+      if (callbackResponse.redirected) {
+        window.location.href = callbackResponse.url
       } else {
+        const callbackJson = await callbackResponse.json()
         $SUBMIT.attr("disabled", false)
         $ERROR.attr("hidden", false)
         $ERROR.text(callbackJson.message)
