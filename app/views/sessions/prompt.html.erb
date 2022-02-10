@@ -1,5 +1,25 @@
 <% @title = t('multifactor_authentication') %>
 
+<% if @user.webauthn_credentials.any? %>
+  <div class="t-body">
+    <p><%= t(".webauthn_credential_note") %></p>
+  </div>
+
+  <%= form_tag webauthn_create_session_path, method: :post, class: "js-webauthn-session--form", data: { options: @webauthn_options.to_json } do %>
+    <div class="form_bottom">
+      <p hidden class="l-text-red-600 js-webauthn-session--error"></p>
+
+      <%= submit_tag t('.sign_in_with_weauthn_credential'), class: 'js-webauthn-session--submit form__submit form__submit--no-hover' %>
+    </div>
+  <% end %>
+<% end %>
+
+<% if @user.mfa_enabled? && @user.webauthn_credentials.any? %>
+  <div class="t-body">
+    <hr />
+  </div>
+<% end %>
+
 <% if @user.mfa_enabled? %>
   <%= form_tag mfa_create_session_path, method: :post, class: "mfa-form" do %>
     <div class="text_field">
@@ -26,26 +46,6 @@
     </div>
     <div class="form_bottom">
       <%= submit_tag t('sign_in'), data: { disable_with: t('form_disable_with') }, class: 'form__submit' %>
-    </div>
-  <% end %>
-<% end %>
-
-<% if @user.mfa_enabled? && @user.webauthn_credentials.any? %>
-  <div class="t-body">
-    <hr />
-  </div>
-<% end %>
-
-<% if @user.webauthn_credentials.any? %>
-  <div class="t-body">
-    <p><%= t(".webauthn_credential_note") %></p>
-  </div>
-
-  <%= form_tag webauthn_create_session_path, method: :post, class: "js-webauthn-session--form", data: { options: @webauthn_options.to_json } do %>
-    <div class="form_bottom">
-      <p hidden class="l-text-red-600 js-webauthn-session--error"></p>
-
-      <%= submit_tag t('.sign_in_with_weauthn_credential'), class: 'js-webauthn-session--submit form__submit form__submit--no-hover' %>
     </div>
   <% end %>
 <% end %>
