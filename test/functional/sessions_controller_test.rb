@@ -17,7 +17,7 @@ class SessionsControllerTest < ActionController::TestCase
       should respond_with :success
       should "save user name in session" do
         assert_equal @controller.session[:mfa_user], @user.handle
-        assert page.has_content? "Multifactor authentication"
+        assert page.has_content? "Multi-Factor Authentication"
       end
     end
 

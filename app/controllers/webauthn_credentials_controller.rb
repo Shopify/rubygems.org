@@ -52,7 +52,7 @@ class WebauthnCredentialsController < ApplicationController
     current_user.webauthn_credentials.find(params[:id]).destroy!
 
     if current_user.webauthn_credentials.none? && current_user.mfa_disabled?
-      current_user.disable_mfa!
+      current_user.update!(mfa_recovery_codes: [])
     end
 
     redirect_to edit_settings_path

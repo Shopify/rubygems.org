@@ -69,10 +69,12 @@ class SignInTest < SystemTest
     fill_in "Password", with: PasswordHelpers::SECURE_TEST_PASSWORD
     click_button "Sign in"
 
-    assert page.has_content? "Multifactor authentication"
+    assert page.has_content? "Multi-Factor Authentication"
 
-    fill_in "OTP code", with: ROTP::TOTP.new("thisisonemfaseed").now
-    click_button "Sign in"
+    within(".mfa-form") do
+      fill_in "OTP code", with: ROTP::TOTP.new("thisisonemfaseed").now
+      click_button "Sign in"
+    end
 
     assert page.has_content? "Sign out"
   end
@@ -83,10 +85,12 @@ class SignInTest < SystemTest
     fill_in "Password", with: PasswordHelpers::SECURE_TEST_PASSWORD
     click_button "Sign in"
 
-    assert page.has_content? "Multifactor authentication"
+    assert page.has_content? "Multi-Factor Authentication"
 
-    fill_in "OTP code", with: "11111"
-    click_button "Sign in"
+    within(".mfa-form") do
+      fill_in "OTP code", with: "11111"
+      click_button "Sign in"
+    end
 
     assert page.has_content? "Sign in"
   end
@@ -97,10 +101,12 @@ class SignInTest < SystemTest
     fill_in "Password", with: PasswordHelpers::SECURE_TEST_PASSWORD
     click_button "Sign in"
 
-    assert page.has_content? "Multifactor authentication"
+    assert page.has_content? "Multi-Factor Authentication"
 
-    fill_in "OTP code", with: "0123456789ab"
-    click_button "Sign in"
+    within(".mfa-form") do
+      fill_in "OTP code", with: "0123456789ab"
+      click_button "Sign in"
+    end
 
     assert page.has_content? "Sign out"
   end
@@ -111,10 +117,12 @@ class SignInTest < SystemTest
     fill_in "Password", with: PasswordHelpers::SECURE_TEST_PASSWORD
     click_button "Sign in"
 
-    assert page.has_content? "Multifactor authentication"
+    assert page.has_content? "Multi-Factor Authentication"
 
-    fill_in "OTP code", with: "ab0123456789"
-    click_button "Sign in"
+    within(".mfa-form") do
+      fill_in "OTP code", with: "ab0123456789"
+      click_button "Sign in"
+    end
 
     assert page.has_content? "Sign in"
   end
@@ -127,10 +135,12 @@ class SignInTest < SystemTest
     fill_in "Password", with: PasswordHelpers::SECURE_TEST_PASSWORD
     click_button "Sign in"
 
-    assert page.has_content? "Multifactor authentication"
+    assert page.has_content? "Multi-Factor Authentication"
 
-    fill_in "OTP code", with: ROTP::TOTP.new("thisisonemfaseed").now
-    click_button "Sign in"
+    within(".mfa-form") do
+      fill_in "OTP code", with: ROTP::TOTP.new("thisisonemfaseed").now
+      click_button "Sign in"
+    end
 
     assert page.has_content? "john@example.com"
     assert page.has_content? "Sign out"

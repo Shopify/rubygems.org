@@ -28,12 +28,12 @@ class SettingsTest < SystemTest
     page.find_by_id("mfa-key").text.match(key_regex)[0].delete("\s")
   end
 
-  test "enabling multifactor authentication with valid otp" do
+  test "enabling Multi-Factor Authentication with valid otp" do
     sign_in
     visit edit_settings_path
     click_button "Register a new device"
 
-    assert page.has_content? "Enabling multifactor auth"
+    assert page.has_content? "Enabling Multi-Factor Authentication"
 
     totp = ROTP::TOTP.new(mfa_key)
     page.fill_in "otp", with: totp.now
@@ -42,29 +42,29 @@ class SettingsTest < SystemTest
     assert page.has_content? "Recovery codes"
 
     click_link "[ copy ]"
-    check "ack"
+    check "saved"
     click_button "Continue"
 
-    assert page.has_content? "You have enabled multifactor authentication."
+    assert page.has_content? "You have enabled Multi-Factor Authentication."
     css = %(a[href="https://guides.rubygems.org/setting-up-multifactor-authentication"])
     assert page.has_css?(css, visible: true)
   end
 
-  test "enabling multifactor authentication with invalid otp" do
+  test "enabling Multi-Factor Authentication with invalid otp" do
     sign_in
     visit edit_settings_path
     click_button "Register a new device"
 
-    assert page.has_content? "Enabling multifactor auth"
+    assert page.has_content? "Enabling Multi-Factor Authentication"
 
     totp = ROTP::TOTP.new(ROTP::Base32.random_base32)
     page.fill_in "otp", with: totp.now
     click_button "Enable"
 
-    assert page.has_content? "You have not yet enabled multifactor authentication."
+    assert page.has_content? "You have not yet enabled Multi-Factor Authentication."
   end
 
-  test "disabling multifactor authentication with valid otp" do
+  test "disabling Multi-Factor Authentication with valid otp" do
     sign_in
     enable_mfa
     visit edit_settings_path
@@ -72,12 +72,12 @@ class SettingsTest < SystemTest
     page.fill_in "otp", with: ROTP::TOTP.new(@user.mfa_seed).now
     change_auth_level "Disabled"
 
-    assert page.has_content? "You have not yet enabled multifactor authentication."
+    assert page.has_content? "You have not yet enabled Multi-Factor Authentication."
     css = %(a[href="https://guides.rubygems.org/setting-up-multifactor-authentication"])
     assert page.has_css?(css)
   end
 
-  test "disabling multifactor authentication with invalid otp" do
+  test "disabling Multi-Factor Authentication with invalid otp" do
     sign_in
     enable_mfa
     visit edit_settings_path
@@ -86,10 +86,10 @@ class SettingsTest < SystemTest
     page.fill_in "otp", with: ROTP::TOTP.new(key).now
     change_auth_level "Disabled"
 
-    assert page.has_content? "You have enabled multifactor authentication."
+    assert page.has_content? "You have enabled Multi-Factor Authentication."
   end
 
-  test "disabling multifactor authentication with recovery code" do
+  test "disabling Multi-Factor Authentication with recovery code" do
     sign_in
     visit edit_settings_path
     click_button "Register a new device"
@@ -100,15 +100,15 @@ class SettingsTest < SystemTest
 
     assert page.has_content? "Recovery codes"
 
-    recoveries = page.find_by_id("recovery-code-list").text.split
+    recoveries = page.find_by_id("recovery-codes--list").text.split
 
     click_link "[ copy ]"
-    check "ack"
+    check "saved"
     click_button "Continue"
     page.fill_in "otp", with: recoveries.sample
     change_auth_level "Disabled"
 
-    assert page.has_content? "You have not yet enabled multifactor authentication."
+    assert page.has_content? "You have not yet enabled Multi-Factor Authentication."
   end
 
   teardown do
