@@ -6,16 +6,8 @@ class SessionsController < Clearance::SessionsController
     @user = find_user
 
     if @user && (@user.mfa_enabled? || @user.webauthn_credentials.any?)
-      if @user.webauthn_credentials.any?
-        @webauthn_options = @user.webauthn_options_for_get
-
-        session[:webauthn_authentication] = {
-          "challenge" => @webauthn_options.challenge,
-          "user" => @user.display_id
-        }
-      end
-
-      session[:mfa_user] = @user.display_id if @user.mfa_enabled?
+      setup_webauthn_authentication
+      setup_mfa_authentication
 
       render "sessions/prompt"
     else
@@ -135,5 +127,20 @@ class SessionsController < Clearance::SessionsController
 
     flash.now.alert = t(".account_blocked")
     render template: "sessions/new", status: :unauthorized
+  end
+
+  def setup_webauthn_authentication
+    if @user.webauthn_credentials.any?
+      @webauthn_options = @user.webauthn_options_for_get
+
+      session[:webauthn_authentication] = {
+        "challenge" => @webauthn_options.challenge,
+        "user" => @user.display_id
+      }
+    end
+  end
+
+  def setup_mfa_authentication
+    session[:mfa_user] = @user.display_id if @user.mfa_enabled?
   end
 end
