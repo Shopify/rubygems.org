@@ -30,9 +30,9 @@ ADD https://s3-us-west-2.amazonaws.com/oregon.production.s3.rubygems.org/stopfor
 
 RUN mv /app/config/database.yml.example /app/config/database.yml
 
-RUN RAILS_ENV=production SECRET_KEY_BASE=1234 bin/rails assets:precompile
+RUN RAILS_ENV=production RAILS_GROUPS=assets SECRET_KEY_BASE=1234 bin/rails assets:precompile
 
-RUN bundle config set --local without 'development test' && \
+RUN bundle config set --local without 'development test assets' && \
   bundle clean --force
 
 FROM ruby:3.0-alpine
@@ -40,7 +40,6 @@ FROM ruby:3.0-alpine
 ARG RUBYGEMS_VERSION
 
 RUN apk add --no-cache \
-  nodejs \
   libpq \
   ca-certificates \
   bash \
