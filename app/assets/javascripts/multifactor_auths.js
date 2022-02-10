@@ -1,4 +1,4 @@
-(function() {
+$(() => {
   const popUp = (e) => {
     e.preventDefault()
     e.returnValue = ""
@@ -34,4 +34,4 @@
       }
     })
   }
-}())
+})
