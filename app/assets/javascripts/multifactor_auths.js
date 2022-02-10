@@ -1,11 +1,9 @@
-window.rubygems = window.rubygems || {}
+(function() {
+  const popUp = (e) => {
+    e.preventDefault()
+    e.returnValue = ""
+  }
 
-window.rubygems.popUp = (e) => {
-  e.preventDefault()
-  e.returnValue = ""
-}
-
-window.rubygems.setupRecoveryCodes = () => {
   const $RECOVERY_CODES = $("#recovery-codes--list")
   const COPY_ICON_SELECTOR = "#recovery-codes--copy-icon"
   const $COPY_ICON = $(COPY_ICON_SELECTOR)
@@ -14,7 +12,7 @@ window.rubygems.setupRecoveryCodes = () => {
   const FORM_SUBMIT = $("#recovery-codes--submit")[0]
 
   if ($RECOVERY_CODES.length > 0) {
-    window.addEventListener("beforeunload", window.rubygems.popUp)
+    window.addEventListener("beforeunload", popUp)
 
     new ClipboardJS(COPY_ICON_SELECTOR)
 
@@ -24,7 +22,7 @@ window.rubygems.setupRecoveryCodes = () => {
       if (!$COPY_ICON.is(".clicked")) {
         e.preventDefault()
         $COPY_ICON.addClass("clicked")
-        window.removeEventListener("beforeunload", window.rubygems.popUp)
+        window.removeEventListener("beforeunload", popUp)
       }
     })
 
@@ -36,6 +34,4 @@ window.rubygems.setupRecoveryCodes = () => {
       }
     })
   }
-}
-
-window.rubygems.setupRecoveryCodes()
+}())
