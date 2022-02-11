@@ -35,6 +35,7 @@ RUN RAILS_ENV=production RAILS_GROUPS=assets SECRET_KEY_BASE=1234 bin/rails asse
 RUN bundle config set --local without 'development test assets' && \
   bundle clean --force
 
+
 FROM ruby:3.0-alpine
 
 ARG RUBYGEMS_VERSION
