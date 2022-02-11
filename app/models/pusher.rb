@@ -66,7 +66,7 @@ class Pusher
   def find
     name = spec.name.to_s
 
-    @rubygem = Rubygem.name_is(name).first || Rubygem.new(name: name)
+    @rubygem = Rubygem.name_is(name) || Rubygem.new(name: name)
 
     unless @rubygem.new_record?
       if (version = @rubygem.find_version_from_spec spec)

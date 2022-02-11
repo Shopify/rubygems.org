@@ -684,11 +684,11 @@ class RubygemTest < ActiveSupport::TestCase
     end
 
     should "find exact match by name on #name_is" do
-      assert_equal @apple_crisp, Rubygem.name_is("apple_crisp").first
+      assert_equal @apple_crisp, Rubygem.name_is("apple_crisp")
     end
 
     should "find exact match by name with extra spaces on #name_is" do
-      assert_equal @apple_crisp, Rubygem.name_is("apple_crisp ").first
+      assert_equal @apple_crisp, Rubygem.name_is("apple_crisp ")
     end
   end
 

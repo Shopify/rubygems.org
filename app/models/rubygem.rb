@@ -49,10 +49,7 @@ class Rubygem < ApplicationRecord
   end
 
   def self.name_is(name)
-    sensitive = where(name: name.strip).limit(1)
-    return sensitive unless sensitive.empty?
-
-    where("UPPER(name) = UPPER(?)", name.strip).limit(1)
+    find_by(name: name.strip) || find_by("UPPER(name) = UPPER(?)", name.strip)
   end
 
   def self.name_starts_with(letter)
