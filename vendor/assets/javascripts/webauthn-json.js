@@ -20,27 +20,27 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
-const base64urlToBuffer = (baseurl64String) => {
-  const padding = "==".slice(0, (4 - (baseurl64String.length % 4)) % 4)
-  const base64String =
+var base64urlToBuffer = (baseurl64String) => {
+  var padding = "==".slice(0, (4 - (baseurl64String.length % 4)) % 4)
+  var base64String =
     baseurl64String.replace(/-/g, "+").replace(/_/g, "/") + padding
-  const str = atob(base64String)
-  const buffer = new ArrayBuffer(str.length)
-  const byteView = new Uint8Array(buffer)
+  var str = atob(base64String)
+  var buffer = new ArrayBuffer(str.length)
+  var byteView = new Uint8Array(buffer)
   for (let i = 0; i < str.length; i++) {
     byteView[i] = str.charCodeAt(i)
   }
   return buffer
 }
 
-const bufferToBase64url = (buffer) => {
-  const byteView = new Uint8Array(buffer)
+var bufferToBase64url = (buffer) => {
+  var byteView = new Uint8Array(buffer)
   let str = ""
-  for (const charCode of byteView) {
+  for (var charCode of byteView) {
     str += String.fromCharCode(charCode)
   }
-  const base64String = btoa(str)
-  const base64urlString = base64String
+  var base64String = btoa(str)
+  var base64urlString = base64String
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=/g, "")

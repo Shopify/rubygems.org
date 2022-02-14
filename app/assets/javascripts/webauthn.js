@@ -1,25 +1,25 @@
 ((() => {
-  const handleEvent = (event) => {
+  var handleEvent = (event) => {
     event.preventDefault()
     return event.target
   }
 
-  const setError = ($submit, $error, message) => {
+  var setError = ($submit, $error, message) => {
     $submit.attr("disabled", false)
     $error.attr("hidden", false)
     $error.text(message)
   }
 
-  const handleResponse = async ($submit, $error, response) => {
+  var handleResponse = async ($submit, $error, response) => {
     if (response.redirected) {
       window.location.href = response.url
     } else {
-      const json = await response.json()
+      var json = await response.json()
       setError($SUBMIT, $ERROR, json.message)
     }
   }
 
-  const credentialsToBase64 = (credentials) => (
+  var credentialsToBase64 = (credentials) => (
     {
       type: credentials.type,
       id: credentials.id,
@@ -40,7 +40,7 @@
     }
   )
 
-  const credentialsToBuffer = (credentials) => (
+  var credentialsToBuffer = (credentials) => (
     credentials.map(
       (credential) => (
         {
@@ -52,38 +52,38 @@
   )
 
   $(() => {
-    const FORM_SELECTOR = ".js-new-webauthn-credential--form"
-    const SUBMIT_SELECTOR = `${FORM_SELECTOR} input[type=submit]`
-    const NICKNAME_INPUT_SELECTOR = `${FORM_SELECTOR} #webauthn_credential_nickname`
-    const ERROR_SELECTOR = ".js-new-webauthn-credential--error"
-    const $FORM = $(FORM_SELECTOR)
-    const $ERROR = $(ERROR_SELECTOR)
-    const $SUBMIT = $(SUBMIT_SELECTOR)
-    const CSRF_TOKEN = $("[name='csrf-token']").attr("content")
+    var FORM_SELECTOR = ".js-new-webauthn-credential--form"
+    var SUBMIT_SELECTOR = `${FORM_SELECTOR} input[type=submit]`
+    var NICKNAME_INPUT_SELECTOR = `${FORM_SELECTOR} #webauthn_credential_nickname`
+    var ERROR_SELECTOR = ".js-new-webauthn-credential--error"
+    var $FORM = $(FORM_SELECTOR)
+    var $ERROR = $(ERROR_SELECTOR)
+    var $SUBMIT = $(SUBMIT_SELECTOR)
+    var CSRF_TOKEN = $("[name='csrf-token']").attr("content")
 
     $FORM.submit(async (event) => {
       try {
-        const form = handleEvent(event)
-        const nickname = $(NICKNAME_INPUT_SELECTOR).val()
+        var form = handleEvent(event)
+        var nickname = $(NICKNAME_INPUT_SELECTOR).val()
 
-        const createResponse = await fetch(`${form.action}.json`, {
+        var createResponse = await fetch(`${form.action}.json`, {
           method: "POST",
           credentials: "same-origin",
           headers: { "X-CSRF-Token": CSRF_TOKEN },
         })
 
-        const createJson = await createResponse.json()
+        var createJson = await createResponse.json()
         createJson.user.id = base64urlToBuffer(createJson.user.id)
         createJson.challenge = base64urlToBuffer(createJson.challenge)
         createJson.excludeCredentials = credentialsToBuffer(
           createJson.excludeCredentials
       )
 
-        const credentials = await navigator.credentials.create({
+        var credentials = await navigator.credentials.create({
           publicKey: createJson,
         })
 
-        const callbackResponse = await fetch(`${form.action}/callback.json`, {
+        var callbackResponse = await fetch(`${form.action}/callback.json`, {
           method: "POST",
           credentials: "same-origin",
           headers: {
@@ -104,18 +104,18 @@
   })
 
   $(() => {
-    const FORM_SELECTOR = ".js-webauthn-session--form"
-    const SUBMIT_SELECTOR = ".js-webauthn-session--submit"
-    const ERROR_SELECTOR = ".js-webauthn-session--error"
-    const $FORM = $(FORM_SELECTOR)
-    const $SUBMIT = $(SUBMIT_SELECTOR)
-    const $ERROR = $(ERROR_SELECTOR)
-    const CSRF_TOKEN = $("[name='csrf-token']").attr("content")
+    var FORM_SELECTOR = ".js-webauthn-session--form"
+    var SUBMIT_SELECTOR = ".js-webauthn-session--submit"
+    var ERROR_SELECTOR = ".js-webauthn-session--error"
+    var $FORM = $(FORM_SELECTOR)
+    var $SUBMIT = $(SUBMIT_SELECTOR)
+    var $ERROR = $(ERROR_SELECTOR)
+    var CSRF_TOKEN = $("[name='csrf-token']").attr("content")
 
     $FORM.submit(async (e) => {
       try {
-        const form = handleEvent(event)
-        const options = JSON.parse(form.dataset.options)
+        var form = handleEvent(event)
+        var options = JSON.parse(form.dataset.options)
         options.challenge = base64urlToBuffer(options.challenge)
         // From: https://developers.yubico.com/WebAuthn/WebAuthn_Developer_Guide/User_Presence_vs_User_Verification.html
         // PREFERRED: This value indicates that the RP prefers user verification
@@ -126,11 +126,11 @@
           options.allowCredentials
         )
 
-        const credentials = await navigator.credentials.get({
+        var credentials = await navigator.credentials.get({
           publicKey: options,
         })
 
-        const response = await fetch(`${form.action}.json`, {
+        var response = await fetch(`${form.action}.json`, {
           method: "POST",
           credentials: "same-origin",
           headers: {
