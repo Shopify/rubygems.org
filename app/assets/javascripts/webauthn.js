@@ -74,7 +74,7 @@
           publicKey: json
         })
       }).then(function (credentials) {
-        return fetch(form.action + "callback.json", {
+        return fetch(form.action + "/callback.json", {
           method: "POST",
           credentials: "same-origin",
           headers: {

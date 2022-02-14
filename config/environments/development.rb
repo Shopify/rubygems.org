@@ -63,9 +63,6 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
-  config.assets.js_compressor = :uglifier
-  config.assets.css_compressor = :sass
-
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
@@ -93,6 +90,8 @@ Rails.application.configure do
       'Cache-Control' => 'max-age=315360000, public',
       'Expires' => 'Thu, 31 Dec 2037 23:55:55 GMT'
     }
+    config.assets.js_compressor = :uglifier
+    config.assets.css_compressor = :sass
     config.assets.compile = false
     config.assets.digest = true
     config.assets.debug = false
