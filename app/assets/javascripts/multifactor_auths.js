@@ -1,5 +1,5 @@
-$(() => {
-  var popUp = (e) => {
+$(function () {
+  var popUp = function (e) {
     e.preventDefault()
     e.returnValue = ""
   }
@@ -16,7 +16,7 @@ $(() => {
 
     new ClipboardJS(COPY_ICON_SELECTOR)
 
-    $COPY_ICON.click((e) => {
+    $COPY_ICON.click(function (e) {
       $COPY_ICON.text($COPY_ICON.data("copied"))
 
       if (!$COPY_ICON.is(".clicked")) {
@@ -26,7 +26,7 @@ $(() => {
       }
     })
 
-    $CHECKBOX_INPUT.change(() => {
+    $CHECKBOX_INPUT.change(function () {
       if (CHECKBOX_INPUT.checked) {
         FORM_SUBMIT.disabled = false
       } else {

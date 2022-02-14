@@ -1,109 +1,100 @@
-((() => {
-  var handleEvent = (event) => {
+(function() {
+  var handleEvent = function(event) {
     event.preventDefault()
     return event.target
   }
 
-  var setError = ($submit, $error, message) => {
+  var setError = function($submit, $error, message) {
     $submit.attr("disabled", false)
     $error.attr("hidden", false)
     $error.text(message)
   }
 
-  var handleResponse = async ($submit, $error, response) => {
+  var handleResponse = function($submit, $error, response) {
     if (response.redirected) {
       window.location.href = response.url
     } else {
-      var json = await response.json()
-      setError($SUBMIT, $ERROR, json.message)
+      response.json().then(function (json) {
+        setError($submit, $error, json.message)
+      }).catch(function (error) {
+        setError($submit, $error, error)
+      })
     }
   }
 
-  var credentialsToBase64 = (credentials) => (
-    {
+  var credentialsToBase64 = function(credentials) {
+    return {
       type: credentials.type,
       id: credentials.id,
       rawId: bufferToBase64url(credentials.rawId),
       clientExtensionResults: credentials.clientExtensionResults,
       response: {
-        authenticatorData: bufferToBase64url(
-          credentials.response.authenticatorData
-        ),
-        attestationObject: bufferToBase64url(
-          credentials.response.attestationObject
-        ),
-        clientDataJSON: bufferToBase64url(
-          credentials.response.clientDataJSON
-        ),
-        signature: bufferToBase64url(credentials.response.signature),
-      },
+        authenticatorData: bufferToBase64url(credentials.response.authenticatorData),
+        attestationObject: bufferToBase64url(credentials.response.attestationObject),
+        clientDataJSON: bufferToBase64url(credentials.response.clientDataJSON),
+        signature: bufferToBase64url(credentials.response.signature)
+      }
     }
-  )
+  }
 
-  var credentialsToBuffer = (credentials) => (
-    credentials.map(
-      (credential) => (
-        {
-          id: base64urlToBuffer(credential.id),
-          type: credential.type,
-        }
-      )
-    )
-  )
+  var credentialsToBuffer = function(credentials) {
+    return credentials.map(function(credential) {
+      return {
+        id: base64urlToBuffer(credential.id),
+        type: credential.type
+      }
+    })
+  }
 
-  $(() => {
+  $(function() {
     var FORM_SELECTOR = ".js-new-webauthn-credential--form"
-    var SUBMIT_SELECTOR = `${FORM_SELECTOR} input[type=submit]`
-    var NICKNAME_INPUT_SELECTOR = `${FORM_SELECTOR} #webauthn_credential_nickname`
+    var SUBMIT_SELECTOR = ".js-new-webauthn-credential--submit"
+    var NICKNAME_INPUT_SELECTOR = ".js-new-webauthn-credential--nickname"
     var ERROR_SELECTOR = ".js-new-webauthn-credential--error"
     var $FORM = $(FORM_SELECTOR)
     var $ERROR = $(ERROR_SELECTOR)
     var $SUBMIT = $(SUBMIT_SELECTOR)
     var CSRF_TOKEN = $("[name='csrf-token']").attr("content")
 
-    $FORM.submit(async (event) => {
-      try {
-        var form = handleEvent(event)
-        var nickname = $(NICKNAME_INPUT_SELECTOR).val()
+    $FORM.submit(function(event) {
+      var form = handleEvent(event)
+      var nickname = $(NICKNAME_INPUT_SELECTOR).val()
 
-        var createResponse = await fetch(`${form.action}.json`, {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "X-CSRF-Token": CSRF_TOKEN },
+      fetch(form.action + ".json", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "X-CSRF-Token": CSRF_TOKEN }
+      }).then(function (response) {
+        return response.json()
+      }).then(function (json) {
+        json.user.id = base64urlToBuffer(json.user.id)
+        json.challenge = base64urlToBuffer(json.challenge)
+        json.excludeCredentials = credentialsToBuffer(json.excludeCredentials)
+        return navigator.credentials.create({
+          publicKey: json
         })
-
-        var createJson = await createResponse.json()
-        createJson.user.id = base64urlToBuffer(createJson.user.id)
-        createJson.challenge = base64urlToBuffer(createJson.challenge)
-        createJson.excludeCredentials = credentialsToBuffer(
-          createJson.excludeCredentials
-      )
-
-        var credentials = await navigator.credentials.create({
-          publicKey: createJson,
-        })
-
-        var callbackResponse = await fetch(`${form.action}/callback.json`, {
+      }).then(function (credentials) {
+        return fetch(form.action + "callback.json", {
           method: "POST",
           credentials: "same-origin",
           headers: {
             "X-CSRF-Token": CSRF_TOKEN,
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
             credentials: credentialsToBase64(credentials),
-            webauthn_credential: { nickname: nickname },
-          }),
+            webauthn_credential: { nickname: nickname }
+          })
         })
-
-        handleResponse($SUBMIT, $ERROR, callbackResponse)
-      } catch (e) {
-        setError($SUBMIT, $ERROR, e.message)
-      }
+      }).then(function (response) {
+        handleResponse($SUBMIT, $ERROR, response)
+      }).catch(function (error) {
+        setError($SUBMIT, $ERROR, error)
+      })
     })
   })
 
-  $(() => {
+  $(function() {
     var FORM_SELECTOR = ".js-webauthn-session--form"
     var SUBMIT_SELECTOR = ".js-webauthn-session--submit"
     var ERROR_SELECTOR = ".js-webauthn-session--error"
@@ -112,40 +103,31 @@
     var $ERROR = $(ERROR_SELECTOR)
     var CSRF_TOKEN = $("[name='csrf-token']").attr("content")
 
-    $FORM.submit(async (e) => {
-      try {
-        var form = handleEvent(event)
-        var options = JSON.parse(form.dataset.options)
-        options.challenge = base64urlToBuffer(options.challenge)
-        // From: https://developers.yubico.com/WebAuthn/WebAuthn_Developer_Guide/User_Presence_vs_User_Verification.html
-        // PREFERRED: This value indicates that the RP prefers user verification
-        // for the operation if possible, but will not fail the operation if
-        // the response does not have the ``AuthenticatorDataFlags.UV`` flag set.
-        options.userVerification = "preferred"
-        options.allowCredentials = credentialsToBuffer(
-          options.allowCredentials
-        )
-
-        var credentials = await navigator.credentials.get({
-          publicKey: options,
-        })
-
-        var response = await fetch(`${form.action}.json`, {
+    $FORM.submit(function(e) {
+      var form = handleEvent(event)
+      var options = JSON.parse(form.dataset.options)
+      options.challenge = base64urlToBuffer(options.challenge)
+      options.userVerification = "preferred"
+      options.allowCredentials = credentialsToBuffer(options.allowCredentials)
+      navigator.credentials.get({
+        publicKey: options
+      }).then(function (credentials) {
+        return fetch(form.action + ".json", {
           method: "POST",
           credentials: "same-origin",
           headers: {
             "X-CSRF-Token": CSRF_TOKEN,
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
             credentials: credentialsToBase64(credentials)
-          }),
+          })
         })
-
+      }).then(function (response) {
         handleResponse($SUBMIT, $ERROR, response)
-      } catch (e) {
-        setError($SUBMIT, $ERROR, e.message)
-      }
+      }).catch(function (error) {
+        setError($SUBMIT, $ERROR, error)
+      })
     })
   })
-})())
+})()

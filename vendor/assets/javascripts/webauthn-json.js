@@ -20,25 +20,25 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
-var base64urlToBuffer = (baseurl64String) => {
+var base64urlToBuffer = function (baseurl64String) {
   var padding = "==".slice(0, (4 - (baseurl64String.length % 4)) % 4)
   var base64String =
     baseurl64String.replace(/-/g, "+").replace(/_/g, "/") + padding
   var str = atob(base64String)
   var buffer = new ArrayBuffer(str.length)
   var byteView = new Uint8Array(buffer)
-  for (let i = 0; i < str.length; i++) {
+  for (var i = 0; i < str.length; i++) {
     byteView[i] = str.charCodeAt(i)
   }
   return buffer
 }
 
-var bufferToBase64url = (buffer) => {
+var bufferToBase64url = function (buffer) {
   var byteView = new Uint8Array(buffer)
-  let str = ""
-  for (var charCode of byteView) {
+  var str = ""
+  byteView.forEach(function(charCode) {
     str += String.fromCharCode(charCode)
-  }
+  })
   var base64String = btoa(str)
   var base64urlString = base64String
     .replace(/\+/g, "-")
