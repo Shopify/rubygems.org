@@ -96,4 +96,10 @@ class MailerPreview < ActionMailer::Preview
     ownership_request = OwnershipRequest.last
     OwnersMailer.ownership_request_approved(ownership_request.id)
   end
+
+  def auth_code
+    user = User.last
+    code = user.email_totp(ROTP::Base32.random_base32).now
+    OtpMailer.auth_code(user.id, code)
+  end
 end

@@ -260,7 +260,23 @@ class User < ApplicationRecord
     !rubygem.owned_by?(self) && rubygem.ownership_requestable?
   end
 
+  def email_otp_verified?(code, salt)
+    email_totp(salt).verify(code, drift_behind: 300).present?
+  end
+
+  def email_totp(salt)
+    ROTP::TOTP.new(email_otp_seed + salt, issuer: "rubygems.org")
+  end
+
   private
+
+  def email_otp_seed
+    return self.auth_secret unless self.auth_secret.nil?
+    self.auth_secret = ROTP::Base32.random_base32
+    save!
+
+    auth_secret
+  end
 
   def verify_digit_otp(seed, otp)
     totp = ROTP::TOTP.new(seed)

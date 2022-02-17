@@ -9,7 +9,11 @@ class SessionsController < Clearance::SessionsController
       session[:mfa_user] = @user.display_id
       render "sessions/otp_prompt"
     else
-      do_login
+      # do_login
+      session[:mfa_user] = @user.display_id
+      session[:salt] = ROTP::Base32.random_base32
+      OtpMailer.delay.auth_code(@user.id, @user.email_totp(session[:salt]).now)
+      render "sessions/otp_prompt"
     end
   end
 
@@ -18,6 +22,8 @@ class SessionsController < Clearance::SessionsController
     session.delete(:mfa_user)
 
     if @user&.mfa_enabled? && @user&.otp_verified?(params[:otp])
+      do_login
+    elsif @user&.email_otp_verified?(params[:otp], session[:salt])
       do_login
     else
       login_failure(t("multifactor_auths.incorrect_otp"))
