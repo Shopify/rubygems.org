@@ -1,4 +1,5 @@
 require "test_helper"
+require "helpers/email_helpers"
 
 class SignInTest < SystemTest
   setup do
@@ -17,10 +18,10 @@ class SignInTest < SystemTest
     assert page.has_content? "Email OTP code"
     click_button "Email OTP code"
 
-    assert_redirected_to session_path
-    # page has "send OTP" button
-    # get redirected to OTP page
-    # enter OTP
+    assert_current_path send_email_otp_session_path
+    otp_code = otp_code_from(Delayed::Job.first)
+    fill_in "OTP code", with: otp_code
+    click_button "Sign in"
 
     assert page.has_content? "Sign out"
   end

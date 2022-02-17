@@ -194,7 +194,7 @@ Rails.application.routes.draw do
 
     resource :session, only: %i[create destroy] do
       post 'mfa_create', to: 'sessions#mfa_create', as: :mfa_create
-      post 'send_email_otp', to: 'sessions#send_email_otp', as: :send_email_otp
+      post 'email_otp', to: 'sessions#send_email_otp', as: :send_email_otp
       get 'verify', to: 'sessions#verify', as: :verify
       post 'authenticate', to: 'sessions#authenticate', as: :authenticate
     end

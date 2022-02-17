@@ -22,4 +22,13 @@ module EmailHelpers
     link = %r{http://localhost/email_confirmations([^";]*)}.match(body)
     link[0]
   end
+
+  def otp_code_from(job)
+    Delayed::Worker.new.run(job)
+    otp_code
+  end
+
+  def otp_code
+    %r{Your OTP code is (\d{6})}.match(last_email.subject)[1]
+  end
 end

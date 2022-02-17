@@ -4,35 +4,36 @@ class SessionsController < Clearance::SessionsController
 
   def create
     @user = find_user
-
-    if @user&.mfa_enabled? && @user&.mfa_via_email_enabled?
+    if @user&.mfa_via_email_enabled?
       session[:mfa_user] = @user.display_id
       render "sessions/send_email_otp"
-    else @user&.mfa_enabled?
+    elsif @user&.mfa_enabled?
       session[:mfa_user] = @user.display_id
       render "sessions/otp_prompt"
+    else
+      do_login
     end
   end
 
   def send_email_otp
     @user = User.find_by_slug(session[:mfa_user])
-    OtpMailer.delay.auth_code(@user.id, @user.email_totp(session[:salt]).now)
-    session[:mfa_user] = @user.display_id
     session[:salt] = ROTP::Base32.random_base32
-    render "sessions/otp_prompt"
+
+    OtpMailer.delay.auth_code(@user.id, @user.email_totp(session[:salt]).now)
+    flash[:success] = "A six digit code has been sent to your email."
+    render "sessions/email_otp_prompt"
   end
 
   def mfa_create
     @user = User.find_by_slug(session[:mfa_user])
     session.delete(:mfa_user)
 
-    if @user&.mfa_enabled? && @user&.otp_verified?(params[:otp])
-      do_login
-    elsif @user&.email_otp_verified?(params[:otp], session[:salt])
-      do_login
-    else
-      login_failure(t("multifactor_auths.incorrect_otp"))
+    if @user&.mfa_via_email_enabled?
+      return do_login if @user&.email_otp_verified?(params[:otp], session[:salt])
+    elsif @user&.mfa_enabled?
+      return do_login if @user&.otp_verified?(params[:otp])
     end
+    login_failure(t("multifactor_auths.incorrect_otp"))
   end
 
   def verify
