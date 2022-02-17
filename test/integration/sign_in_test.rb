@@ -8,11 +8,19 @@ class SignInTest < SystemTest
                   mfa_recovery_codes: %w[0123456789ab ba9876543210])
   end
 
-  test "signing in" do
+  test "signing in with valid email otp" do
     visit sign_in_path
     fill_in "Email or Username", with: "nick@example.com"
     fill_in "Password", with: PasswordHelpers::SECURE_TEST_PASSWORD
     click_button "Sign in"
+
+    assert page.has_content? "Email OTP code"
+    click_button "Email OTP code"
+
+    assert_redirected_to session_path
+    # page has "send OTP" button
+    # get redirected to OTP page
+    # enter OTP
 
     assert page.has_content? "Sign out"
   end

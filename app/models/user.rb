@@ -198,7 +198,7 @@ class User < ApplicationRecord
   end
 
   def mfa_enabled?
-    !mfa_disabled?
+    !mfa_disabled? || mfa_via_email_enabled?
   end
 
   def disable_mfa!
@@ -266,6 +266,10 @@ class User < ApplicationRecord
 
   def email_totp(salt)
     ROTP::TOTP.new(email_otp_seed + salt, issuer: "rubygems.org")
+  end
+
+  def mfa_via_email_enabled?
+    mfa_seed.nil?
   end
 
   private

@@ -5,16 +5,21 @@ class SessionsController < Clearance::SessionsController
   def create
     @user = find_user
 
-    if @user&.mfa_enabled?
+    if @user&.mfa_enabled? && @user&.mfa_via_email_enabled?
       session[:mfa_user] = @user.display_id
-      render "sessions/otp_prompt"
-    else
-      # do_login
+      render "sessions/send_email_otp"
+    else @user&.mfa_enabled?
       session[:mfa_user] = @user.display_id
-      session[:salt] = ROTP::Base32.random_base32
-      OtpMailer.delay.auth_code(@user.id, @user.email_totp(session[:salt]).now)
       render "sessions/otp_prompt"
     end
+  end
+
+  def send_email_otp
+    @user = User.find_by_slug(session[:mfa_user])
+    OtpMailer.delay.auth_code(@user.id, @user.email_totp(session[:salt]).now)
+    session[:mfa_user] = @user.display_id
+    session[:salt] = ROTP::Base32.random_base32
+    render "sessions/otp_prompt"
   end
 
   def mfa_create

@@ -1,0 +1,11 @@
+<% @title = "Email OTP code" %>
+
+<div class="t-body">
+  this page sends an email
+</div>
+
+<%= form_tag send_email_otp_session_path, method: :post do %>
+  <div class="form_bottom">
+    <%= submit_tag "Email OTP code", class: 'form__submit' %>
+  </div>
+<% end %>
