@@ -15,13 +15,21 @@
         <%= label_tag :otp, "OTP code", class: "form__label" %>
         <%= text_field_tag :otp, "", class: "form__input", autocomplete: :off %>
       </div>
+      
       <%= submit_tag t(".mfa.update"), class: "form__submit" %>
     <% end %>
+
+    # if they are using email OTP
+    <%= form_tag root_path, method: :get, id: "mfa-edit-send-email-otp" do %>
+      <%= submit_tag "Email OTP Code", class: "form__submit" %>
+    <% end %>
+
   <% else %>
     <p>
       <%= t(".mfa.disabled_html") %>
       <%= button_to t(".mfa.go_settings"), new_multifactor_auth_path, method: "get", class: "form__submit" %>
     </p>
+    # somewhere here we add an email option
   <% end %>
 </div>
 
