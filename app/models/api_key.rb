@@ -49,6 +49,10 @@ class ApiKey < ApplicationRecord
     ownership&.rubygem
   end
 
+  def invalid?
+    !!invalid_at
+  end
+
   private
 
   def exclusive_show_dashboard_scope
