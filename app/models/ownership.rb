@@ -2,6 +2,7 @@ class Ownership < ApplicationRecord
   belongs_to :rubygem
   belongs_to :user
   belongs_to :authorizer, class_name: "User"
+  has_many :api_key_rubygem_scopes
 
   validates :user_id, uniqueness: { scope: :rubygem_id }
 
@@ -9,6 +10,7 @@ class Ownership < ApplicationRecord
   delegate :name, to: :authorizer, prefix: true, allow_nil: true
 
   before_create :generate_confirmation_token
+  before_destroy :mark_api_keys_invalid
 
   scope :confirmed, -> { where.not(confirmed_at: nil) }
   scope :unconfirmed, -> { where(confirmed_at: nil) }
@@ -70,5 +72,13 @@ class Ownership < ApplicationRecord
 
   def safe_destroy
     destroy if unconfirmed? || rubygem.owners.many?
+  end
+
+  #TODO: write test
+  def mark_api_keys_invalid
+    api_key_rubygem_scopes.each do |scope|
+      scope.mark_api_key_invalid
+      scope.destroy
+    end
   end
 end

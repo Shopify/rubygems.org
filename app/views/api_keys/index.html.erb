@@ -39,7 +39,7 @@
     </tr>
 
     <% for api_key in @api_keys do %>
-      <tr class="owners__row <%= 'owners__row__invalid' unless api_key.valid? %>">
+      <tr class="owners__row <%= 'owners__row__invalid' if api_key.invalid? %>">
         <td class="owners__cell" data-title="Name">
           <%= api_key.name %>
         </td>
@@ -48,7 +48,7 @@
         </td>
         <td class="owners__cell" data-title="Gem">
           <%= api_key.rubygem&.name %>
-          <% unless api_key.valid?(:gem_ownership) %>
+          <% if api_key.invalid? %>
             <br>
             <strong>(<%= t(".ownership_removed") %>)</strong>
           <% end %>

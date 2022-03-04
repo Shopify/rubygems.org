@@ -209,7 +209,7 @@ class ApiKeysTest < SystemTest
   end
 
   test "gem ownership removed displays api key as invalid" do
-    create(:api_key, user: @user, rubygem: @ownership.rubygem)
+    api_key = create(:api_key, user: @user, rubygem: @ownership.rubygem)
     visit_profile_api_keys_path
     refute page.has_css? ".owners__row__invalid"
     refute page.has_content? "(ownership removed)"
@@ -218,10 +218,13 @@ class ApiKeysTest < SystemTest
 
     visit_profile_api_keys_path
     assert page.has_css? ".owners__row__invalid"
+    assert api_key.reload.invalid?
+    # looks a bit weird bc there's no gem metadata available
     assert page.has_content? "(ownership removed)"
 
+    # Check if edit button has disappeared
     click_button "Edit"
-    assert page.has_css? ".flash"
+    # Update behaviour to redirect back to api keys page if gone to edit path
   end
 
   def visit_profile_api_keys_path
