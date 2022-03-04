@@ -11,6 +11,7 @@ class ApiKey < ApplicationRecord
   validate :exclusive_show_dashboard_scope, if: :can_show_dashboard?
   validate :scope_presence
   validates :name, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }
+  validate :gem_ownership
 
   attr_accessor :rubygem_name
 
@@ -76,5 +77,12 @@ class ApiKey < ApplicationRecord
     errors.add :rubygem, "#{rubygem_name} could not be found" unless rubygem
 
     self.rubygem = rubygem
+  end
+
+  def gem_ownership
+    return true unless rubygem
+    return true if rubygem.owned_by?(user)
+    errors.add :rubygem, "#{rubygem.name} cannot be scoped to this API key"
+    false
   end
 end
