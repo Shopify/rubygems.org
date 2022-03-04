@@ -31,7 +31,10 @@ class ApiKeysController < ApplicationController
   def edit
     @api_key = current_user.api_keys.find(params.require(:id))
 
-    flash[:error] = @api_key.errors.full_messages.to_sentence unless @api_key.valid?
+    if @api_key.invalid?
+      redirect_to profile_api_keys_path 
+      flash[:error] = "You cannot edit an invalid API key. Please delete it and create a new one."
+    end
   end
 
   def update

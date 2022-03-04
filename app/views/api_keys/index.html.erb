@@ -49,8 +49,7 @@
         <td class="owners__cell" data-title="Gem">
           <%= api_key.rubygem&.name %>
           <% if api_key.invalid? %>
-            <br>
-            <strong>(<%= t(".ownership_removed") %>)</strong>
+            <strong><%= t(".ownership_removed") %></strong>
           <% end %>
         </td>
         <td class="owners__cell" data-title="Age">
@@ -65,10 +64,12 @@
           <%= api_key.last_accessed_at&.strftime("%Y-%m-%d %H:%M %Z") %>
         </td>
         <td class="owners__cell">
-          <%= button_to t("edit"),
-                      edit_profile_api_key_path(id: api_key.id),
-                      method: :get,
-                      class: "form__submit form__submit--small" %>
+          <% unless api_key.invalid? %>
+            <%= button_to t("edit"),
+                        edit_profile_api_key_path(id: api_key.id),
+                        method: :get,
+                        class: "form__submit form__submit--small" %>
+          <% end %>
         </td>
         <td class="owners__cell">
           <%= button_to t(".delete"),
