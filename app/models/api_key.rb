@@ -3,8 +3,10 @@ class ApiKey < ApplicationRecord
 
   before_validation :set_rubygem_from_name, on: %i[create update]
   belongs_to :user
-  has_one :api_keys_rubygems, dependent: :destroy
-  has_one :rubygem, through: :api_keys_rubygems
+  has_one :api_key_rubygem_scope, dependent: :destroy
+  has_one :ownership, through: :api_key_rubygem_scope
+  # has_one :rubygem, through: :ownership
+
   validates :user, :name, :hashed_key, presence: true
   validate :exclusive_show_dashboard_scope, if: :can_show_dashboard?
   validate :scope_presence
@@ -39,6 +41,14 @@ class ApiKey < ApplicationRecord
     gem_ownership
   end
 
+  def rubygem=(rubygem)
+    self.ownership = user.ownerships.find_by(rubygem: rubygem)
+  end
+
+  def rubygem
+    ownership&.rubygem
+  end
+
   private
 
   def exclusive_show_dashboard_scope
@@ -55,6 +65,7 @@ class ApiKey < ApplicationRecord
 
   def set_rubygem_from_name
     return if rubygem_name.nil?
+    # for update, set it back to all scopes
     return self.rubygem = nil if rubygem_name.blank?
 
     self.rubygem = Rubygem.name_is(rubygem_name).first
