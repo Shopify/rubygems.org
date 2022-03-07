@@ -68,7 +68,6 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
   end
 
   context "#callback" do
-
     context "when logged out" do
       setup do
         post :callback
