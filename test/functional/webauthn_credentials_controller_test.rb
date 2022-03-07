@@ -68,9 +68,10 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
   end
 
   context "#callback" do
+
     context "when logged out" do
       setup do
-        post :create
+        post :callback
       end
 
       should redirect_to :sign_in
@@ -81,16 +82,16 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
         @user = create(:user)
         sign_in_as @user
         post :create
-        @challenge = JSON.parse(response.body)["challenge"]
-        @origin = "http://localhost:3000"
-        @client = WebAuthn::FakeClient.new(@origin, encoding: false)
-        @nickname = "Touch ID on my Macbook"
+        @nickname = SecureRandom.hex
+        challenge = JSON.parse(response.body)["challenge"]
+        origin = "http://localhost:3000"
+        client = WebAuthn::FakeClient.new(origin, encoding: false)
         post(
           :callback,
           params: {
             credentials: WebauthnHelpers.create_result(
-              client: @client,
-              challenge: @challenge
+              client: client,
+              challenge: challenge
             ),
             webauthn_credential: { nickname: @nickname }
           },
@@ -104,6 +105,58 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
         assert_equal @nickname, @user.webauthn_credentials.last.nickname
         assert_equal 1, @user.webauthn_credentials.count
       end
+    end
+
+    context "when nickname is not present" do
+      setup do
+        @user = create(:user)
+        sign_in_as @user
+        post :create
+        @nickname = ""
+        challenge = JSON.parse(response.body)["challenge"]
+        origin = "http://localhost:3000"
+        client = WebAuthn::FakeClient.new(origin, encoding: false)
+        post(
+          :callback,
+          params: {
+            credentials: WebauthnHelpers.create_result(
+              client: client,
+              challenge: challenge
+            ),
+            webauthn_credential: { nickname: @nickname }
+          },
+          format: :json
+        )
+      end
+
+      should respond_with :unprocessable_entity
+    end
+
+    context "when credentials are incorrect" do
+      setup do
+        @user = create(:user)
+        sign_in_as @user
+        post :create
+        @nickname = SecureRandom.hex
+        challenge = SecureRandom.hex
+        origin = "http://localhost:3000"
+        client = WebAuthn::FakeClient.new(origin, encoding: false)
+        post(
+          :callback,
+          params: {
+            credentials: WebauthnHelpers.create_result(
+              client: client,
+              challenge: challenge
+            ),
+            webauthn_credential: { nickname: @nickname }
+          },
+          format: :json
+        )
+      end
+
+      setup { subject }
+
+      should respond_with :unprocessable_entity
     end
   end
 end
