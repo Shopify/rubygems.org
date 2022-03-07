@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 6.1.0"
+gem "rails", "~> 7.0.0"
 gem "rails-i18n"
 
 gem "aws-sdk-s3"
@@ -54,7 +54,7 @@ end
 group :development, :test do
   gem "m", "~> 1.5", require: false
   gem "pry-byebug"
-  gem "toxiproxy", "~> 1.0.0"
+  gem "toxiproxy", "~> 2.0.0"
   gem "webrick"
   gem "factory_bot_rails"
 
