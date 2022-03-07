@@ -304,38 +304,89 @@ class SessionsControllerTest < ActionController::TestCase
   end
 
   context "#webauthn_create" do
-    setup do
-      @user = create(:user)
-      @webauthn_credential = create(:webauthn_credential, user: @user)
-      post(
-        :create,
-        params: { session: { who: @user.handle, password: @user.password } }
-      )
-      @challenge = session[:webauthn_authentication]["challenge"]
-      @origin = "http://localhost:3000"
-      @rp_id = URI.parse(@origin).host
-      @client = WebAuthn::FakeClient.new(@origin, encoding: false)
-      WebauthnHelpers.create(
-        webauthn_credential: @webauthn_credential,
-        client: @client
-      )
-      post(
-        :webauthn_create,
-        params: {
-          credentials:
-            WebauthnHelpers.get_result(
-              client: @client,
-              challenge: @challenge
-            )
-        },
-        format: :json
-      )
+    context "when verifying the challenge" do
+      setup do
+        @user = create(:user)
+        @webauthn_credential = create(:webauthn_credential, user: @user)
+        post(
+          :create,
+          params: { session: { who: @user.handle, password: @user.password } }
+        )
+        @challenge = session[:webauthn_authentication]["challenge"]
+        @origin = "http://localhost:3000"
+        @rp_id = URI.parse(@origin).host
+        @client = WebAuthn::FakeClient.new(@origin, encoding: false)
+        WebauthnHelpers.create(
+          webauthn_credential: @webauthn_credential,
+          client: @client
+        )
+        post(
+          :webauthn_create,
+          params: {
+            credentials:
+              WebauthnHelpers.get_result(
+                client: @client,
+                challenge: @challenge
+              )
+          },
+          format: :json
+        )
+      end
+
+      should redirect_to :dashboard
+
+      should "log in the user" do
+        assert @controller.request.env[:clearance].signed_in?
+      end
     end
 
-    should redirect_to :dashboard
+    context "when not providing credentials" do
+      setup do
+        @user = create(:user)
+        @webauthn_credential = create(:webauthn_credential, user: @user)
+        post(
+          :create,
+          params: { session: { who: @user.handle, password: @user.password } }
+        )
+        post(
+          :webauthn_create,
+          format: :json
+        )
+      end
 
-    should "log in the user" do
-      assert @controller.request.env[:clearance].signed_in?
+      should respond_with :unauthorized
+    end
+
+    context "when providing wrong credentials" do
+      setup do
+        @user = create(:user)
+        @webauthn_credential = create(:webauthn_credential, user: @user)
+        post(
+          :create,
+          params: { session: { who: @user.handle, password: @user.password } }
+        )
+        @challenge = SecureRandom.hex
+        @origin = "http://localhost:3000"
+        @rp_id = URI.parse(@origin).host
+        @client = WebAuthn::FakeClient.new(@origin, encoding: false)
+        WebauthnHelpers.create(
+          webauthn_credential: @webauthn_credential,
+          client: @client
+        )
+        post(
+          :webauthn_create,
+          params: {
+            credentials:
+              WebauthnHelpers.get_result(
+                client: @client,
+                challenge: @challenge
+              )
+          },
+          format: :json
+        )
+      end
+
+      should respond_with :unauthorized
     end
   end
 end
