@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require_relative "../config/environment"
+
+@gems = []
+
+def add_dependencies(gem)
+  return if gem.latest_version.nil? # for old gems eg. https://rubygems.org/gems/eco-source
+  return if gem.latest_version.dependencies.blank?
+  gem.latest_version.dependencies.where(unresolved_name: nil).each do |dependency|
+    next if @gems.include?(dependency.rubygem)
+    @gems << dependency.rubygem
+    puts dependency.rubygem
+    add_dependencies(dependency.rubygem)
+  end
+end
+
+top_100 = Rubygem.by_downloads.limit(100)
+
+top_100.each do |rubygem|
+  @gems << rubygem
+  puts rubygem
+  add_dependencies(rubygem)
+end
+
+puts @gems.uniq.count
