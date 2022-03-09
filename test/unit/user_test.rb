@@ -398,6 +398,22 @@ class UserTest < ActiveSupport::TestCase
         refute user.mfa_recommended?
       end
     end
+
+    context "mfa required" do
+      should "be false" do
+        user = create(:user)
+        my_rubygem = create(:rubygem)
+        create(:ownership, user: user, rubygem: my_rubygem)
+        assert_equal [my_rubygem], user.rubygems
+
+        GemDownload.increment(
+          Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
+          rubygem_id: my_rubygem.id
+        )
+
+        refute user.mfa_required?
+      end
+    end
   end
 
   context ".without_mfa" do

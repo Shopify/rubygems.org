@@ -236,7 +236,17 @@ class User < ApplicationRecord
 
   def mfa_recommended?
     return false if strong_mfa_level?
-    rubygems.any?(&:mfa_recommended?)
+    rubygems.any? { |gem| gem.mfa_recommended? && !gem.surpassed_mfa_required_threshold? }
+  end
+
+  def mfa_required?
+    return false if strong_mfa_level?
+
+    rubygems.any?(&:surpassed_mfa_required_threshold?)
+  end
+
+  def strong_mfa_level?
+    mfa_level == 'ui_and_gem_signin' || mfa_level == 'ui_and_api'
   end
 
   def otp_verified?(otp)

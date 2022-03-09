@@ -895,6 +895,18 @@ class RubygemTest < ActiveSupport::TestCase
     end
   end
 
+  context "#surpassed_mfa_required_threshold?" do
+    should "be false because the threshold does not exist yet" do
+      rubygem = create(:rubygem)
+      GemDownload.increment(
+        Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
+        rubygem_id: rubygem.id
+      )
+
+      refute rubygem.surpassed_mfa_required_threshold?
+    end
+  end
+
   context "#mfa_requirement_satisfied_for?" do
     setup do
       @rubygem = create(:rubygem)

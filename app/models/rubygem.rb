@@ -328,7 +328,12 @@ class Rubygem < ApplicationRecord
   end
 
   def mfa_recommended?
-    downloads > MFA_RECOMMENDED_THRESHOLD
+    downloads > MFA_RECOMMENDED_THRESHOLD && !surpassed_mfa_required_threshold?
+  end
+
+  def surpassed_mfa_required_threshold?
+    # TODO: set this once we want this to be enforced
+    false
   end
 
   def mfa_requirement_satisfied_for?(user)
