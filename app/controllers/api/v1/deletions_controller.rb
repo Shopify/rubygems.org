@@ -11,10 +11,10 @@ class Api::V1::DeletionsController < Api::BaseController
     if @deletion.save
       StatsD.increment "yank.success"
       enqueue_web_hook_jobs(@version)
-      render plain: "Successfully deleted gem: #{@version.to_title}"
+      render plain: response_with_warnings("Successfully deleted gem: #{@version.to_title}")
     else
       StatsD.increment "yank.failure"
-      render plain: @deletion.errors.full_messages.to_sentence,
+      render plain: response_with_warnings(@deletion.errors.full_messages.to_sentence),
              status: :unprocessable_entity
     end
   end
@@ -23,10 +23,10 @@ class Api::V1::DeletionsController < Api::BaseController
 
   def validate_gem_and_version
     if !@rubygem.hosted?
-      render plain: t(:this_rubygem_could_not_be_found),
+      render plain: response_with_warnings(t(:this_rubygem_could_not_be_found)),
              status: :not_found
     elsif !@rubygem.owned_by?(@api_key.user)
-      render plain: "You do not have permission to delete this gem.",
+      render plain: response_with_warnings("You do not have permission to delete this gem."),
              status: :forbidden
     else
       begin
@@ -37,7 +37,7 @@ class Api::V1::DeletionsController < Api::BaseController
                end
         @version = Version.find_from_slug!(@rubygem, slug)
       rescue ActiveRecord::RecordNotFound
-        render plain: "The version #{params[:version]} does not exist.",
+        render plain: response_with_warnings("The version #{params[:version]} does not exist."),
                status: :not_found
       end
     end

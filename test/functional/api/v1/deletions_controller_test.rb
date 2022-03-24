@@ -108,6 +108,100 @@ class Api::V1::DeletionsControllerTest < ActionController::TestCase
         end
       end
 
+      context "when mfa is recommended" do
+        setup do
+          User.any_instance.stubs(:mfa_recommended?).returns true
+
+          another_gem = create(:rubygem, name: "gem_owned_by_someone_else")
+          create(:version, rubygem: another_gem, number: "0.1.1", platform: "ruby")
+          v2 = create(:version, rubygem: @rubygem, number: "0.1.1", platform: "ruby")
+          Deletion.create!(user: @user, version: v2)
+
+          @gems = {
+            success: { name: @rubygem.to_param, version: @v1, deletion_status: :success },
+            already_deleted: { name: @rubygem.to_param, version: v2, deletion_status: :unprocessable_entity },
+            not_owned_gem: { name: another_gem.to_param, version: @v1, deletion_status: :forbidden }
+          }
+        end
+
+        context "by user with mfa disabled" do
+          should "include mfa setup warning" do
+            @gems.each do |_, gem|
+              delete :create, params: { gem_name: gem[:name], version: gem[:version].number }
+
+              assert_response gem[:deletion_status]
+              mfa_warning = <<~WARN.chomp
+
+
+                [WARNING] For protection of your account and gems, we encourage you to set up multifactor authentication \
+                at https://rubygems.org/multifactor_auth/new. Your account will be required to have MFA enabled in the future.
+              WARN
+
+              assert_includes @response.body, mfa_warning
+            end
+          end
+        end
+
+        context "by user on `ui_only` mfa level" do
+          setup do
+            @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+          end
+
+          should "include change mfa level warning" do
+            @gems.each do |_, gem|
+              delete :create, params: { gem_name: gem[:name], version: gem[:version].number }
+
+              assert_response gem[:deletion_status]
+              mfa_warning = <<~WARN.chomp
+
+
+                [WARNING] For protection of your account and gems, we encourage you to change your multifactor authentication \
+                level to 'UI and gem signin' or 'UI and API' at https://rubygems.org/settings/edit. \
+                Your account will be required to have MFA enabled on one of these levels in the future.
+              WARN
+
+              assert_includes @response.body, mfa_warning
+            end
+          end
+        end
+
+        context "by user on `ui_and_gem_signin` mfa level" do
+          setup do
+            @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_gem_signin)
+          end
+
+          should "not include mfa warnings" do
+            @gems.each do |_, gem|
+              @request.env["HTTP_OTP"] = ROTP::TOTP.new(@user.mfa_seed).now
+              delete :create, params: { gem_name: gem[:name], version: gem[:version].number }
+
+              assert_response gem[:deletion_status]
+              mfa_warning = "[WARNING] For protection of your account and gems"
+
+              refute_includes @response.body, mfa_warning
+            end
+          end
+        end
+
+        context "by user on `ui_and_api` mfa level" do
+          setup do
+            @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_api)
+          end
+
+          should "not include mfa warnings" do
+            @gems.each do |_, gem|
+              @request.env["HTTP_OTP"] = ROTP::TOTP.new(@user.mfa_seed).now
+              delete :create, params: { gem_name: gem[:name], version: gem[:version].number }
+
+              assert_response gem[:deletion_status]
+              mfa_warning = "[WARNING] For protection of your account and gems"
+
+              refute_includes @response.body, mfa_warning
+            end
+          end
+        end
+      end
+
       context "ON DELETE to create for existing gem version" do
         setup do
           create(:global_web_hook, user: @user, url: "http://example.org")
