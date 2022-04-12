@@ -34,6 +34,10 @@ class User < ApplicationRecord
   has_many :ownership_calls, -> { opened }, dependent: :destroy, inverse_of: :user
   has_many :ownership_requests, -> { opened }, dependent: :destroy, inverse_of: :user
 
+  has_many :access_grants, class_name: 'Doorkeeper::AccessGrant', foreign_key: :resource_owner_id, dependent: :destroy
+
+  has_many :access_tokens, class_name: 'Doorkeeper::AccessToken', foreign_key: :resource_owner_id, dependent: :destroy
+
   validates :email, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, format: { with: URI::MailTo::EMAIL_REGEXP }, presence: true
   validates :unconfirmed_email, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
 

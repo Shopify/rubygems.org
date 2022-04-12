@@ -10,6 +10,8 @@ gem "clearance"
 gem "dalli"
 gem "delayed_job"
 gem "delayed_job_active_record"
+gem "doorkeeper"
+gem 'doorkeeper-openid_connect'
 gem "gravtastic"
 gem "high_voltage"
 gem "honeybadger"
