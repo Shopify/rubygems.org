@@ -43,6 +43,7 @@ gem "rack-attack"
 gem "rqrcode"
 gem "rotp"
 gem "unpwn"
+gem "sorbet-runtime"
 
 # Logging
 gem "lograge"
@@ -59,10 +60,14 @@ group :development, :test do
   gem "toxiproxy", "~> 2.0.0"
   gem "webrick"
   gem "factory_bot_rails"
+  gem "sorbet"
+  gem "spoom"
+  gem "tapioca"
 
   gem "brakeman", require: false
   gem "rubocop", "~> 1.23", require: false
   gem "rubocop-rails", "~> 2.12", require: false
+  gem "rubocop-sorbet", require: false
   gem "rubocop-performance", "~> 1.12", require: false
   gem "rubocop-minitest", "~> 0.16", require: false
 end
