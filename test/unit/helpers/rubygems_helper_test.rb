@@ -1,7 +1,7 @@
 require "test_helper"
 
 class RubygemsHelperTest < ActionView::TestCase
-  include Rails.application.routes.url_helpers
+  T.unsafe(self).include Rails.application.routes.url_helpers
   include ApplicationHelper
   include ERB::Util
 
