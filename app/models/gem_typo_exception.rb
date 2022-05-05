@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class GemTypoException < ApplicationRecord
   validates :name, presence: true, uniqueness: { case_sensitive: false }
   validate :rubygems_name

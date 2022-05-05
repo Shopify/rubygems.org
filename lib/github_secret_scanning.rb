@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class GithubSecretScanning
   KEYS_URI = "https://api.github.com/meta/public_keys/secret_scanning".freeze
 

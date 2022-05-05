@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class ConfirmedUserGuard < Clearance::SignInGuard
   def call
     if user_unconfirmed?

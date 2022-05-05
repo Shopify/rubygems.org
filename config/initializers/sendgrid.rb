@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 if Rails.env.production? || Rails.env.staging?
   ActionMailer::Base.smtp_settings = {
     address:              'smtp.sendgrid.net',

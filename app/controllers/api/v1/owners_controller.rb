@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class Api::V1::OwnersController < Api::BaseController
   before_action :authenticate_with_api_key, except: %i[show gems]
   before_action :find_rubygem, except: :gems

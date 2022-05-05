@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class HomeController < ApplicationController
   def index
     @downloads_count = GemDownload.total_count

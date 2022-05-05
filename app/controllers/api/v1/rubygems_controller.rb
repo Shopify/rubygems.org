@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class Api::V1::RubygemsController < Api::BaseController
   before_action :authenticate_with_api_key, except: %i[show reverse_dependencies]
   before_action :find_rubygem,              only: %i[show reverse_dependencies]

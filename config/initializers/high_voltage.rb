@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 HighVoltage.configure do |config|
   config.routes = false
 end

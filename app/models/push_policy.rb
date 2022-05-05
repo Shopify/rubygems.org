@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 PushPolicy = Gem::Security::Policy.new(
   "Push Policy",
   verify_data:   true,

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # TODO: add feature to statsd-instrument for default tags
 class StatsD::Instrument::Metric
   def self.normalize_tags(tags)

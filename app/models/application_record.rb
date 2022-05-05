@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 end

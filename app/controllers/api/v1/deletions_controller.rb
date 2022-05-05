@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class Api::V1::DeletionsController < Api::BaseController
   before_action :authenticate_with_api_key
   before_action :find_rubygem_by_name

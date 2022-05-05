@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class ApiKeysController < ApplicationController
   include ApiKeyable
   before_action :redirect_to_signin, unless: :signed_in?

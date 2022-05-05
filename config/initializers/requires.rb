@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 require 'rubygems/package'
 require 'rubygems/indexer'
 require 'rdoc/markup'

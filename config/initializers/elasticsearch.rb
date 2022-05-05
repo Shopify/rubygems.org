@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 require 'faraday_middleware/aws_sigv4'
 
 port = 9200

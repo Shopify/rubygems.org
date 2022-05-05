@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class AdoptionsController < ApplicationController
   before_action :find_rubygem
   before_action :verify_ownership_requestable

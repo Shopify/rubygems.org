@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class MailerPreview < ActionMailer::Preview
   def email_reset
     Mailer.email_reset(User.first)

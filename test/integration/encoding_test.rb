@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 require "test_helper"
 
 class EncodingTest < ActionDispatch::IntegrationTest
