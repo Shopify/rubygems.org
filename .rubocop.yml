@@ -4,6 +4,7 @@ require:
   - rubocop-performance
   - rubocop-rails
   - rubocop-minitest
+  - rubocop-sorbet
 
 AllCops:
   Exclude:
