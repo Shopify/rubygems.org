@@ -1,3 +1,4 @@
+# typed: false
 class PasswordsController < Clearance::PasswordsController
   before_action :validate_confirmation_token, only: %i[edit mfa_edit]
 

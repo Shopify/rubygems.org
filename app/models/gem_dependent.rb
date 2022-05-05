@@ -1,3 +1,4 @@
+# typed: false
 class GemDependent
   extend StatsD::Instrument
   DepKey = Struct.new(:name, :number, :platform)

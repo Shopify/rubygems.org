@@ -1,3 +1,4 @@
+# typed: false
 if Rails.env.production? || Rails.env.staging?
   require_relative "../../lib/lograge/formatters/datadog"
 

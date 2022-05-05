@@ -1,3 +1,4 @@
+# typed: false
 require "tasks/helpers/gemcutter_tasks_helper"
 
 namespace :gemcutter do

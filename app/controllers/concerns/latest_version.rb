@@ -1,3 +1,4 @@
+# typed: false
 module LatestVersion
   extend ActiveSupport::Concern
 

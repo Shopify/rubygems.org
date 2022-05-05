@@ -1,3 +1,4 @@
+# typed: false
 namespace :memcached do
   desc "Flushes memcached cache"
   task flush: :environment do

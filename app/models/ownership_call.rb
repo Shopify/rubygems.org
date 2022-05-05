@@ -1,3 +1,4 @@
+# typed: false
 class OwnershipCall < ApplicationRecord
   belongs_to :rubygem
   belongs_to :user

@@ -1,3 +1,4 @@
+# typed: false
 namespace :dependency do
   desc "Update dependencies to reset rubygem_id where rubygem_id is dangling"
   task dangling_rubygem_id_purge: :environment do

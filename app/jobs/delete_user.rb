@@ -1,3 +1,4 @@
+# typed: false
 class DeleteUser
   attr_reader :user
 

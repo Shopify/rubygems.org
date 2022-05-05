@@ -1,3 +1,4 @@
+# typed: false
 module EmailHelpers
   def last_email_link
     Delayed::Worker.new.work_off

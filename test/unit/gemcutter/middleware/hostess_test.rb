@@ -1,3 +1,4 @@
+# typed: false
 require "test_helper"
 require_relative "../../../../lib/gemcutter/middleware/hostess"
 

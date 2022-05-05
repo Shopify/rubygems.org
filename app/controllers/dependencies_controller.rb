@@ -1,3 +1,4 @@
+# typed: false
 class DependenciesController < ApplicationController
   include LatestVersion
   before_action :find_rubygem, only: [:show]

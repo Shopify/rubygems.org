@@ -1,3 +1,4 @@
+# typed: false
 class Links
   # Links available for indexed gems
   LINKS = {

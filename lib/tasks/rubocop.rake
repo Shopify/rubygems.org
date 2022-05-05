@@ -1,3 +1,4 @@
+# typed: false
 begin
   require "rubocop"
   require "rubocop/rake_task"

@@ -1,3 +1,4 @@
+# typed: false
 class UsersController < Clearance::UsersController
   def new
     @user = user_from_params

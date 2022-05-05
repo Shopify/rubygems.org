@@ -1,3 +1,4 @@
+# typed: false
 class EmailConfirmationsController < ApplicationController
   before_action :redirect_to_signin, unless: :signed_in?, only: :unconfirmed
   before_action :validate_confirmation_token, only: %i[update mfa_update]

@@ -1,3 +1,4 @@
+# typed: false
 class Mailer < ApplicationMailer
   include Roadie::Rails::Automatic
 

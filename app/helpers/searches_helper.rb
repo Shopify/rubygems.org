@@ -1,3 +1,4 @@
+# typed: false
 module SearchesHelper
   def es_suggestions(gems)
     return false if gems.size >= 1

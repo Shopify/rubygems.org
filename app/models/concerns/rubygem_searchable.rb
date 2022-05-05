@@ -1,3 +1,4 @@
+# typed: false
 module RubygemSearchable
   extend ActiveSupport::Concern
 

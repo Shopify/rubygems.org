@@ -1,3 +1,4 @@
+# typed: false
 class ApiKey < ApplicationRecord
   API_SCOPES = %i[index_rubygems push_rubygem yank_rubygem add_owner remove_owner access_webhooks show_dashboard].freeze
 

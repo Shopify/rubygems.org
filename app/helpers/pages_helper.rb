@@ -1,3 +1,4 @@
+# typed: false
 module PagesHelper
   def version_number
     version&.number || "0.0.0"

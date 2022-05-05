@@ -1,3 +1,4 @@
+# typed: false
 class Api::V1::ApiKeysController < Api::BaseController
   include ApiKeyable
 

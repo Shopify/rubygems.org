@@ -1,3 +1,4 @@
+# typed: false
 class WebHook < ApplicationRecord
   GLOBAL_PATTERN = "*".freeze
 

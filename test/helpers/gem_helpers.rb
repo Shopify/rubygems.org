@@ -1,3 +1,4 @@
+# typed: false
 module GemHelpers
   def gem_specification_from_gem_fixture(name)
     Gem::Package.new(File.join("test", "gems", "#{name}.gem")).spec

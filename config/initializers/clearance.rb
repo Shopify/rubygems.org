@@ -1,3 +1,4 @@
+# typed: false
 require_relative "../../lib/confirmed_user_guard"
 
 Clearance.configure do |config|

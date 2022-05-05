@@ -1,3 +1,4 @@
+# typed: false
 module AdoptionHelpers
   def visit_rubygem_adoptions_path(rubygem, user)
     visit rubygem_adoptions_path(rubygem, as: user)

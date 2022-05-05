@@ -1,3 +1,4 @@
+# typed: false
 class CertificateChainSerializer
   PATTERN = /-----BEGIN CERTIFICATE-----(?:.|\n)+?-----END CERTIFICATE-----/
 

@@ -1,3 +1,4 @@
+# typed: false
 module ApplicationHelper
   def page_title
     combo = "#{t :title} | #{t :subtitle}"

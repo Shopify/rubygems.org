@@ -1,3 +1,4 @@
+# typed: false
 class Rack::Attack
   REQUEST_LIMIT = 100
   EXP_BASE_REQUEST_LIMIT = 300

@@ -1,3 +1,4 @@
+# typed: false
 require Rails.root.join("config", "secret") if Rails.root.join("config", "secret.rb").file?
 require_relative "../../lib/gemcutter/middleware/redirector"
 require "active_support/core_ext/integer/time"

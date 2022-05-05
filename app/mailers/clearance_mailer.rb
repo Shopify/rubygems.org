@@ -1,3 +1,4 @@
+# typed: false
 class ClearanceMailer < ApplicationMailer
   include Roadie::Rails::Automatic
 

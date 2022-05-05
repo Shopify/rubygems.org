@@ -1,3 +1,4 @@
+# typed: false
 class Api::V2::VersionsController < Api::BaseController
   before_action :find_rubygem_by_name, only: [:show]
 

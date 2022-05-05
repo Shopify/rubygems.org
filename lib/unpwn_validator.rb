@@ -1,3 +1,4 @@
+# typed: false
 require "unpwn"
 
 class UnpwnValidator < ActiveModel::EachValidator

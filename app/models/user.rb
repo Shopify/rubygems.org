@@ -1,3 +1,4 @@
+# typed: false
 class User < ApplicationRecord
   include Clearance::User
   include Gravtastic

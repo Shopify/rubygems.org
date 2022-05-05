@@ -1,3 +1,4 @@
+# typed: false
 module GemcutterTaskshelper
   module_function
 

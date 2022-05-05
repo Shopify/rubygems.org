@@ -1,3 +1,4 @@
+# typed: false
 module Gemcutter::Middleware
   class Redirector
     def initialize(app)

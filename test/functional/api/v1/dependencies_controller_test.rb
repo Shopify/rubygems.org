@@ -1,3 +1,4 @@
+# typed: false
 require "test_helper"
 
 class Api::V1::DependenciesControllerTest < ActionController::TestCase

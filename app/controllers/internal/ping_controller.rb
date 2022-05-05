@@ -1,3 +1,4 @@
+# typed: false
 class Internal::PingController < ApplicationController
   def index
     render plain: "PONG"

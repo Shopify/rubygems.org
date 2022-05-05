@@ -1,3 +1,4 @@
+# typed: false
 OwnershipConfirmationMailer = Struct.new(:ownership_id) do
   def perform
     ownership = Ownership.find_by(id: ownership_id)

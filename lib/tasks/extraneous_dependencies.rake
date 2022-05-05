@@ -1,3 +1,4 @@
+# typed: false
 require "tasks/helpers/compact_index_tasks_helper"
 
 namespace :extraneous_dependencies do

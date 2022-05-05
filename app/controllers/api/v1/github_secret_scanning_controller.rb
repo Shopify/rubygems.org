@@ -1,3 +1,4 @@
+# typed: false
 class Api::V1::GithubSecretScanningController < Api::BaseController
   include ApiKeyable
 

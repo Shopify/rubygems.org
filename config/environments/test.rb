@@ -1,3 +1,4 @@
+# typed: false
 require_relative "../../lib/gemcutter/middleware/redirector"
 require "active_support/core_ext/integer/time"
 

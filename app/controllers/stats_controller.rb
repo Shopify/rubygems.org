@@ -1,3 +1,4 @@
+# typed: false
 class StatsController < ApplicationController
   before_action -> { set_page Gemcutter::STATS_MAX_PAGES }
 

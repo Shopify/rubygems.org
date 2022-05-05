@@ -1,3 +1,4 @@
+# typed: false
 class GemCachePurger
   def self.call(gem_name)
     # We need to purge from Fastly and from Memcached

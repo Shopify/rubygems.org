@@ -1,3 +1,4 @@
+# typed: false
 class Rubygem < ApplicationRecord
   include Patterns
   include RubygemSearchable

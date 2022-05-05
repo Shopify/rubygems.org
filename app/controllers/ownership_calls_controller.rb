@@ -1,3 +1,4 @@
+# typed: false
 class OwnershipCallsController < ApplicationController
   before_action :find_rubygem, except: :index
   before_action :redirect_to_signin, unless: :signed_in?, except: :index

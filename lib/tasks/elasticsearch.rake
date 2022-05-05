@@ -1,3 +1,4 @@
+# typed: false
 require "elasticsearch/rails/tasks/import"
 
 namespace :elasticsearch do

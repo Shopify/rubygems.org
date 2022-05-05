@@ -1,3 +1,4 @@
+# typed: false
 require "digest/sha2"
 
 class Pusher

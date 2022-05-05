@@ -1,3 +1,4 @@
+# typed: false
 class SubscriptionsController < ApplicationController
   before_action :find_rubygem
 

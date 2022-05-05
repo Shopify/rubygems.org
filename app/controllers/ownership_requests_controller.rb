@@ -1,3 +1,4 @@
+# typed: false
 class OwnershipRequestsController < ApplicationController
   before_action :find_rubygem
   before_action :find_ownership_request, only: :update

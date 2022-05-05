@@ -1,3 +1,4 @@
+# typed: false
 require "test_helper"
 
 class I18nTest < ActionDispatch::IntegrationTest

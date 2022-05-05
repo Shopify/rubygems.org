@@ -1,3 +1,4 @@
+# typed: false
 module Lograge
   module Formatters
     class Datadog

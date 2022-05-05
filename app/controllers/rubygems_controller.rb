@@ -1,3 +1,4 @@
+# typed: false
 class RubygemsController < ApplicationController
   include LatestVersion
   before_action :set_reserved_gem, only: :show, if: :reserved?

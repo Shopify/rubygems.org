@@ -1,3 +1,4 @@
+# typed: false
 class GemTypo
   DOWNLOADS_THRESHOLD = 10_000
   LAST_RELEASE_TIME   = 5.years.ago

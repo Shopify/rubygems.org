@@ -1,3 +1,4 @@
+# typed: false
 class Dependency < ApplicationRecord
   belongs_to :rubygem, optional: true
   belongs_to :version

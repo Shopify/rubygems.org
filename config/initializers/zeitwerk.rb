@@ -1,3 +1,4 @@
+# typed: false
 # ignore rake tasks because don't need to autoload them
 Rails.autoloaders.main.ignore(Rails.root.join("lib/tasks"))
 

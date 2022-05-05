@@ -1,3 +1,4 @@
+# typed: false
 require "tempfile"
 require "test_helper"
 

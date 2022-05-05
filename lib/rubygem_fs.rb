@@ -1,3 +1,4 @@
+# typed: false
 require "aws-sdk-s3"
 
 module RubygemFs

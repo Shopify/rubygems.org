@@ -1,3 +1,4 @@
+# typed: false
 module Patterns
   extend ActiveSupport::Concern
 

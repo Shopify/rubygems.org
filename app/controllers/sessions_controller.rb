@@ -1,3 +1,4 @@
+# typed: false
 class SessionsController < Clearance::SessionsController
   before_action :redirect_to_signin, unless: :signed_in?, only: %i[verify authenticate]
   before_action :ensure_not_blocked, only: :create

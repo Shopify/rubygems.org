@@ -1,3 +1,4 @@
+# typed: false
 require_relative "../../lib/gemcutter/middleware/hostess"
 require "active_support/core_ext/integer/time"
 

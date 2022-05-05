@@ -1,3 +1,4 @@
+# typed: false
 require "resolv"
 
 def mx_exists?(email)

@@ -1,3 +1,4 @@
+# typed: false
 class Indexer
   extend StatsD::Instrument
 

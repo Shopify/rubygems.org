@@ -1,3 +1,4 @@
+# typed: false
 require "test_helper"
 require_relative "../../lib/shoryuken/sqs_worker"
 

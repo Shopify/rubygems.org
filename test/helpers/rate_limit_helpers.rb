@@ -1,3 +1,4 @@
+# typed: false
 module RateLimitHelpers
   def exceeding_limit
     (Rack::Attack::REQUEST_LIMIT * 1.25).to_i

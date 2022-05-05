@@ -1,3 +1,4 @@
+# typed: false
 class OwnersController < ApplicationController
   before_action :find_rubygem, except: :confirm
   before_action :render_forbidden, unless: :owner?, except: %i[confirm resend_confirmation]

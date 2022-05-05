@@ -1,3 +1,4 @@
+# typed: false
 class Subscription < ApplicationRecord
   belongs_to :rubygem
   belongs_to :user

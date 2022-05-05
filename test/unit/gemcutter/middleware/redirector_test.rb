@@ -1,3 +1,4 @@
+# typed: false
 require "test_helper"
 
 class Gemcutter::Middleware::RedirectorTest < ActiveSupport::TestCase

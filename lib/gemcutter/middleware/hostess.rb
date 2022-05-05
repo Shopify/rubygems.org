@@ -1,3 +1,4 @@
+# typed: false
 module Gemcutter::Middleware
   class Hostess < Rack::Static
     def initialize(app, options = {})

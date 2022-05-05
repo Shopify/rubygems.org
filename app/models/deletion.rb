@@ -1,3 +1,4 @@
+# typed: false
 class Deletion < ApplicationRecord
   belongs_to :user
 

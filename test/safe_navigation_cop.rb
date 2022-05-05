@@ -1,3 +1,4 @@
+# typed: false
 class RuboCop::Cop::Style::CustomSafeNavigationCop < RuboCop::Cop::Cop
   MSG = "Use ruby safe navigation opetator (&.) instead of try".freeze
 

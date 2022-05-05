@@ -1,3 +1,4 @@
+# typed: false
 class Api::V1::DependenciesController < Api::BaseController
   before_action :check_gem_count
 

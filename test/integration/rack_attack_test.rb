@@ -1,3 +1,4 @@
+# typed: false
 require "test_helper"
 require "helpers/rate_limit_helpers"
 

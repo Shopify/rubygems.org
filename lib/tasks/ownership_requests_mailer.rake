@@ -1,3 +1,4 @@
+# typed: false
 namespace :ownership_request_notification do
   desc "Send email notification about ownership requests to the owners"
   task send: :environment do

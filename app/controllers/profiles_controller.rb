@@ -1,3 +1,4 @@
+# typed: false
 class ProfilesController < ApplicationController
   before_action :redirect_to_signin, unless: :signed_in?, except: :show
   before_action :verify_password, only: %i[update destroy]
