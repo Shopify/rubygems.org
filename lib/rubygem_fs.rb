@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 require "aws-sdk-s3"
 
 module RubygemFs
@@ -20,9 +20,6 @@ module RubygemFs
                             secret_access_key: "s",
                             endpoint: host,
                             force_path_style: true)
-    @fs.define_singleton_method(:init) do
-      s3.create_bucket(bucket: bucket)
-    end
     @fs.init
   end
 
@@ -62,6 +59,10 @@ module RubygemFs
         region: Gemcutter.config["s3_region"],
         endpoint: "https://#{Gemcutter.config['s3_endpoint']}"
       }.merge(config)
+    end
+
+    def init
+      s3.create_bucket(bucket: bucket)
     end
 
     def store(key, body, metadata = {})
