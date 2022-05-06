@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 require "net/http"
 
 class Net::HTTP::Purge < Net::HTTPRequest
@@ -9,8 +9,9 @@ end
 
 class Fastly
   def self.purge(options = {})
-    return unless ENV["FASTLY_DOMAINS"]
-    ENV["FASTLY_DOMAINS"].split(",").each do |domain|
+    fastly_domains = ENV["FASTLY_DOMAINS"]
+    return unless fastly_domains
+    fastly_domains.split(",").each do |domain|
       url = "https://#{domain}/#{options[:path]}"
       headers = options[:soft] ? { "Fastly-Soft-Purge" => 1 } : {}
       headers["Fastly-Key"] = ENV["FASTLY_API_KEY"]
