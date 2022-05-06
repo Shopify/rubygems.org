@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 class ElasticSearcher
   def initialize(query, page: 1)
     @query  = query
