@@ -17,7 +17,11 @@ $(function() {
     } else {
       gemScopeSelector.val("");
       gemScopeSelector.prop("disabled", true);
-      addHiddenRubygemField();
+      if (!hiddenRubygemFieldExists()) addHiddenRubygemField();
+    }
+
+    function hiddenRubygemFieldExists() {
+      return $("#" + hiddenRubygemId).length
     }
   }
 
