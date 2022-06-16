@@ -1,9 +1,22 @@
 require "test_helper"
 
 class MultifactorAuthableTest < ActiveSupport::TestCase
+  class MultifactorAuthableThing < ApplicationRecord
+    self.table_name = :multifactor_authable_things
+    include MultifactorAuthable
+  end
+
   setup do
-    @multifactor_authable_class = User
-    @multifactor_authable = create(@multifactor_authable_class.name.underscore.to_sym)
+    ActiveRecord::Migration.suppress_messages do
+      ActiveRecord::Migration.create_table :multifactor_authable_things do |t|
+        t.string "mfa_seed"
+        t.integer "mfa_level", default: 0
+        t.string "mfa_recovery_codes", default: [], array: true
+      end
+    end
+
+    @multifactor_authable_class = MultifactorAuthableThing
+    @multifactor_authable = @multifactor_authable_class.create
   end
 
   context "#mfa_enabled" do
@@ -118,62 +131,55 @@ class MultifactorAuthableTest < ActiveSupport::TestCase
     end
   end
 
-  context "#mfa_recommended_not_yet_enabled?" do
+  context "mfa recommended" do
     setup do
       @popular_rubygem = create(:rubygem)
       GemDownload.increment(
         Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
         rubygem_id: @popular_rubygem.id
       )
+      @multifactor_authable_gems = Rubygem.where(id: @popular_rubygem.id)
+      @multifactor_authable.stubs(:rubygems).returns(@multifactor_authable_gems)
     end
 
-    should "return true if instance owns a gem that exceeds recommended threshold and has mfa disabled" do
-      create(:ownership, user: @multifactor_authable, rubygem: @popular_rubygem)
+    context "#mfa_recommended_not_yet_enabled?" do
+      should "return true if instance owns a gem that exceeds recommended threshold and has mfa disabled" do
+        assert_predicate @multifactor_authable, :mfa_recommended_not_yet_enabled?
+      end
 
-      assert_predicate @multifactor_authable, :mfa_recommended_not_yet_enabled?
+      should "return false if instance owns a gem that exceeds recommended threshold and has mfa enabled" do
+        @multifactor_authable.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+
+        refute_predicate @multifactor_authable, :mfa_recommended_not_yet_enabled?
+      end
+
+      should "return false if instance does not own a gem that exceeds recommended threshold and has mfa disabled" do
+        @multifactor_authable.stubs(:rubygems).returns(Rubygem.where(id: create(:rubygem).id))
+
+        refute_predicate @multifactor_authable, :mfa_recommended_not_yet_enabled?
+      end
     end
 
-    should "return false if instance owns a gem that exceeds recommended threshold and has mfa enabled" do
-      create(:ownership, user: @multifactor_authable, rubygem: @popular_rubygem)
-      @multifactor_authable.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+    context "#mfa_recommended_weak_level_enabled?" do
+      setup do
+        @multifactor_authable.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+      end
 
-      refute_predicate @multifactor_authable, :mfa_recommended_not_yet_enabled?
-    end
+      should "return true if instance owns a gem that exceeds recommended threshold and has mfa ui_only" do
+        assert_predicate @multifactor_authable, :mfa_recommended_weak_level_enabled?
+      end
 
-    should "return false if instance does not own a gem that exceeds recommended threshold and has mfa disabled" do
-      create(:ownership, user: @multifactor_authable, rubygem: create(:rubygem))
+      should "return false if instance owns a gem that exceeds recommended threshold and has mfa disabled" do
+        @multifactor_authable.disable_mfa!
 
-      refute_predicate @multifactor_authable, :mfa_recommended_not_yet_enabled?
-    end
-  end
+        refute_predicate @multifactor_authable, :mfa_recommended_weak_level_enabled?
+      end
 
-  context "#mfa_recommended_weak_level_enabled?" do
-    setup do
-      @popular_rubygem = create(:rubygem)
-      GemDownload.increment(
-        Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
-        rubygem_id: @popular_rubygem.id
-      )
-      @multifactor_authable.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
-    end
+      should "return false if instance does not own a gem that exceeds recommended threshold and has mfa disabled" do
+        @multifactor_authable.stubs(:rubygems).returns(Rubygem.where(id: create(:rubygem).id))
 
-    should "return true if instance owns a gem that exceeds recommended threshold and has mfa ui_only" do
-      create(:ownership, user: @multifactor_authable, rubygem: @popular_rubygem)
-
-      assert_predicate @multifactor_authable, :mfa_recommended_weak_level_enabled?
-    end
-
-    should "return false if instance owns a gem that exceeds recommended threshold and has mfa disabled" do
-      create(:ownership, user: @multifactor_authable, rubygem: @popular_rubygem)
-      @multifactor_authable.disable_mfa!
-
-      refute_predicate @multifactor_authable, :mfa_recommended_weak_level_enabled?
-    end
-
-    should "return false if instance does not own a gem that exceeds recommended threshold and has mfa disabled" do
-      create(:ownership, user: @multifactor_authable, rubygem: create(:rubygem))
-
-      refute_predicate @multifactor_authable, :mfa_recommended_weak_level_enabled?
+        refute_predicate @multifactor_authable, :mfa_recommended_weak_level_enabled?
+      end
     end
   end
 
@@ -210,7 +216,7 @@ class MultifactorAuthableTest < ActiveSupport::TestCase
 
   context ".without_mfa" do
     setup do
-      create(@multifactor_authable_class.name.underscore.to_sym, mfa_level: :ui_and_api)
+      @multifactor_authable_class.new(mfa_level: :ui_and_api)
     end
 
     should "return instances without mfa" do
@@ -218,6 +224,12 @@ class MultifactorAuthableTest < ActiveSupport::TestCase
 
       assert_equal 1, multifactor_authable_without_mfa.size
       assert_equal @multifactor_authable, multifactor_authable_without_mfa.first
+    end
+  end
+
+  teardown do
+    ActiveRecord::Migration.suppress_messages do
+      ActiveRecord::Migration.drop_table :multifactor_authable_things
     end
   end
 end
