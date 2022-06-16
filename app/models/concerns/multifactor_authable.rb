@@ -54,6 +54,8 @@ module MultifactorAuthable
       save!(validate: false)
     end
 
+    private
+
     def strong_mfa_level?
       mfa_ui_and_gem_signin? || mfa_ui_and_api?
     end
