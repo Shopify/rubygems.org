@@ -11,4 +11,3 @@ exclude_patterns:
 - "**/tests/"
 - "**/vendor/"
 - "**/*.d.ts"
-- "app/models/user.rb"
