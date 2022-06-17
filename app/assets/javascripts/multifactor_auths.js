@@ -4,6 +4,16 @@ $(function () {
     e.returnValue = ""
   }
 
+function confirmNoRecoveryCopy (e, from) {
+  if (from == null){
+    e.preventDefault();
+    if (confirm("Leave without copying recovery codes?")) {
+      window.removeEventListener("beforeunload", popUp);
+      $(this).trigger('click', ["non-null"]);
+    }
+  }
+}
+
   var $RECOVERY_CODES = $("#recovery-codes--list")
   var COPY_ICON_SELECTOR = "#recovery-codes--copy-icon"
   var $COPY_ICON = $(COPY_ICON_SELECTOR)
@@ -13,6 +23,7 @@ $(function () {
 
   if ($RECOVERY_CODES.length > 0) {
     window.addEventListener("beforeunload", popUp)
+    $(".form__submit").on("click", confirmNoRecoveryCopy);
 
     new ClipboardJS(COPY_ICON_SELECTOR)
 
@@ -23,6 +34,7 @@ $(function () {
         e.preventDefault()
         $COPY_ICON.addClass("clicked")
         window.removeEventListener("beforeunload", popUp)
+        $(".form__submit").unbind("click", confirmNoRecoveryCopy);
       }
     })
 
