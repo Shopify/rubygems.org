@@ -7,13 +7,13 @@ class EmailConfirmationsController < ApplicationController
       @form_url = mfa_update_email_confirmations_url(token: @user.confirmation_token)
       render template: "multifactor_auths/otp_prompt"
     else
-      confirm_email_success
+      confirm_email
     end
   end
 
   def mfa_update
     if @user.mfa_enabled? && @user.otp_verified?(params[:otp])
-      confirm_email_success
+      confirm_email
     else
       @form_url       = mfa_update_email_confirmations_url(token: @user.confirmation_token)
       flash.now.alert = t("multifactor_auths.incorrect_otp")
@@ -53,17 +53,24 @@ class EmailConfirmationsController < ApplicationController
   end
 
   def validate_confirmation_token
-    @user = User.find_by(confirmation_token: params[:token])
+    @user = User.find_by(confirmation_token: token_params)
     redirect_to root_path, alert: t("failure_when_forbidden") unless @user&.valid_confirmation_token?
   end
 
-  def confirm_email_success
-    @user.confirm_email!
-    sign_in @user
-    redirect_to root_path, notice: t("email_confirmations.update.confirmed_email")
+  def confirm_email
+    if @user.confirm_email!
+      sign_in @user
+      redirect_to root_path, notice: t("email_confirmations.update.confirmed_email")
+    else
+      redirect_to root_path, alert: @user.errors.full_messages.to_sentence
+    end
   end
 
   def email_params
-    params.require(:email_confirmation).permit(:email).fetch(:email, "")
+    params.permit(email_confirmation: :email).require(:email_confirmation).require(:email)
+  end
+
+  def token_params
+    params.permit(:token).require(:token)
   end
 end

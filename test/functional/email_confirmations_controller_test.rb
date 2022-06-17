@@ -28,6 +28,17 @@ class EmailConfirmationsControllerTest < ActionController::TestCase
       end
     end
 
+    context "array of tokens" do
+      setup do
+        get :update, params: { token: [@user.confirmation_token, Clearance::Token.new, Clearance::Token.new] }
+      end
+
+      should respond_with :bad_request
+      should "not sign in user" do
+        refute cookies[:remember_token]
+      end
+    end
+
     context "token has expired" do
       setup do
         @user.update_attribute("token_expires_at", 2.minutes.ago)
@@ -42,6 +53,36 @@ class EmailConfirmationsControllerTest < ActionController::TestCase
       end
     end
 
+    context "mutliple user has same unconfirmed email" do
+      setup do
+        @email = "some@email.com"
+        @user.update_attribute(:unconfirmed_email, @email)
+        @second_user = create(:user, unconfirmed_email: @email)
+        get :update, params: { token: @user.confirmation_token }
+      end
+
+      should redirect_to("the homepage") { root_url }
+
+      should "confirm email for first user" do
+        assert_equal @email, @user.reload.email
+      end
+
+      context "second user sends confirmation request" do
+        setup do
+          get :update, params: { token: @second_user.confirmation_token }
+        end
+
+        should "show error to second user on confirmation request and not " do
+          assert_equal "Email address has already been taken", flash[:alert]
+        end
+
+        should "not confirm email for first user" do
+          assert_predicate @second_user, :unconfirmed_email?
+          refute_equal @email, @second_user.reload.email
+        end
+      end
+    end
+
     context "user has mfa enabled" do
       setup do
         @user.mfa_ui_only!
@@ -50,7 +91,7 @@ class EmailConfirmationsControllerTest < ActionController::TestCase
 
       should respond_with :success
       should "display otp form" do
-        assert page.has_content?("Multi-Factor Authentication")
+        assert page.has_content?("Multi-factor authentication")
       end
     end
   end
@@ -122,6 +163,13 @@ class EmailConfirmationsControllerTest < ActionController::TestCase
 
       should "promise to send email if account exists" do
         assert_equal "We will email you confirmation link to activate your account if one exists.", flash[:notice]
+      end
+    end
+
+    context "invalid params" do
+      should "fail friendly" do
+        post :create, params: { email_confirmation: "ABC" }
+        assert_response 400 # bad status raised by strong params
       end
     end
 

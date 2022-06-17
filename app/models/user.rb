@@ -69,18 +69,22 @@ class User < ApplicationRecord
   end
 
   def self.find_by_slug!(slug)
+    raise ActiveRecord::RecordNotFound if slug.blank?
     find_by(id: slug) || find_by!(handle: slug)
   end
 
   def self.find_by_slug(slug)
+    return if slug.blank?
     find_by(id: slug) || find_by(handle: slug)
   end
 
   def self.find_by_name(name)
+    return if name.blank?
     find_by(email: name) || find_by(handle: name)
   end
 
   def self.find_by_blocked(slug)
+    return if slug.blank?
     find_by(blocked_email: slug) || find_by(handle: slug)
   end
 
@@ -164,7 +168,7 @@ class User < ApplicationRecord
   end
 
   def confirm_email!
-    update_email! if unconfirmed_email
+    return false if unconfirmed_email && !update_email
     update!(email_confirmed: true, confirmation_token: nil)
   end
 
@@ -226,9 +230,27 @@ class User < ApplicationRecord
     save!(validate: false)
   end
 
+  def strong_mfa_level?
+    mfa_ui_and_gem_signin? || mfa_ui_and_api?
+  end
+
   def mfa_gem_signin_authorized?(otp)
-    return true unless mfa_ui_and_gem_signin? || mfa_ui_and_api?
+    return true unless strong_mfa_level?
     otp_verified?(otp)
+  end
+
+  def mfa_recommended?
+    return false if strong_mfa_level?
+
+    rubygems.mfa_recommended.any?
+  end
+
+  def mfa_recommended_not_yet_enabled?
+    mfa_recommended? && mfa_disabled?
+  end
+
+  def mfa_recommended_weak_level_enabled?
+    mfa_recommended? && mfa_ui_only?
   end
 
   def otp_verified?(otp)
@@ -270,9 +292,9 @@ class User < ApplicationRecord
     save!(validate: false)
   end
 
-  def update_email!
+  def update_email
     self.attributes = { email: unconfirmed_email, unconfirmed_email: nil, mail_fails: 0 }
-    save!(validate: false)
+    save
   end
 
   def unconfirmed_email_uniqueness

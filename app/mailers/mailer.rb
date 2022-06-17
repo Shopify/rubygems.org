@@ -65,7 +65,7 @@ class Mailer < ApplicationMailer
     @user = User.find(user_id)
 
     mail to: @user.email,
-      subject: "Please consider enabling Multi-Factor Authentication for your account"
+      subject: "Please consider enabling Multi-factor Authentication for your account"
   end
 
   def gem_yanked(yanked_by_user_id, version_id, notified_user_id)

@@ -57,6 +57,7 @@ zh-CN:
   api_keys:
     create:
       success:
+      invalid_gem:
     destroy:
       success:
     index:
@@ -64,6 +65,7 @@ zh-CN:
       name:
       scopes:
       age:
+      gem:
       last_access:
       action:
       delete:
@@ -84,14 +86,22 @@ zh-CN:
       new_api_key:
       multifactor_auth:
       enable_mfa:
+      rubygem_scope:
+      rubygem_scope_info:
     reset:
       success:
     update:
       success:
+      invalid_gem:
     edit:
       edit_api_key:
       multifactor_auth:
       enable_mfa:
+      rubygem_scope:
+      rubygem_scope_info:
+      invalid_key:
+    all_gems:
+    gem_ownership_removed:
   clearance_mailer:
     change_password:
       title:
@@ -284,6 +294,8 @@ zh-CN:
     otp_code: OTP 码
     require_mfa_disabled: 你的多重要素验证已启用，请先停用。
     require_mfa_enabled: 你的多重要素验证已停用，请先启用。
+    setup_recommended:
+    strong_mfa_level_recommended:
     new:
       title: 启用多重要素验证
       scan_prompt: 请用你的验证装置扫描 QR-code。如果你没办法扫描，手动输入下面的资料。
@@ -436,8 +448,8 @@ zh-CN:
         wiki: Wiki
         resend_ownership_confirmation:
         ownership:
-    blacklisted:
-      blacklisted_namespace:
+    reserved:
+      reserved_namespace:
     dependencies:
       header: "%{title} 依赖关系"
     gem_members:

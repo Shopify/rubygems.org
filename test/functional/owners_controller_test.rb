@@ -112,8 +112,8 @@ class OwnersControllerTest < ActionController::TestCase
             should respond_with :forbidden
 
             should "show error message" do
-              expected_alert = "The gem has Multi-Factor Authentication " \
-                               "requirement enabled, please setup Multi-Factor Authentication " \
+              expected_alert = "The gem has multi-factor authentication " \
+                               "requirement enabled, please setup multi-factor authentication " \
                                "on your account."
               assert_equal expected_alert, flash[:alert]
             end
@@ -235,8 +235,8 @@ class OwnersControllerTest < ActionController::TestCase
             should respond_with :forbidden
 
             should "show error message" do
-              expected_alert = "The gem has Multi-Factor Authentication " \
-                               "requirement enabled, please setup Multi-Factor Authentication " \
+              expected_alert = "The gem has multi-factor authentication " \
+                               "requirement enabled, please setup multi-factor authentication " \
                                "on your account."
               assert_equal expected_alert, flash[:alert]
             end
@@ -392,13 +392,13 @@ class OwnersControllerTest < ActionController::TestCase
         end
 
         should "confirm ownership" do
-          assert @ownership.confirmed?
+          assert_predicate @ownership, :confirmed?
           assert redirect_to("rubygem show") { rubygem_path(@rubygem) }
           assert_equal "You were added as an owner to #{@rubygem.name} gem", flash[:notice]
         end
 
         should "not sign in the user" do
-          refute @controller.request.env[:clearance].signed_in?
+          refute_predicate @controller.request.env[:clearance], :signed_in?
         end
 
         should "send email notifications about new owner" do
@@ -416,14 +416,14 @@ class OwnersControllerTest < ActionController::TestCase
 
       context "when token has expired" do
         setup do
-          travel_to Time.current + 3.days
+          travel_to 3.days.from_now
           get :confirm, params: { rubygem_id: @rubygem.name, token: @ownership.token }
         end
 
         should "warn about invalid token" do
           assert respond_with :success
           assert_equal "The confirmation token has expired. Please try resending the token from the gem page.", flash[:alert]
-          assert @ownership.unconfirmed?
+          assert_predicate @ownership, :unconfirmed?
         end
 
         should "not send email notification about owner added" do

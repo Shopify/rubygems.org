@@ -121,7 +121,8 @@ Follow the instructions below on how to install Bundler and setup the database.
 
 * Start elasticsearch: `elasticsearch`
 * Start memcached: `memcached`
-* Run the tests: `bundle exec rake`
+* Run the tests: `bin/rails test`
+* See the [rails documentation](https://guides.rubyonrails.org/testing.html) for more testing options.
 
 #### Confirmation emails links
 
@@ -161,12 +162,12 @@ can try running:
 directory. The proper directory will be full of .gem files.
 
 #### Getting the data dumps
-* You can use rubygems.org data [dumps](https://rubygems.org/pages/data) to test
-application in development environment especially for performance related issues.
-* To load the main database dump into Postgres, use `script/load-pg-dump`. e.g.
+* You can use rubygems.org data [dumps](https://rubygems.org/pages/data) to test the
+application in a development environment, especially for performance-related issues.
+* To load the main database dump into Postgres, use the `script/load-pg-dump` script. e.g.
 
     ``` bash
-    $ ./script/load-pg-dump -d rubygems_development
+    $ ./script/load-pg-dump -d rubygems_development ~/Downloads/public_postgresql.tar
     ```
 
 #### Pushing gems
@@ -188,3 +189,8 @@ Database Layout
 Courtesy of [Rails ERD](https://voormedia.github.io/rails-erd/)
 
 ![Rubygems.org Domain Model](https://cdn.rawgit.com/rubygems/rubygems.org/master/doc/erd.svg)
+
+Locales
+-------
+
+You can add the translations in `config/locales/en.yml` then use `bin/fill-locales` to fill the other locales with `nil` values for your translations.

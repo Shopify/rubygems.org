@@ -23,11 +23,11 @@ en:
   please_sign_up: Access Denied. Please sign up for an account at https://rubygems.org
   please_sign_in: Please sign in to continue.
   otp_incorrect: Your OTP code is incorrect. Please check it and retry.
-  otp_missing: You have enabled Multi-Factor Authentication but no OTP code provided. Please fill it and retry.
+  otp_missing: You have enabled multi-factor Authentication but no OTP code provided. Please fill it and retry.
   sign_in: Sign in
   sign_up: Sign up
   dependency_list: Show all transitive dependencies
-  multifactor_authentication: Multi-Factor Authentication
+  multifactor_authentication: Multi-factor authentication
   subtitle: your community gem host
   this_rubygem_could_not_be_found: This rubygem could not be found.
   time_ago: "%{duration} ago"
@@ -63,12 +63,14 @@ en:
   api_keys:
     create:
       success: "Created new API key"
+      invalid_gem: Selected gem cannot be scoped to this key
     destroy:
       success: "Successfully deleted API key: %{name}"
     index:
       api_keys: API keys
       name: Name
       scopes: Scopes
+      gem: Gem
       age: Age
       last_access: Last access
       action: Action
@@ -85,19 +87,27 @@ en:
       show_dashboard: Show dashboard
       reset: Reset
       save_key: "Note that we won't be able to show the key to you again. New API key:"
-      mfa: Multi-Factor Authentication
+      mfa: Multi-factor Authentication
     new:
       new_api_key: New API key
-      multifactor_auth: Multi-Factor Authentication
-      enable_mfa: Enable Multi-Factor Authentication
+      multifactor_auth: Multi-factor authentication
+      enable_mfa: Enable MFA
+      rubygem_scope: Gem Scope
+      rubygem_scope_info: This scope restricts gem push/yank and owner add/remove commands to a specific gem.
     reset:
       success: "Deleted all API keys"
     update:
       success: "Successfully updated API key"
+      invalid_gem: Selected gem cannot be scoped to this key
     edit:
       edit_api_key: "Edit API key"
-      multifactor_auth: Multi-Factor Authentication
-      enable_mfa: Enable Multi-Factor Authentication
+      multifactor_auth: Multi-factor authentication
+      enable_mfa: Enable MFA
+      rubygem_scope: Gem Scope
+      rubygem_scope_info: This scope restricts gem push/yank and owner add/remove commands to a specific gem.
+      invalid_key: An invalid API key cannot be edited. Please delete it and create a new one.
+    all_gems: All Gems
+    gem_ownership_removed: Ownership of %{rubygem_name} has been removed after being scoped to this key.
   clearance_mailer:
     change_password:
       title: CHANGE PASSWORD
@@ -116,7 +126,7 @@ en:
       title: Dashboard
   dependencies:
     show:
-      click_to_expand: Click on the arrow icon (▶) to expand
+      click_to_expand: Click on the arrow icon to expand.
   email_confirmations:
     create:
       promise_resend: We will email you confirmation link to activate your account if one exists.
@@ -279,13 +289,15 @@ en:
       title: Change your password
       will_email_notice: We will email you a link to change your password.
   multifactor_auths:
-    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your Multi-Factor Authentication device or to your additional credentials.'
+    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your multi-factor authentication device or to your additional credentials.'
     incorrect_otp: Your OTP code is incorrect.
     otp_code: OTP code
-    require_mfa_disabled: Your Multi-Factor Authentication has been enabled. You have to disable it first.
-    require_mfa_enabled: Your Multi-Factor Authentication has not been enabled. You have to enable it first.
+    require_mfa_disabled: Your multi-factor authentication has been enabled. You have to disable it first.
+    require_mfa_enabled: Your multi-factor authentication has not been enabled. You have to enable it first.
+    setup_recommended: For protection of your account and your gems, we encourage you to set up multi-factor authentication. Your account will be required to have MFA enabled in the future.
+    strong_mfa_level_recommended: For protection of your account and your gems, we encourage you to change your MFA level to "UI and gem signin" or "UI and API". Your account will be required to have MFA enabled on one of these levels in the future.
     new:
-      title: Enabling Multi-Factor Authentication
+      title: Enabling multi-factor auth
       scan_prompt: Please scan the qr-code with your authenticator app. If you cannot scan the code, add information below into your app manually.
       otp_prompt: Type digit code from auth app to continue.
       confirm: I have kept my recovery codes safe.
@@ -295,18 +307,18 @@ en:
       time_based: "Time based: Yes"
     create:
       qrcode_expired: The QR-code and key is expired. Please try registering a new device again.
-      success: You have successfully enabled Multi-Factor Authentication.
+      success: You have successfully enabled multi-factor authentication.
     recovery:
       copied: "[ copied ]"
       continue: Continue
       title: Recovery codes
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
-      note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your Multi-Factor Authentication if your lose your authentication device. Each of the code can be used once."
+      note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your multi-factor authentication if your lose your authentication device. Each of the code can be used once."
     destroy:
-      success: You have successfully disabled Multi-Factor Authentication.
+      success: You have successfully disabled multi-factor authentication.
     update:
-      success: You have successfully updated your Multi-Factor Authentication level.
+      success: You have successfully updated your multi-factor authentication level.
   notifiers:
     update:
       success: You have successfully updated your email notification settings.
@@ -346,7 +358,7 @@ en:
     destroy:
       removed_notice: "%{owner_name} was removed from the owners successfully"
       failed_notice: Can't remove the only owner of the gem
-    mfa_required: The gem has Multi-Factor Authentication requirement enabled, please setup Multi-Factor Authentication on your account.
+    mfa_required: The gem has multi-factor authentication requirement enabled, please setup multi-factor authentication on your account.
   settings:
     edit:
       title: Edit settings
@@ -364,14 +376,14 @@ en:
       reset_password:
         title: Reset password
       mfa:
-        multifactor_auth: Multi-Factor Authentication
-        disabled_html: You have not yet enabled Multi-Factor Authentication. Please refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems Multi-Factor Authentication guide</a> for more information on these levels.
+        multifactor_auth: Multi-factor authentication
+        disabled_html: You have not yet enabled multi-factor authentication. Please refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems MFA guide</a> for more information on these levels.
         go_settings: Register a new device
-        enabled_html: You have enabled Multi-Factor Authentication. Please input your OTP from your authenticator or one of your active recovery codes to change your Multi-Factor Authentication level or disable it.
-          Refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems Multi-Factor Authentication guide</a> for more information on these levels.
+        enabled_html: You have enabled multi-factor authentication. Please input your OTP from your authenticator or one of your active recovery codes to change your MFA level or disable it.
+          Refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems MFA guide</a> for more information on these levels.
         update: Update
         level:
-          title: Multi-Factor Authentication Level
+          title: Multi-factor Authentication Level
           disabled: Disabled
           ui_only: UI Only
           ui_and_api: UI and API (Recommended)
@@ -438,18 +450,18 @@ en:
         wiki: Wiki
         resend_ownership_confirmation: Resend confirmation
         ownership: Ownership
-    blacklisted:
-      blacklisted_namespace: This namespace is reserved by rubygems.org.
+    reserved:
+      reserved_namespace: This namespace is reserved by rubygems.org.
     dependencies:
       header: "%{title} Dependencies"
     gem_members:
       authors_header: Authors
-      self_no_mfa_warning_html: Please consider <a href="/settings/edit">enabling Multi-Factor Authentication</a> to keep your account secure.
-      not_using_mfa_warning_show: "* Some owners are not using Multi-Factor Authentication. Click for the complete list."
-      not_using_mfa_warning_hide: "* The following owners are not using Multi-Factor Authentication. Click to hide."
+      self_no_mfa_warning_html: Please consider <a href="/settings/edit">enabling multi-factor authentication (MFA)</a> to keep your account secure.
+      not_using_mfa_warning_show: "* Some owners are not using multi-factor authentication (MFA). Click for the complete list."
+      not_using_mfa_warning_hide: "* The following owners are not using multi-factor authentication (MFA). Click to hide."
       owners_header: Owners
       pushed_by: Pushed by
-      using_mfa_info: "* All owners are using Multi-Factor Authentication."
+      using_mfa_info: "* All owners are using multi-factor authentication (MFA)."
       yanked_by: Yanked by
       sha_256_checksum: SHA 256 checksum
       signature_period: Signature validity period
@@ -545,7 +557,7 @@ en:
       subtitle_owner_html: Ask new maintainers to join %{gem} <a class="adoption__blog__link" href="https://blog.rubygems.org/2022/01/19/rubygems-adoptions.html">(read more)</a>
       subtitle_user_html: Request ownership of %{gem} <a class="adoption__blog__link" href="https://blog.rubygems.org/2022/01/19/rubygems-adoptions.html">(read more)</a>
       ownership_calls: Ownership Call
-      no_ownership_calls: There are no ownership calls for %{gem}. The gem owners are not looking new maintainers.
+      no_ownership_calls: There are no ownership calls for %{gem}. The gem owners are not looking for new maintainers.
   ownership_calls:
     update:
       success_notice: The ownership call for %{gem} was closed.

@@ -26,7 +26,7 @@ class ApplicationHelperTest < ActionView::TestCase
 
     assert_equal "alert(&quot;foo&quot;);Rails authentication &amp; authorization",
       short_info(rubygem.versions.most_recent)
-    assert short_info(rubygem.versions.most_recent).html_safe?
+    assert_predicate short_info(rubygem.versions.most_recent), :html_safe?
   end
 
   context "rubygem" do
@@ -41,16 +41,6 @@ class ApplicationHelperTest < ActionView::TestCase
     should "stats graph meter" do
       most_downloaded_count = 8_000_000
       assert_in_delta(stats_graph_meter(@rubygem, most_downloaded_count), 12.5)
-    end
-  end
-
-  context "i18n_api_scopes" do
-    setup do
-      @api_key = create(:api_key, index_rubygems: true, push_rubygem: true)
-    end
-    should "return concat of ul tags for enabled scopes" do
-      assert_equal '<ul class="scopes__list">Index rubygems</ul><ul class="scopes__list">Push rubygem</ul>',
-        i18n_api_scopes(@api_key)
     end
   end
 end

@@ -5,7 +5,6 @@ class SessionsControllerTest < ActionController::TestCase
     setup do
       @user = User.new(email_confirmed: true, handle: "test")
       @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
-      @request.cookies[:mfa_feature] = "true"
     end
 
     context "on POST to create" do
@@ -16,15 +15,15 @@ class SessionsControllerTest < ActionController::TestCase
 
       should respond_with :success
       should "save user name in session" do
-        assert_equal @controller.session[:mfa_user], @user.handle
-        assert page.has_content? "Multi-Factor Authentication"
+        assert_equal @controller.session[:mfa_user], @user.id
+        assert page.has_content? "Multi-factor authentication"
       end
     end
 
     context "on POST to mfa_create" do
       context "when OTP is correct" do
         setup do
-          @controller.session[:mfa_user] = @user.handle
+          @controller.session[:mfa_user] = @user.id
           post :mfa_create, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
         end
 
@@ -35,13 +34,13 @@ class SessionsControllerTest < ActionController::TestCase
         end
 
         should "make user logged in" do
-          assert @controller.request.env[:clearance].signed_in?
+          assert_predicate @controller.request.env[:clearance], :signed_in?
         end
       end
 
       context "when OTP is recovery code" do
         setup do
-          @controller.session[:mfa_user] = @user.handle
+          @controller.session[:mfa_user] = @user.id
           post :mfa_create, params: { otp: @user.mfa_recovery_codes.first }
         end
 
@@ -52,12 +51,13 @@ class SessionsControllerTest < ActionController::TestCase
         end
 
         should "make user logged in" do
-          assert @controller.request.env[:clearance].signed_in?
+          assert_predicate @controller.request.env[:clearance], :signed_in?
         end
       end
 
       context "when OTP is incorrect" do
         setup do
+          @controller.session[:mfa_user] = @user.id
           wrong_otp = (ROTP::TOTP.new(@user.mfa_seed).now.to_i.succ % 1_000_000).to_s
           post :mfa_create, params: { otp: wrong_otp }
         end
@@ -70,7 +70,7 @@ class SessionsControllerTest < ActionController::TestCase
         end
 
         should "not sign in the user" do
-          refute @controller.request.env[:clearance].signed_in?
+          refute_predicate @controller.request.env[:clearance], :signed_in?
         end
 
         should "clear user name in session" do
@@ -92,7 +92,75 @@ class SessionsControllerTest < ActionController::TestCase
       should redirect_to("the dashboard") { dashboard_path }
 
       should "sign in the user" do
-        assert @controller.request.env[:clearance].signed_in?
+        assert_predicate @controller.request.env[:clearance], :signed_in?
+      end
+
+      context "when mfa is recommended" do
+        setup do
+          @user = User.new(email_confirmed: true, handle: "test")
+          @user.stubs(:mfa_recommended?).returns true
+        end
+
+        context "when mfa is disabled" do
+          setup do
+            User.expects(:authenticate).with("login", "pass").returns @user
+            post :create, params: { session: { who: "login", password: "pass" } }
+          end
+
+          should respond_with :redirect
+          should redirect_to("the mfa setup page") { new_multifactor_auth_path }
+
+          should "set notice flash" do
+            expected_notice = "For protection of your account and your gems, we encourage you to set up multi-factor authentication. " \
+                              "Your account will be required to have MFA enabled in the future."
+            assert_equal expected_notice, flash[:notice]
+          end
+        end
+
+        context "when mfa is enabled" do
+          setup do
+            @controller.session[:mfa_user] = @user.id
+            User.expects(:find).with(@user.id).returns @user
+          end
+
+          context "on `ui_only` level" do
+            setup do
+              @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+              post :mfa_create, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
+            end
+
+            should respond_with :redirect
+            should redirect_to("the settings page") { edit_settings_path }
+
+            should "set notice flash" do
+              expected_notice = "For protection of your account and your gems, we encourage you to change your MFA level " \
+                                "to \"UI and gem signin\" or \"UI and API\". Your account will be required to have MFA enabled " \
+                                "on one of these levels in the future."
+
+              assert_equal expected_notice, flash[:notice]
+            end
+          end
+
+          context "on `ui_and_gem_signin` level" do
+            setup do
+              @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_gem_signin)
+              post :mfa_create, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
+            end
+
+            should respond_with :redirect
+            should redirect_to("the dashboard") { dashboard_path }
+          end
+
+          context "on `ui_and_api` level" do
+            setup do
+              @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_api)
+              post :mfa_create, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
+            end
+
+            should respond_with :redirect
+            should redirect_to("the dashboard") { dashboard_path }
+          end
+        end
       end
     end
 
@@ -110,7 +178,7 @@ class SessionsControllerTest < ActionController::TestCase
       end
 
       should "not sign in the user" do
-        refute @controller.request.env[:clearance].signed_in?
+        refute_predicate @controller.request.env[:clearance], :signed_in?
       end
     end
 
@@ -121,7 +189,7 @@ class SessionsControllerTest < ActionController::TestCase
 
       should respond_with :unauthorized
       should "not sign in the user" do
-        refute @controller.request.env[:clearance].signed_in?
+        refute_predicate @controller.request.env[:clearance], :signed_in?
       end
     end
 
@@ -150,11 +218,11 @@ class SessionsControllerTest < ActionController::TestCase
       end
 
       should "set mfa_user" do
-        assert_equal @user.handle, session[:mfa_user]
+        assert_equal @user.id, session[:mfa_user]
       end
 
       should "have mfa forms and not webauthn credentials form" do
-        assert page.has_content?("Multi-Factor Authentication")
+        assert page.has_content?("multi-factor authentication")
         assert page.has_field?("OTP code")
         assert page.has_button?("Sign in")
         assert page.has_field?("Recovery code")
@@ -184,7 +252,7 @@ class SessionsControllerTest < ActionController::TestCase
       end
 
       should "not have mfa forms and have webauthn credentials form" do
-        assert page.has_content?("Multi-Factor Authentication")
+        assert page.has_content?("Multi-factor authentication")
         assert_not page.has_field?("OTP code")
         assert_not page.has_field?("Recovery code")
         assert page.has_button?("Sign in with an additional credential")
@@ -209,11 +277,11 @@ class SessionsControllerTest < ActionController::TestCase
       end
 
       should "set mfa_user" do
-        assert_equal @user.handle, session[:mfa_user]
+        assert_equal @user.id, session[:mfa_user]
       end
 
       should "have mfa forms and webauthn credentials form" do
-        assert page.has_content?("Multi-Factor Authentication")
+        assert page.has_content?("multi-factor authentication")
         assert page.has_field?("OTP code")
         assert page.has_button?("Sign in")
         assert page.has_field?("Recovery code")
@@ -231,7 +299,7 @@ class SessionsControllerTest < ActionController::TestCase
     should redirect_to("login page") { sign_in_path }
 
     should "sign out the user" do
-      refute @controller.request.env[:clearance].signed_in?
+      refute_predicate @controller.request.env[:clearance], :signed_in?
     end
   end
 

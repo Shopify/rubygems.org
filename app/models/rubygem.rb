@@ -25,13 +25,17 @@ class Rubygem < ApplicationRecord
     presence: true,
     uniqueness: { case_sensitive: false },
     if: :needs_name_validation?
-  validate :blacklist_names_exclusion
+  validate :reserved_names_exclusion
   validate :protected_gem_typo, on: :create, unless: -> { Array(validation_context).include?(:typo_exception) }
 
   after_create :update_unresolved
   # TODO: Remove this once we move to GemDownload only
   after_create :create_gem_download
   before_destroy :mark_unresolved
+
+  MFA_RECOMMENDED_THRESHOLD = 165_000_000
+
+  scope :mfa_recommended, -> { joins(:gem_download).where("gem_downloads.count > ?", MFA_RECOMMENDED_THRESHOLD) }
 
   def create_gem_download
     GemDownload.create!(count: 0, rubygem_id: id, version_id: 0)
@@ -127,6 +131,16 @@ class Rubygem < ApplicationRecord
         public_versions.find_by(number: number)
       end
     payload(version).merge!(version.as_json) if version
+  end
+
+  def find_version!(number:, platform:)
+    platform = platform.presence || "ruby"
+    versions.find_by!(number: number, platform: platform)
+  end
+
+  def find_version_by_slug!(slug)
+    full_name = "#{name}-#{slug}"
+    versions.find_by!(full_name: full_name)
   end
 
   def hosted?
@@ -364,8 +378,8 @@ class Rubygem < ApplicationRecord
     new_record? || name_changed?
   end
 
-  def blacklist_names_exclusion
-    return unless GEM_NAME_BLACKLIST.include? name.downcase
+  def reserved_names_exclusion
+    return unless GEM_NAME_RESERVED_LIST.include? name.downcase
     errors.add :name, "'#{name}' is a reserved gem name."
   end
 

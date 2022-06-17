@@ -16,7 +16,7 @@ class PasswordsControllerTest < ActionController::TestCase
       end
 
       should "set a valid confirmation_token" do
-        assert @user.valid_confirmation_token?
+        assert_predicate @user, :valid_confirmation_token?
       end
     end
   end
@@ -58,7 +58,7 @@ class PasswordsControllerTest < ActionController::TestCase
 
       should respond_with :success
       should "display otp form" do
-        assert page.has_content?("Multi-Factor Authentication")
+        assert page.has_content?("Multi-factor authentication")
       end
     end
   end
