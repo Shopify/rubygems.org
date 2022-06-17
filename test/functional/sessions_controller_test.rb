@@ -404,7 +404,7 @@ class SessionsControllerTest < ActionController::TestCase
       should redirect_to :dashboard
 
       should "log in the user" do
-        assert @controller.request.env[:clearance].signed_in?
+        assert_predicate @controller.request.env[:clearance], :signed_in?
       end
     end
 
