@@ -16,7 +16,7 @@ class SessionsController < Clearance::SessionsController
   end
 
   def webauthn_create
-    @user = User.find_by_slug!(session.dig(:webauthn_authentication, "user"))
+    @user = User.find(session.dig(:webauthn_authentication, "user"))
     @challenge = session.dig(:webauthn_authentication, "challenge")
 
     if params[:credentials].blank?
@@ -144,7 +144,7 @@ class SessionsController < Clearance::SessionsController
 
     session[:webauthn_authentication] = {
       "challenge" => @webauthn_options.challenge,
-      "user" => @user.display_id
+      "user" => @user.id
     }
   end
 
