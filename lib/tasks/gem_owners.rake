@@ -21,38 +21,38 @@ namespace :gem_owners do
       {
         email: "sandi@metz.com",
         password: "yellow-bananas-111",
-        handle: "sandi",
+        handle: "sandi"
       },
       {
         email: "katrina@owen.com",
         password: "red-bananas-111",
-        handle: "katrina",
+        handle: "katrina"
       },
       {
         email: "jen@shenny.com",
         password: "black-berries-111",
-        handle: "jenshenny",
+        handle: "jenshenny"
       },
       {
         email: "betty@li.com",
         password: "poop-berries-111",
-        handle: "betty",
+        handle: "betty"
       },
       {
         email: "panda@bear.com",
         password: "blue-berries-111",
-        handle: "panda",
+        handle: "panda"
       },
       {
         email: "power@rangers.com",
         password: "green-ranger-111",
-        handle: "greenranger",
+        handle: "greenranger"
       },
       {
         email: "squid@games.com",
         password: "so-squiddy-111",
-        handle: "squid",
-      },
+        handle: "squid"
+      }
     ]
 
     puts
@@ -80,15 +80,16 @@ namespace :gem_owners do
     puts
     puts
     print("Assigning gem owners")
+    approver = users[0]
     puts
     users.each do |user|
       # Assign all users to the same gem
       print "💎"
-      Ownership.create_confirmed(rubygems[0], user)
+      Ownership.create_confirmed(rubygems[0], user, approver)
 
       10.times do
         print "💎"
-        Ownership.create_confirmed(rubygems[count], user)
+        Ownership.create_confirmed(rubygems[count], user, approver)
 
         count += 1
       end
