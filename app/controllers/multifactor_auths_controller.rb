@@ -33,6 +33,9 @@ class MultifactorAuthsController < ApplicationController
     redirect_to edit_settings_url
   end
 
+  def replace
+  end
+
   private
 
   def otp_param

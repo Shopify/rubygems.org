@@ -315,6 +315,8 @@ en:
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
       note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your MFA if your lose your authentication device. Each of the code can be used once."
+    replace:
+      title: Replacing multi-factor authenticator device
     destroy:
       success: You have successfully disabled multi-factor authentication.
     update:
@@ -384,6 +386,7 @@ en:
           ui_only: UI Only
           ui_and_api: UI and API (Recommended)
           ui_and_gem_signin: UI and gem signin
+        replace_header: Replace multi-factor authentication device
   profiles:
     adoptions:
       no_ownership_calls: You have not created any ownership call for any of your gems.
