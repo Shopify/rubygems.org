@@ -14,17 +14,18 @@
   </div>
 </div>
 
-<%= form_tag multifactor_auth_path, method: :post do %>
+
+<%= form_tag _form_path, method: :post do %>
   <div class="text_field">
     <%= label_tag :otp, 'OTP code', class: 'form__label' %>
     <p class='form__field__instructions'><%= t '.otp_prompt' %></p>
     <%= text_field_tag :otp, '', class: 'form__input', autocomplete: :off %>
   </div>
 
-  <%if _context == "replace"%>
-  <div>
-   <p><%= t('multifactor_auths.replace.warning') %></p>
-  </div>
+  <% if _context == "replace"%>
+    <div>
+    <p><%= t('multifactor_auths.replace.warning') %></p>
+    </div>
   <% end %>
   <%= submit_tag t("multifactor_auths.#{_context}.button"), class: 'form__submit' %>
 <% end %>

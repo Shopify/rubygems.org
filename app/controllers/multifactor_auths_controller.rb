@@ -1,8 +1,8 @@
 class MultifactorAuthsController < ApplicationController
   before_action :redirect_to_signin, unless: :signed_in?
-  before_action :require_mfa_disabled, only: %i[new]
+  before_action :require_mfa_disabled, only: %i[new create]
   before_action :require_mfa_enabled, only: :update
-  before_action :seed_and_expire, only: :create
+  before_action :seed_and_expire, only: %i[create post_verify]
   helper_method :issuer
 
   def new
@@ -33,6 +33,31 @@ class MultifactorAuthsController < ApplicationController
     mfa_setup
   end
 
+  def post_replace
+    session[:replacement_otp] = otp_param
+    redirect_to verify_multifactor_auth_path
+  end
+
+  def verify
+  end
+
+  def post_verify
+    if current_user.otp_verified?(otp_param)
+        # post the other thing
+        # if it takes too long tell them
+        current_user.verify_and_enable_mfa!(@seed, :ui_and_api, session[:replacement_otp], @expire)
+        if current_user.errors.any?
+          flash[:error] = current_user.errors[:base].join
+          redirect_to replace_multifactor_auth_path
+        else
+          flash[:success] = t(".success")
+          render :recovery
+        end
+    else
+      flash[:error] = t("multifactor_auths.incorrect_otp")
+      redirect_to verify_multifactor_auth_path
+    end
+  end
 
   def mfa_setup
     @seed = ROTP::Base32.random_base32
