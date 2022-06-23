@@ -321,6 +321,11 @@ en:
       previous_otp: OTP code (previous device)
       button: Replace
       warning: "Warning: this will remove your previous multi-factor authentication device permanently"
+    verify:
+      title: Multi-factor verification
+      verify_html: 'Please enter an OTP or <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> with your original multi-factor authentication device.'
+      submit: Verify
+      success: You have successfully replaced your multi-factor authentication device.
     destroy:
       success: You have successfully disabled multi-factor authentication.
     update:

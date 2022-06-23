@@ -136,8 +136,10 @@ Rails.application.routes.draw do
     resource :dashboard, only: :show, constraints: { format: /html|atom/ }
     resources :profiles, only: :show
     resource :multifactor_auth, only: %i[new create update] do
-      get 'replace' => 'multifactor_auths#replace', as: 'mfa_replace'
-      post 'replace' => 'multifactor_auths#post_replace', as: 'mfa_post_replace'
+      get 'replace' => 'multifactor_auths#replace'
+      post 'replace' => 'multifactor_auths#post_replace'
+      get 'verify' => 'multifactor_auths#verify'
+      post 'verify' => 'multifactor_auths#post_verify'
     end
     # should this route go here?
     resource :settings, only: :edit
