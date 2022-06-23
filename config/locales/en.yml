@@ -299,6 +299,7 @@ en:
     ui_only_warning: Updating multi-factor authentication to "UI Only" is no longer supported. Please use "UI and gem signin" or "UI and API".
     new:
       title: Enabling multi-factor auth
+    mfa_setup:
       scan_prompt: Please scan the qr-code with your authenticator app. If you cannot scan the code, add information below into your app manually.
       otp_prompt: Type digit code from auth app to continue.
       confirm: I have kept my recovery codes safe.
