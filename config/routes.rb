@@ -137,6 +137,7 @@ Rails.application.routes.draw do
     resources :profiles, only: :show
     resource :multifactor_auth, only: %i[new create update] do
       get 'replace' => 'multifactor_auths#replace', as: 'mfa_replace'
+      post 'replace' => 'multifactor_auths#post_replace', as: 'mfa_post_replace'
     end
     # should this route go here?
     resource :settings, only: :edit

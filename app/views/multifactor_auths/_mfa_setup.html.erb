@@ -20,5 +20,11 @@
     <p class='form__field__instructions'><%= t '.otp_prompt' %></p>
     <%= text_field_tag :otp, '', class: 'form__input', autocomplete: :off %>
   </div>
-  <%= submit_tag t('.enable'), class: 'form__submit' %>
+
+  <%if _context == "replace"%>
+  <div>
+   <p><%= t('multifactor_auths.replace.warning') %></p>
+  </div>
+  <% end %>
+  <%= submit_tag t("multifactor_auths.#{_context}.button"), class: 'form__submit' %>
 <% end %>
