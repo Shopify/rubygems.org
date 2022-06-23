@@ -1,1 +1,1 @@
-<%= render partial: "mfa_setup", object: @new_multifactor_auth %>
+<%= render partial: "mfa_setup", locals: {_context: "new", seed: @seed, issuer: issuer, current_user: current_user} %>
