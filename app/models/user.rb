@@ -212,13 +212,17 @@ class User < ApplicationRecord
     save!(validate: false)
   end
 
-  def verify_and_enable_mfa!(seed, level, otp, expiry)
+  def verify_and_enable_mfa!(seed, level, otp, expiry, replace:false)
     if expiry < Time.now.utc
       errors.add(:base, I18n.t("multifactor_auths.create.qrcode_expired"))
     elsif verify_digit_otp(seed, otp)
       enable_mfa!(seed, level)
     else
-      errors.add(:base, I18n.t("multifactor_auths.incorrect_otp"))
+      if replace
+        errors.add(:base, I18n.t("multifactor_auths.replace.incorrect_otp"))
+      else
+        errors.add(:base, I18n.t("multifactor_auths.incorrect_otp"))
+      end
     end
   end
 

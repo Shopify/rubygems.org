@@ -43,9 +43,7 @@ class MultifactorAuthsController < ApplicationController
 
   def post_verify
     if current_user.otp_verified?(otp_param)
-        # post the other thing
-        # if it takes too long tell them
-        current_user.verify_and_enable_mfa!(@seed, :ui_and_api, session[:replacement_otp], @expire)
+        current_user.verify_and_enable_mfa!(@seed, :ui_and_api, session[:replacement_otp], @expire, replace: true)
         if current_user.errors.any?
           flash[:error] = current_user.errors[:base].join
           redirect_to replace_multifactor_auth_path
