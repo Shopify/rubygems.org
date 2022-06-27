@@ -141,7 +141,7 @@ Rails.application.routes.draw do
       get 'verify' => 'multifactor_auths#verify'
       post 'verify' => 'multifactor_auths#post_verify'
     end
-    # should this route go here?
+
     resource :settings, only: :edit
     resource :profile, only: %i[edit update] do
       get :adoptions

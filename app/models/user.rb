@@ -218,7 +218,7 @@ class User < ApplicationRecord
     elsif verify_digit_otp(seed, otp)
       enable_mfa!(seed, level)
     else
-        errors.add(:base, I18n.t("multifactor_auths.incorrect_otp"))
+      errors.add(:base, I18n.t("multifactor_auths.incorrect_otp"))
     end
   end
 
