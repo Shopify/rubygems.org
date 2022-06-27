@@ -66,8 +66,8 @@ fr:
       api_keys:
       name:
       scopes:
-      age:
       gem:
+      age:
       last_access:
       action:
       delete:
@@ -314,24 +314,22 @@ fr:
     recovery_code_html:
     incorrect_otp: Votre clé OTP est incorrecte.
     otp_code: clé OTP
-    require_mfa_disabled: Votre authentification multi-facteur a été activée. Si vous voulez la reconfigurer, vous
-      devez d'abord la désactiver.
+    require_mfa_disabled: Votre authentification multi-facteur a été activée. Si vous
+      voulez la reconfigurer, vous devez d'abord la désactiver.
     require_mfa_enabled: Votre authentification multifacteur n'a pas été activée.
       Vous devez d'abord l'activer.
     setup_recommended:
     strong_mfa_level_recommended:
-    ui_only_warning: 
+    ui_only_warning:
     new:
       title: Activer l'authentification multifacteur
-      scan_prompt: Veuillez scanner le QR code avec votre app d'authentification.
-        Si vous ne pouvez pas scanner le code, veuillez saisir manuellement les informations
-        ci-dessous dans votre app.
-      otp_prompt: Veuillez taper le code de l'application d'authentification pour
-        poursuivre.
-      confirm: J'ai gardé mes codes de récupération en sécurité.
-      enable: Activer
-      account: 'Compte: %{account}'
-      key: 'Clé: %{key}'
+      button:
+    mfa_setup:
+      scan_prompt:
+      otp_prompt:
+      confirm:
+      account:
+      key:
       time_based:
     create:
       qrcode_expired: Le QR code et la clé sont expirés. Veuillez essayer d'enregistrer
@@ -343,6 +341,19 @@ fr:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    post_replace:
+      success:
     destroy:
       success: Vous avez désactivé l'authentification multifacteur.
     update:
@@ -411,6 +422,7 @@ fr:
           ui_only:
           ui_and_api:
           ui_and_gem_signin:
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:

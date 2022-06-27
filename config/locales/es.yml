@@ -75,8 +75,8 @@ es:
       api_keys:
       name:
       scopes:
-      age:
       gem:
+      age:
       last_access:
       action:
       delete:
@@ -321,23 +321,23 @@ es:
     recovery_code_html:
     incorrect_otp: Tu código OTP no es correcto.
     otp_code: código OTP
-    require_mfa_disabled: Se ha activado la autenticación de múltiples factores. Para reconfigurarla, primero tendrás que desactivarla.
+    require_mfa_disabled: Se ha activado la autenticación de múltiples factores. Para
+      reconfigurarla, primero tendrás que desactivarla.
     require_mfa_enabled: No se ha activado la autenticación de múltiples factores.
       Primero tienes que activarla.
     setup_recommended:
     strong_mfa_level_recommended:
-    ui_only_warning: 
+    ui_only_warning:
     new:
       title: Activando autenticación de múltiples factores
-      scan_prompt: Por favor escanea el código QR con tu aplicación de Autenticación.
-        Si no puedes escanear el código, agrega manualmente información abajo en tu
-        aplicación.
-      otp_prompt: Escribe el código de la aplicación de Autenticación para continuar.
-      confirm: He mantenido seguros mis códigos de recuperación.
-      enable: Activar
-      account: 'Cuenta: %{account}'
-      key: 'Clave: %{key}'
-      time_based: 'Basado en tiempo: Sí'
+      button:
+    mfa_setup:
+      scan_prompt:
+      otp_prompt:
+      confirm:
+      account:
+      key:
+      time_based:
     create:
       qrcode_expired: El código QR y la clave han vencido. Por favor intenta nuevamente
         registrar un nuevo dispositivo.
@@ -348,6 +348,19 @@ es:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    post_replace:
+      success:
     destroy:
       success: Has desactivado exitosamente la autenticación de múltiples factores.
     update:
@@ -417,6 +430,7 @@ es:
           ui_only: Solo Interfaz de Usuario
           ui_and_api: Interfaz de Usuario y API
           ui_and_gem_signin: Interfaz de Usario y gem signin
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:

@@ -74,8 +74,8 @@ pt-BR:
       api_keys:
       name:
       scopes:
-      age:
       gem:
+      age:
       last_access:
       action:
       delete:
@@ -324,13 +324,14 @@ pt-BR:
     require_mfa_enabled:
     setup_recommended:
     strong_mfa_level_recommended:
-    ui_only_warning: 
+    ui_only_warning:
     new:
       title:
+      button:
+    mfa_setup:
       scan_prompt:
       otp_prompt:
       confirm:
-      enable:
       account:
       key:
       time_based:
@@ -343,6 +344,19 @@ pt-BR:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    post_replace:
+      success:
     destroy:
       success:
     update:
@@ -411,6 +425,7 @@ pt-BR:
           ui_only:
           ui_and_api:
           ui_and_gem_signin:
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:

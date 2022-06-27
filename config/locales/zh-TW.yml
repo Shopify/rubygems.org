@@ -64,8 +64,8 @@ zh-TW:
       api_keys:
       name:
       scopes:
-      age:
       gem:
+      age:
       last_access:
       action:
       delete:
@@ -297,16 +297,17 @@ zh-TW:
     require_mfa_enabled: 你的多重要素驗證已停用，請先啟用。
     setup_recommended:
     strong_mfa_level_recommended:
-    ui_only_warning: 
+    ui_only_warning:
     new:
       title: 啟用多重要素驗證
-      scan_prompt: 請用你的驗證裝置掃描 QR-code。如果你沒辦法掃描，手動輸入下面的資料。
-      otp_prompt: 輸入驗證裝置上的數字來繼續。
-      confirm: 我已把復原碼收在安全的地方。
-      enable: 啟用
-      account: '帳號: %{account}'
-      key: '金鑰: %{key}'
-      time_based: '基於時間的: 是'
+      button:
+    mfa_setup:
+      scan_prompt:
+      otp_prompt:
+      confirm:
+      account:
+      key:
+      time_based:
     create:
       qrcode_expired: QR-code 和金鑰已過期。請再重新註冊裝置。
       success: 你已成功啟用多重要素驗證。
@@ -316,6 +317,19 @@ zh-TW:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    post_replace:
+      success:
     destroy:
       success: 你已成功停用多重要素驗證。
     update:
@@ -383,6 +397,7 @@ zh-TW:
           ui_only: 只有使用者介面
           ui_and_api: 使用者介面與API
           ui_and_gem_signin:
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:
