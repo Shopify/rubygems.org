@@ -6,6 +6,9 @@
   </div>
   <div>
     <p><%= t('.scan_prompt') %></p>
+    <% if _context == "replace"%>
+      <p><%= t('multifactor_auths.replace.timeout_warning') %>
+     <% end %>
     <p>
       <span id="mfa-account"><%= t('.account', account: "#{issuer}:#{current_user.email}") %></span><br>
       <span id="mfa-key"><%= t('.key', key: @seed.chars.each_slice(4).map(&:join).join(' ')) %></span><br>

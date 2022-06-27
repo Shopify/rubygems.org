@@ -2,7 +2,9 @@ class MultifactorAuthsController < ApplicationController
   before_action :redirect_to_signin, unless: :signed_in?
   before_action :require_mfa_disabled, only: %i[new create]
   before_action :require_mfa_enabled, only: :update
-  before_action :seed_and_expire, only: %i[create post_verify]
+  before_action :seed_and_expire, only: %i[create post_replace]
+  before_action :redirect_to_verify, unless: :mfa_verification_session_active?, only: %i[replace post_replace]
+
   helper_method :issuer
 
   def new
@@ -10,14 +12,7 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def create
-    current_user.verify_and_enable_mfa!(@seed, :ui_and_api, otp_param, @expire)
-    if current_user.errors.any?
-      flash[:error] = current_user.errors[:base].join
-      redirect_to edit_settings_url
-    else
-      flash[:success] = t(".success")
-      render :recovery
-    end
+    check_new_mfa
   end
 
   def update
@@ -34,8 +29,7 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def post_replace
-    session[:replacement_otp] = otp_param
-    redirect_to verify_multifactor_auth_path
+    check_new_mfa
   end
 
   def verify
@@ -43,26 +37,13 @@ class MultifactorAuthsController < ApplicationController
 
   def post_verify
     if current_user.otp_verified?(otp_param)
-        current_user.verify_and_enable_mfa!(@seed, :ui_and_api, session[:replacement_otp], @expire, replace: true)
-        if current_user.errors.any?
-          flash[:error] = current_user.errors[:base].join
-          redirect_to replace_multifactor_auth_path
-        else
-          flash[:success] = t(".success")
-          render :recovery
-        end
+      session[:mfa_verified_user] = current_user.id
+      session[:mfa_verification]  = Time.current + Gemcutter::MFA_VERIFICATION_EXPIRY
+      redirect_to replace_multifactor_auth_path
     else
       flash[:error] = t("multifactor_auths.incorrect_otp")
       redirect_to verify_multifactor_auth_path
     end
-  end
-
-  def mfa_setup
-    @seed = ROTP::Base32.random_base32
-    session[:mfa_seed] = @seed
-    session[:mfa_seed_expire] = Gemcutter::MFA_KEY_EXPIRY.from_now.utc.to_i
-    text = ROTP::TOTP.new(@seed, issuer: issuer).provisioning_uri(current_user.email)
-    @qrcode_svg = RQRCode::QRCode.new(text, level: :l).as_svg(module_size: 6)
   end
 
   private
@@ -111,4 +92,40 @@ class MultifactorAuthsController < ApplicationController
       current_user.update!(mfa_level: level_param)
     end
   end
+
+  def mfa_setup
+    @seed = ROTP::Base32.random_base32
+    session[:mfa_seed] = @seed
+    session[:mfa_seed_expire] = Gemcutter::MFA_KEY_EXPIRY.from_now.utc.to_i
+    text = ROTP::TOTP.new(@seed, issuer: issuer).provisioning_uri(current_user.email)
+    @qrcode_svg = RQRCode::QRCode.new(text, level: :l).as_svg(module_size: 6)
+  end
+
+  def check_new_mfa
+    remove_session
+    current_user.verify_and_enable_mfa!(@seed, :ui_and_api, otp_param, @expire)
+    if current_user.errors.any?
+      flash[:error] = current_user.errors[:base].join
+      redirect_to edit_settings_path
+    else
+      flash[:success] = t(".success")
+      render :recovery
+    end
+  end
+
+  def redirect_to_verify
+    if session[:mfa_verification]
+      flash[:error] = t("multifactor_auths.replace.timeout")
+    else
+      flash[:error] = t("multifactor_auths.replace.verify")
+    end
+    remove_session
+    redirect_to verify_multifactor_auth_path
+  end
+
+  def remove_session
+    session[:mfa_verified_user] = nil
+    session[:mfa_verification] = nil
+  end
+
 end

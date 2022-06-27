@@ -26,7 +26,7 @@
 
 <% if @user.mfa_enabled? %>
   <div class="t-body">
-  <h2><%= link_to t('.mfa.replace_header'), replace_multifactor_auth_path %></h2>
+  <h2><%= link_to t('.mfa.replace_header'), verify_multifactor_auth_path %></h2>
 </div>
 <% end %>
 
