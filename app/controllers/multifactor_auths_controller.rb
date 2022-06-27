@@ -114,11 +114,11 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def redirect_to_verify
-    if session[:mfa_verification]
-      flash[:error] = t("multifactor_auths.replace.timeout")
-    else
-      flash[:error] = t("multifactor_auths.replace.verify")
-    end
+    flash[:error] = if session[:mfa_verification]
+                      t("multifactor_auths.replace.timeout")
+                    else
+                      t("multifactor_auths.replace.verify")
+                    end
     remove_session
     redirect_to verify_multifactor_auth_path
   end
@@ -127,5 +127,4 @@ class MultifactorAuthsController < ApplicationController
     session[:mfa_verified_user] = nil
     session[:mfa_verification] = nil
   end
-
 end
