@@ -137,9 +137,9 @@ Rails.application.routes.draw do
     resources :profiles, only: :show
     resource :multifactor_auth, only: %i[new create update] do
       get 'replace' => 'multifactor_auths#replace'
-      post 'replace' => 'multifactor_auths#post_replace'
+      post 'replace' => 'multifactor_auths#submit_replace'
       get 'verify' => 'multifactor_auths#verify'
-      post 'verify' => 'multifactor_auths#post_verify'
+      post 'verify' => 'multifactor_auths#submit_verify'
     end
 
     resource :settings, only: :edit

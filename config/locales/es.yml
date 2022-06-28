@@ -359,7 +359,7 @@ es:
       title:
       verify_html:
       submit:
-    post_replace:
+    submit_replace:
       success:
     destroy:
       success: Has desactivado exitosamente la autenticación de múltiples factores.

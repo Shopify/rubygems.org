@@ -2,8 +2,8 @@ class MultifactorAuthsController < ApplicationController
   before_action :redirect_to_signin, unless: :signed_in?
   before_action :require_mfa_disabled, only: %i[new create]
   before_action :require_mfa_enabled, only: :update
-  before_action :seed_and_expire, only: %i[create post_replace]
-  before_action :redirect_to_verify, unless: :mfa_verification_session_active?, only: %i[replace post_replace]
+  before_action :seed_and_expire, only: %i[create submit_replace]
+  before_action :redirect_to_verify, unless: :mfa_verification_session_active?, only: %i[replace submit_replace]
 
   helper_method :issuer
 
@@ -28,14 +28,14 @@ class MultifactorAuthsController < ApplicationController
     mfa_setup
   end
 
-  def post_replace
+  def submit_replace
     check_new_mfa
   end
 
   def verify
   end
 
-  def post_verify
+  def submit_verify
     if current_user.otp_verified?(otp_param)
       session[:mfa_verified_user] = current_user.id
       session[:mfa_verification]  = Time.current + Gemcutter::MFA_VERIFICATION_EXPIRY
@@ -99,6 +99,7 @@ class MultifactorAuthsController < ApplicationController
     session[:mfa_seed_expire] = Gemcutter::MFA_KEY_EXPIRY.from_now.utc.to_i
     text = ROTP::TOTP.new(@seed, issuer: issuer).provisioning_uri(current_user.email)
     @qrcode_svg = RQRCode::QRCode.new(text, level: :l).as_svg(module_size: 6)
+    @key_chunk_length = 4
   end
 
   def check_new_mfa

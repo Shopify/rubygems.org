@@ -11,7 +11,7 @@
      <% end %>
     <p>
       <span id="mfa-account"><%= t('.account', account: "#{issuer}:#{current_user.email}") %></span><br>
-      <span id="mfa-key"><%= t('.key', key: @seed.chars.each_slice(4).map(&:join).join(' ')) %></span><br>
+      <span id="mfa-key"><%= t('.key', key: @seed.chars.each_slice(@key_chunk_length).map(&:join).join(' ')) %></span><br>
       <span id="mfa-type"><%= t('.time_based') %></span>
     </p>
   </div>

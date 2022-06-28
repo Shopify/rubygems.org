@@ -352,7 +352,7 @@ fr:
       title:
       verify_html:
       submit:
-    post_replace:
+    submit_replace:
       success:
     destroy:
       success: Vous avez désactivé l'authentification multifacteur.

@@ -344,7 +344,7 @@ nl:
       title:
       verify_html:
       submit:
-    post_replace:
+    submit_replace:
       success:
     destroy:
       success:

@@ -328,7 +328,7 @@ zh-TW:
       title:
       verify_html:
       submit:
-    post_replace:
+    submit_replace:
       success:
     destroy:
       success: 你已成功停用多重要素驗證。
