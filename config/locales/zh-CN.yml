@@ -299,14 +299,14 @@ zh-CN:
     ui_only_warning:
     new:
       title: 启用多重要素验证
-      button:
+      button: 启用
     mfa_setup:
-      scan_prompt:
-      otp_prompt:
-      confirm:
-      account:
-      key:
-      time_based:
+      scan_prompt: 请用你的验证装置扫描 QR-code。如果你没办法扫描，手动输入下面的资料。
+      otp_prompt: 输入验证装置上的数字来继续。
+      confirm: 我已把复原码收在安全的地方。
+      account: '帐号: %{account}'
+      key: '金钥: %{key}'
+      time_based: '基于时间的: 是'
     create:
       qrcode_expired: 二维码和密钥已过期。请再重新注册装置。
       success: 你已成功启用多重要素验证。

@@ -32,9 +32,6 @@ class MultifactorAuthsController < ApplicationController
     check_new_mfa
   end
 
-  def verify
-  end
-
   def submit_verify
     if current_user.otp_verified?(otp_param)
       session[:mfa_verified_user] = current_user.id

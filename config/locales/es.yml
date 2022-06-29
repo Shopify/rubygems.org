@@ -330,14 +330,16 @@ es:
     ui_only_warning:
     new:
       title: Activando autenticación de múltiples factores
-      button:
+      button: Activar
     mfa_setup:
-      scan_prompt:
-      otp_prompt:
-      confirm:
-      account:
-      key:
-      time_based:
+      scan_prompt: Por favor escanea el código QR con tu aplicación de Autenticación.
+        Si no puedes escanear el código, agrega manualmente información abajo en tu
+        aplicación.
+      otp_prompt: Escribe el código de la aplicación de Autenticación para continuar.
+      confirm: He mantenido seguros mis códigos de recuperación.
+      account: 'Cuenta: %{account}'
+      key: 'Clave: %{key}'
+      time_based: 'Basado en tiempo: Sí'
     create:
       qrcode_expired: El código QR y la clave han vencido. Por favor intenta nuevamente
         registrar un nuevo dispositivo.

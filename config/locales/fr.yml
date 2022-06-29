@@ -323,13 +323,16 @@ fr:
     ui_only_warning:
     new:
       title: Activer l'authentification multifacteur
-      button:
+      button: Activer
     mfa_setup:
-      scan_prompt:
-      otp_prompt:
-      confirm:
-      account:
-      key:
+      scan_prompt: Veuillez scanner le QR code avec votre app d'authentification.
+        Si vous ne pouvez pas scanner le code, veuillez saisir manuellement les informations
+        ci-dessous dans votre app.
+      otp_prompt: Veuillez taper le code de l'application d'authentification pour
+        poursuivre.
+      confirm: J'ai gardé mes codes de récupération en sécurité.
+      account: 'Compte: %{account}'
+      key: 'Clé: %{key}'
       time_based:
     create:
       qrcode_expired: Le QR code et la clé sont expirés. Veuillez essayer d'enregistrer

@@ -300,14 +300,14 @@ zh-TW:
     ui_only_warning:
     new:
       title: 啟用多重要素驗證
-      button:
+      button: 啟用
     mfa_setup:
-      scan_prompt:
-      otp_prompt:
-      confirm:
-      account:
-      key:
-      time_based:
+      scan_prompt: 請用你的驗證裝置掃描 QR-code。如果你沒辦法掃描，手動輸入下面的資料。
+      otp_prompt: 輸入驗證裝置上的數字來繼續。
+      confirm: 我已把復原碼收在安全的地方。
+      account: '帳號: %{account}'
+      key: '金鑰: %{key}'
+      time_based: '基於時間的: 是'
     create:
       qrcode_expired: QR-code 和金鑰已過期。請再重新註冊裝置。
       success: 你已成功啟用多重要素驗證。
