@@ -385,24 +385,46 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
 
     context "with correct credentials" do
       setup do
-        @api_key = create(:api_key, user: @user, key: "12345", push_rubygem: true, ownership: create(:ownership, user: @user))
+        @api_key = create(:api_key, user: @user, key: "12345", push_rubygem: true)
         authorize_with("#{@user.email}:#{@user.password}")
-        put :update, params: { api_key: "12345", index_rubygems: "true", mfa: "true", rubygem_name: "" }
-        @api_key.reload
       end
 
-      should respond_with :success
-      should "keep current scope enabled and update scope in params" do
-        assert_predicate @api_key, :can_index_rubygems?
-        assert_predicate @api_key, :can_push_rubygem?
+      context "update api scopes" do
+        setup do
+          put :update, params: { api_key: "12345", index_rubygems: "true" }
+          @api_key.reload
+        end
+
+        should respond_with :success
+        should "keep current scope enabled and update scope in params" do
+          assert_predicate @api_key, :can_index_rubygems?
+          assert_predicate @api_key, :can_push_rubygem?
+        end
       end
 
-      should "update MFA" do
-        assert @api_key.mfa
+      context "update mfa" do
+        setup do
+          put :update, params: { api_key: "12345", mfa: "true" }
+          @api_key.reload
+        end
+
+        should respond_with :success
+        should "enable MFA" do
+          assert @api_key.mfa
+        end
       end
 
-      should "update rubygem" do
-        assert_nil @api_key.rubygem
+      context "update gem scope" do
+        setup do
+          @ownership = create(:ownership, user: @user)
+          put :update, params: { api_key: "12345", mfa: "true", rubygem_name: @ownership.rubygem.name }
+          @api_key.reload
+        end
+
+        should respond_with :success
+        should "update rubygem" do
+          assert_equal @ownership.rubygem, @api_key.rubygem
+        end
       end
     end
 
