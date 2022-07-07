@@ -122,7 +122,7 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def remove_session
-    session[:mfa_verified_user] = nil
-    session[:mfa_verification] = nil
+    session.delete(:mfa_verified_user)
+    session.delete(:mfa_verification)
   end
 end
