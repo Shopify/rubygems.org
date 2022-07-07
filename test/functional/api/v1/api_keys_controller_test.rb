@@ -262,25 +262,38 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
     context "with correct credentials" do
       setup do
         authorize_with("#{@user.email}:#{@user.password}")
-        post :create, params: { name: "test-key", index_rubygems: "true" }, format: "text"
-        Delayed::Worker.new.work_off
       end
 
-      should_return_api_key_successfully
+      context "api key created email" do
+        setup do
+          post :create, params: { name: "test-key", index_rubygems: "true" }, format: "text"
+          Delayed::Worker.new.work_off
+        end
 
-      should "deliver api key created email" do
-        refute_empty ActionMailer::Base.deliveries
-        email = ActionMailer::Base.deliveries.last
-        assert_equal [@user.email], email.to
-        assert_equal ["no-reply@mailer.rubygems.org"], email.from
-        assert_equal "New API key created for rubygems.org", email.subject
-        assert_match "test-key", email.body.to_s
+        should "be delivered" do
+          refute_empty ActionMailer::Base.deliveries
+          email = ActionMailer::Base.deliveries.last
+          assert_equal [@user.email], email.to
+          assert_equal ["no-reply@mailer.rubygems.org"], email.from
+          assert_equal "New API key created for rubygems.org", email.subject
+          assert_match "test-key", email.body.to_s
+        end
+      end
+
+      context "with api scope param set" do
+        setup do
+          post :create, params: { name: "test-key", index_rubygems: "true" }, format: "text"
+        end
+
+        should_return_api_key_successfully
       end
 
       context "with MFA param set" do
         setup do
           post :create, params: { name: "mfa", index_rubygems: "true", mfa: "true" }, format: "text"
         end
+
+        should_return_api_key_successfully
 
         should "have MFA" do
           created_key = @user.api_keys.find_by(name: "mfa")
@@ -299,13 +312,12 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
               post :create, params: { name: "gem-scoped-key", push_rubygem: "true", rubygem_name: @ownership.rubygem.name }, format: "text"
             end
 
-            should respond_with :success
+            should_return_api_key_successfully
 
             should "have a rubygem associated" do
               created_key = @user.api_keys.find_by(name: "gem-scoped-key")
 
               assert_equal @ownership.rubygem, created_key.rubygem
-              assert_equal created_key.hashed_key, Digest::SHA256.hexdigest(response.body)
             end
           end
 
