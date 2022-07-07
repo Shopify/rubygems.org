@@ -287,6 +287,53 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
           assert created_key.mfa
         end
       end
+
+      context "with rubygem_name param set" do
+        context "with a valid rubygem" do
+          setup do
+            @ownership = create(:ownership, user: @user)
+          end
+
+          context "with applicable scoped enabled" do
+            setup do
+              post :create, params: { name: "gem-scoped-key", push_rubygem: "true", rubygem_name: @ownership.rubygem.name }, format: "text"
+            end
+
+            should respond_with :success
+
+            should "have a rubygem associated" do
+              created_key = @user.api_keys.find_by(name: "gem-scoped-key")
+
+              assert_equal @ownership.rubygem, created_key.rubygem
+              assert_equal created_key.hashed_key, Digest::SHA256.hexdigest(response.body)
+            end
+          end
+
+          context "with applicable scoped disabled" do
+            setup do
+              post :create, params: { name: "gem-scoped-key", index_rubygems: "true", rubygem_name: @ownership.rubygem.name }, format: "text"
+            end
+
+            should respond_with :unprocessable_entity
+
+            should "respond with an error" do
+              assert_equal "Rubygem scope can only be set for push/yank rubygem, and add/remove owner scopes", response.body
+            end
+          end
+        end
+
+        context "with an rubygem name that the user is not an owner of" do
+          setup do
+            post :create, params: { name: "gem-scoped-key", index_rubygems: "true", rubygem_name: "invalid-gem-name" }, format: "text"
+          end
+
+          should respond_with :unprocessable_entity
+
+          should "respond with an error" do
+            assert_equal "Rubygem that is selected cannot be scoped to this key", response.body
+          end
+        end
+      end
     end
 
     context "when user has enabled MFA for UI and API" do
@@ -326,9 +373,9 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
 
     context "with correct credentials" do
       setup do
-        @api_key = create(:api_key, user: @user, key: "12345", push_rubygem: true)
+        @api_key = create(:api_key, user: @user, key: "12345", push_rubygem: true, ownership: create(:ownership, user: @user))
         authorize_with("#{@user.email}:#{@user.password}")
-        put :update, params: { api_key: "12345", index_rubygems: "true", mfa: "true" }
+        put :update, params: { api_key: "12345", index_rubygems: "true", mfa: "true", rubygem_name: "" }
         @api_key.reload
       end
 
@@ -340,6 +387,10 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
 
       should "update MFA" do
         assert @api_key.mfa
+      end
+
+      should "update rubygem" do
+        assert_nil @api_key.rubygem
       end
     end
 
