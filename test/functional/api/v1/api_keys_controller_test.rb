@@ -417,13 +417,62 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
       context "update gem scope" do
         setup do
           @ownership = create(:ownership, user: @user)
-          put :update, params: { api_key: "12345", mfa: "true", rubygem_name: @ownership.rubygem.name }
-          @api_key.reload
         end
 
-        should respond_with :success
-        should "update rubygem" do
-          assert_equal @ownership.rubygem, @api_key.rubygem
+        context "remove gem scope" do
+          setup do
+            @api_key.update(rubygem_name: @ownership.rubygem.name)
+            put :update, params: { api_key: "12345", rubygem_name: "" }
+            @api_key.reload
+          end
+
+          should respond_with :success
+          should "have no rubygem associated" do
+            assert_nil @api_key.rubygem
+          end
+        end
+
+        context "add gem scope" do
+          setup do
+            put :update, params: { api_key: "12345", rubygem_name: @ownership.rubygem.name }
+            @api_key.reload
+          end
+
+          should respond_with :success
+          should "update rubygem associated" do
+            assert_equal @ownership.rubygem, @api_key.rubygem
+          end
+        end
+
+        context "add gem scope without applicable scopes enabled" do
+          setup do
+            put :update, params: { api_key: "12345", push_rubygem: "false", index_rubygem: "true", rubygem_name: @ownership.rubygem.name }
+            @api_key.reload
+          end
+
+          should respond_with :unprocessable_entity
+          should "not update rubygem associated" do
+            key = @user.api_keys.first
+            assert_nil key.rubygem
+            expected_message = "Failed to update scopes for the API key ci-key: " \
+                               "[\"Rubygem scope can only be set for push/yank rubygem, and add/remove owner scopes\"]"
+            assert_equal expected_message, response.body
+          end
+        end
+
+        context "add gem scope with gem not owned by the user" do
+          setup do
+            put :update, params: { api_key: "12345", rubygem_name: "invalid-gem-name" }
+            assert_predicate @api_key, :can_index_rubygems?
+            @api_key.reload
+          end
+
+          should respond_with :unprocessable_entity
+          should "not update rubygem associated" do
+            assert_nil @api_key.rubygem
+            assert_predicate @api_key, :can_index_rubygems?
+            assert_equal "Failed to update scopes for the API key ci-key: [\"Rubygem that is selected cannot be scoped to this key\"]", response.body
+          end
         end
       end
     end
