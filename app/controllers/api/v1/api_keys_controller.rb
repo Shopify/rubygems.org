@@ -34,11 +34,16 @@ class Api::V1::ApiKeysController < Api::BaseController
 
       check_mfa(user) do
         api_key = user.api_keys.find_by!(hashed_key: hashed_key(params[:api_key]))
+        rubygem_id = api_key.rubygem_id
+        api_key.assign_attributes(api_key_update_params)
 
-        if api_key.update(api_key_update_params)
+        if api_key.errors.blank? && api_key.save
           respond_with "Scopes for the API key #{api_key.name} updated"
         else
           errors = api_key.errors.full_messages
+          # assign_attributes autosaves associations
+          # https://discuss.rubyonrails.org/t/using-accepts-nested-attributes-for-with-assign-attributes-means-immediate-saving-of-associated-model/70525
+          api_key.update_attribute("rubygem_id", rubygem_id)
           respond_with "Failed to update scopes for the API key #{api_key.name}: #{errors}", status: :unprocessable_entity
         end
       end
