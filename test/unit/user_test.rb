@@ -36,6 +36,21 @@ class UserTest < ActiveSupport::TestCase
         refute_predicate user, :valid?
       end
 
+      should "be invalid with duplicate handle on create" do
+        create(:user, handle: "test")
+        user = build(:user, handle: "Test")
+        refute_predicate user, :valid?
+      end
+
+      should "be invalid with duplicate handle on update" do
+        create(:user, handle: "test")
+        user = create(:user, handle: "test2")
+        user.update(handle: "Test")
+
+        assert_contains user.errors[:handle], "has already been taken"
+        refute_predicate user, :valid?
+      end
+
       should "be valid when nil and other users have a nil handle" do
         assert_predicate build(:user, handle: nil), :valid?
         assert_predicate build(:user, handle: nil), :valid?
@@ -356,32 +371,6 @@ class UserTest < ActiveSupport::TestCase
       end
     end
 
-    context "strong_mfa_level?" do
-      should "be true if the users mfa level is ui_and_api" do
-        user = create(:user, mfa_level: "ui_and_api")
-
-        assert_predicate user, :strong_mfa_level?
-      end
-
-      should "be true if the users mfa level is ui_and_gem_signin" do
-        user = create(:user, mfa_level: "ui_and_gem_signin")
-
-        assert_predicate user, :strong_mfa_level?
-      end
-
-      should "be false if users mfa level is ui_only" do
-        user = create(:user, mfa_level: "ui_only")
-
-        refute_predicate user, :strong_mfa_level?
-      end
-
-      should "be false if users has mfa disabled" do
-        user = create(:user, mfa_level: "disabled")
-
-        refute_predicate user, :strong_mfa_level?
-      end
-    end
-
     context "recommend mfa" do
       setup do
         @rubygem = create(:rubygem)
@@ -395,10 +384,6 @@ class UserTest < ActiveSupport::TestCase
             Rubygem::MFA_RECOMMENDED_THRESHOLD,
             rubygem_id: @rubygem.id
           )
-        end
-
-        should "return false for mfa_recommended?" do
-          refute_predicate @user, :mfa_recommended?
         end
 
         should "return false for mfa_recommended_not_yet_enabled?" do
@@ -416,10 +401,6 @@ class UserTest < ActiveSupport::TestCase
             Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
             rubygem_id: @rubygem.id
           )
-        end
-
-        should "return true for mfa_recommended?" do
-          assert_predicate @user, :mfa_recommended?
         end
 
         should "return true for mfa_recommended_not_yet_enabled?" do
@@ -441,10 +422,6 @@ class UserTest < ActiveSupport::TestCase
           )
         end
 
-        should "return true for mfa_recommended?" do
-          assert_predicate @user, :mfa_recommended?
-        end
-
         should "return false for mfa_recommended_not_yet_enabled?" do
           refute_predicate @user, :mfa_recommended_not_yet_enabled?
         end
@@ -462,10 +439,6 @@ class UserTest < ActiveSupport::TestCase
             Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
             rubygem_id: @rubygem.id
           )
-        end
-
-        should "return false for mfa_recommended?" do
-          refute_predicate @user, :mfa_recommended?
         end
 
         should "return false for mfa_recommended_not_yet_enabled?" do

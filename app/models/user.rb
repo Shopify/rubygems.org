@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include UserMultifactorMethods
   include Clearance::User
   include Gravtastic
   include WebauthnConcern
@@ -38,7 +39,7 @@ class User < ApplicationRecord
   validates :email, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, format: { with: URI::MailTo::EMAIL_REGEXP }, presence: true
   validates :unconfirmed_email, length: { maximum: Gemcutter::MAX_FIELD_LENGTH }, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
 
-  validates :handle, uniqueness: true, allow_nil: true
+  validates :handle, uniqueness: { case_sensitive: false }, allow_nil: true, if: :handle_changed?
   validates :handle, format: {
     with: /\A[A-Za-z][A-Za-z_\-0-9]*\z/,
     message: "must start with a letter and can only contain letters, numbers, underscores, and dashes"
@@ -58,8 +59,6 @@ class User < ApplicationRecord
     unless: :skip_password_validation?
   validate :unconfirmed_email_uniqueness
   validate :toxic_email_domain, on: :create
-
-  enum mfa_level: { disabled: 0, ui_only: 1, ui_and_api: 2, ui_and_gem_signin: 3 }, _prefix: :mfa
 
   def self.authenticate(who, password)
     user = find_by(email: who.downcase) || find_by(handle: who)
@@ -98,10 +97,6 @@ class User < ApplicationRecord
 
   def self.ownership_request_notifiable_owners
     where(ownerships: { ownership_request_notifier: true })
-  end
-
-  def self.without_mfa
-    where(mfa_level: "disabled")
   end
 
   def name
@@ -284,13 +279,6 @@ class User < ApplicationRecord
   end
 
   private
-
-  def verify_digit_otp(seed, otp)
-    totp = ROTP::TOTP.new(seed)
-    return false unless totp.verify(otp, drift_behind: 30, drift_ahead: 30)
-
-    save!(validate: false)
-  end
 
   def update_email
     self.attributes = { email: unconfirmed_email, unconfirmed_email: nil, mail_fails: 0 }

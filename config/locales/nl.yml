@@ -67,8 +67,8 @@ nl:
       api_keys:
       name:
       scopes:
-      age:
       gem:
+      age:
       last_access:
       action:
       delete:
@@ -313,7 +313,7 @@ nl:
     require_mfa_enabled:
     setup_recommended:
     strong_mfa_level_recommended:
-    ui_only_warning: 
+    ui_only_warning:
     new:
       title:
       scan_prompt:
@@ -447,7 +447,7 @@ nl:
       required_ruby_version: Required Ruby Version
       required_rubygems_version: Required Rubygems Version
       requires_mfa:
-      since: "%{version}"
+      released_with_mfa:
       links:
         badge: Badge
         bugs: Bug-tracker

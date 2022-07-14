@@ -68,8 +68,8 @@ ja:
       api_keys:
       name:
       scopes:
-      age:
       gem:
+      age:
       last_access:
       action:
       delete:
@@ -296,7 +296,7 @@ ja:
     require_mfa_enabled:
     setup_recommended:
     strong_mfa_level_recommended:
-    ui_only_warning: 
+    ui_only_warning:
     new:
       title:
       scan_prompt:
@@ -423,12 +423,12 @@ ja:
       bundler_header: Gemfile
       copied: コピー完了!
       copy_to_clipboard: クリップボードにコピー
-      downloads_for_this_version: 現行バージョン
+      downloads_for_this_version: このバージョンのみ
       install: インストール
       required_ruby_version: 必要Rubyバージョン
-      required_rubygems_version: 必要Gemバージョン
+      required_rubygems_version: 必要RubyGemsバージョン
       requires_mfa:
-      since: "%{version}"
+      released_with_mfa:
       links:
         badge: バッジ
         bugs: バグトラッカー
@@ -436,7 +436,7 @@ ja:
         code: ソースコード
         docs: ドキュメント
         download: ダウンロード
-        header: リンク集
+        header: リンク
         home: ホームページ
         mail: メーリングリスト
         report_abuse: 悪用報告
