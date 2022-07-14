@@ -18,7 +18,7 @@ class WebauthnCredentialsTest < SystemTest
     assert_text "Additional credentials"
     assert_text "You don't have any additional credentials"
     assert page.has_field?("Nickname")
-    assert page.has_button?("Add additional credential")
+    assert page.has_button?("Register an additional credential")
   end
 
   should "show the additional credentials" do
@@ -32,7 +32,7 @@ class WebauthnCredentialsTest < SystemTest
     assert_text @backup.nickname
     assert page.has_button?("Delete")
     assert page.has_field?("Nickname")
-    assert page.has_button?("Add additional credential")
+    assert page.has_button?("Register an additional credential")
   end
 
   should "be able to delete additional crendentials" do
