@@ -135,7 +135,13 @@ Rails.application.routes.draw do
     end
     resource :dashboard, only: :show, constraints: { format: /html|atom/ }
     resources :profiles, only: :show
-    resource :multifactor_auth, only: %i[new create update]
+    resource :multifactor_auth, only: %i[new create update] do
+      get 'replace' => 'multifactor_auths#replace'
+      post 'replace' => 'multifactor_auths#submit_replace'
+      get 'verify' => 'multifactor_auths#verify'
+      post 'verify' => 'multifactor_auths#submit_verify'
+    end
+
     resource :settings, only: :edit
     resource :profile, only: %i[edit update] do
       get :adoptions

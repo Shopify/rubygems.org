@@ -24,6 +24,12 @@
   <% end %>
 </div>
 
+<% if @user.mfa_enabled? %>
+  <div class="t-body">
+  <h2><%= link_to t('.mfa.replace_header'), verify_multifactor_auth_path %></h2>
+</div>
+<% end %>
+
 <div class="t-body">
   <h2><%= link_to t('.reset_password.title'), new_password_path %></h2>
 </div>

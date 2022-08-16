@@ -332,12 +332,13 @@ es:
     ui_only_warning:
     new:
       title: Activando autenticación de múltiples factores
+      button: Activar
+    mfa_setup:
       scan_prompt: Por favor escanea el código QR con tu aplicación de Autenticación.
         Si no puedes escanear el código, agrega manualmente información abajo en tu
         aplicación.
       otp_prompt: Escribe el código de la aplicación de Autenticación para continuar.
       confirm: He mantenido seguros mis códigos de recuperación.
-      enable: Activar
       account: 'Cuenta: %{account}'
       key: 'Clave: %{key}'
       time_based: 'Basado en tiempo: Sí'
@@ -351,6 +352,19 @@ es:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    submit_replace:
+      success:
     destroy:
       success: Has desactivado exitosamente la autenticación de múltiples factores.
     update:
@@ -420,6 +434,7 @@ es:
           ui_only: Solo Interfaz de Usuario
           ui_and_api: Interfaz de Usuario y API
           ui_and_gem_signin: Interfaz de Usario y gem signin
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:

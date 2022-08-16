@@ -1,0 +1,34 @@
+<% @title = t("multifactor_auths.#{_context}.title") %>
+
+<div class="t-body l-overflow">
+  <div class="l-half--l l-half--l--center">
+    <%= raw @qrcode_svg %>
+  </div>
+  <div>
+    <p><%= t('.scan_prompt') %></p>
+    <% if _context == "replace"%>
+      <p><%= t('multifactor_auths.replace.timeout_warning') %>
+     <% end %>
+    <p>
+      <span id="mfa-account"><%= t('.account', account: "#{issuer}:#{current_user.email}") %></span><br>
+      <span id="mfa-key"><%= t('.key', key: @seed.chars.each_slice(@key_chunk_length).map(&:join).join(' ')) %></span><br>
+      <span id="mfa-type"><%= t('.time_based') %></span>
+    </p>
+  </div>
+</div>
+
+
+<%= form_tag _form_path, method: :post do %>
+  <div class="text_field">
+    <%= label_tag :otp, 'OTP code', class: 'form__label' %>
+    <p class='form__field__instructions'><%= t '.otp_prompt' %></p>
+    <%= text_field_tag :otp, '', class: 'form__input', autocomplete: :off %>
+  </div>
+
+  <% if _context == "replace"%>
+    <div>
+    <p><%= t('multifactor_auths.replace.warning') %></p>
+    </div>
+  <% end %>
+  <%= submit_tag t("multifactor_auths.#{_context}.button"), class: 'form__submit' %>
+<% end %>

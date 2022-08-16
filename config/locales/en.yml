@@ -301,10 +301,11 @@ en:
     ui_only_warning: Updating multi-factor authentication to "UI Only" is no longer supported. Please use "UI and gem signin" or "UI and API".
     new:
       title: Enabling multi-factor auth
+      button: Enable
+    mfa_setup:
       scan_prompt: Please scan the qr-code with your authenticator app. If you cannot scan the code, add information below into your app manually.
       otp_prompt: Type digit code from auth app to continue.
       confirm: I have kept my recovery codes safe.
-      enable: Enable
       account: "Account: %{account}"
       key: "Key: %{key}"
       time_based: "Time based: Yes"
@@ -317,6 +318,19 @@ en:
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
       note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your MFA if your lose your authentication device. Each of the code can be used once."
+    replace:
+      title: Replacing multi-factor authentication device
+      button: Replace
+      warning: "Warning: this will remove your previous multi-factor authentication device permanently."
+      verify: "Please verify with your current multi-factor authentication device to continue."
+      timeout_warning: "This page will expire in 5 minutes."
+      timeout: "Your multi-factor replacement session has expired, please verify again."
+    verify:
+      title: Multi-factor verification
+      verify_html: 'Please enter an OTP or <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> from your original multi-factor authentication device to continue.'
+      submit: Verify
+    submit_replace:
+      success: You have succesfully replaced your multi-factor authentication device.
     destroy:
       success: You have successfully disabled multi-factor authentication.
     update:
@@ -386,6 +400,7 @@ en:
           ui_only: UI Only
           ui_and_api: UI and API (Recommended)
           ui_and_gem_signin: UI and gem signin
+        replace_header: Replace multi-factor authentication device
   profiles:
     adoptions:
       no_ownership_calls: You have not created any ownership call for any of your gems.

@@ -301,10 +301,11 @@ zh-CN:
     ui_only_warning:
     new:
       title: 启用多重要素验证
+      button: 启用
+    mfa_setup:
       scan_prompt: 请用你的验证装置扫描 QR-code。如果你没办法扫描，手动输入下面的资料。
       otp_prompt: 输入验证装置上的数字来继续。
       confirm: 我已把复原码收在安全的地方。
-      enable: 启用
       account: '帐号: %{account}'
       key: '金钥: %{key}'
       time_based: '基于时间的: 是'
@@ -317,6 +318,19 @@ zh-CN:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    submit_replace:
+      success:
     destroy:
       success: 你已成功停用多重要素验证。
     update:
@@ -384,6 +398,7 @@ zh-CN:
           ui_only: 只有使用者介面
           ui_and_api: 使用者介面与API
           ui_and_gem_signin:
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:

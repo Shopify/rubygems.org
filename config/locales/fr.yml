@@ -330,13 +330,14 @@ fr:
     ui_only_warning:
     new:
       title: Activer l'authentification multifacteur
+      button: Activer
+    mfa_setup:
       scan_prompt: Veuillez scanner le QR code avec votre app d'authentification.
         Si vous ne pouvez pas scanner le code, veuillez saisir manuellement les informations
         ci-dessous dans votre app.
       otp_prompt: Veuillez taper le code de l'application d'authentification pour
         poursuivre.
       confirm: J'ai gardé mes codes de récupération en sécurité.
-      enable: Activer
       account: 'Compte: %{account}'
       key: 'Clé: %{key}'
       time_based:
@@ -350,6 +351,19 @@ fr:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    submit_replace:
+      success:
     destroy:
       success: Vous avez désactivé l'authentification multifacteur.
     update:
@@ -418,6 +432,7 @@ fr:
           ui_only:
           ui_and_api:
           ui_and_gem_signin:
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:

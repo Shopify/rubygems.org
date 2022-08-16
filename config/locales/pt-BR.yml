@@ -329,10 +329,11 @@ pt-BR:
     ui_only_warning:
     new:
       title:
+      button:
+    mfa_setup:
       scan_prompt:
       otp_prompt:
       confirm:
-      enable:
       account:
       key:
       time_based:
@@ -345,6 +346,19 @@ pt-BR:
       copy:
       saved:
       note_html:
+    replace:
+      title:
+      button:
+      warning:
+      verify:
+      timeout_warning:
+      timeout:
+    verify:
+      title:
+      verify_html:
+      submit:
+    submit_replace:
+      success:
     destroy:
       success:
     update:
@@ -413,6 +427,7 @@ pt-BR:
           ui_only:
           ui_and_api:
           ui_and_gem_signin:
+        replace_header:
   profiles:
     adoptions:
       no_ownership_calls:

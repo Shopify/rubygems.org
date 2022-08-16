@@ -137,4 +137,8 @@ class ApplicationController < ActionController::Base
   def password_session_active?
     session[:verification] && session[:verification] > Time.current && session.fetch(:verified_user, "") == current_user.id
   end
+
+  def mfa_verification_session_active?
+    session[:mfa_verification] && session[:mfa_verification] > Time.current && session.fetch(:mfa_verified_user, "") == current_user.id
+  end
 end
