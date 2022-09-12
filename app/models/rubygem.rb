@@ -345,6 +345,10 @@ class Rubygem < ApplicationRecord
     user.mfa_enabled? || !metadata_mfa_required?
   end
 
+  def mfa_required?
+    downloads > MFA_REQUIRED_THRESHOLD
+  end
+
   # TODO: broken. don't use until #2964 is resolved.
   def mfa_required_since_version
     return unless metadata_mfa_required?

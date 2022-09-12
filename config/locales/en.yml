@@ -226,6 +226,7 @@ en:
       subtitle: Hi %{handle}!
       body_text:  You were added as an owner to %{gem} gem by %{authorizer}. Please visit link below to confirm your ownership.
       body_html: You were added as an owner to <strong><a href="https://rubygems.org/gems/%{gem}">%{gem}</a></strong> gem by <strong>%{authorizer}</strong>. Please click on the link below to confirm your ownership.
+      require_mfa_html: <strong>This gem requires you to enable MFA.</strong> By confirming, you would not be able to perform privileged actions (i.e. push and yank gems, or add and remove gem owners) until MFA is configured.
       link_expiration_explanation_html: Please note that this link is valid for only %{expiry_hours}. You can resend confirmation mail from the  <strong><a href="https://rubygems.org/gems/%{gem}">%{gem}</a></strong> gem page after sign in.
     owner_added:
       subject_self: You were added as an owner to %{gem} gem
