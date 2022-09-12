@@ -212,6 +212,9 @@ class Api::V1::RubygemsControllerTest < ActionController::TestCase
           post :create, body: gem_file.read
         end
         should respond_with :unauthorized
+        should "return body that starts with MFA enabled message" do
+          assert @response.body.start_with?("You have enabled multifactor authentication")
+        end
       end
 
       context "On post to create for new gem with incorrect OTP" do
@@ -347,7 +350,7 @@ class Api::V1::RubygemsControllerTest < ActionController::TestCase
       should respond_with :conflict
       should "not register new version" do
         version = Rubygem.last.reload.versions.most_recent
-        assert_equal @date.to_formatted_s(:db), version.built_at.to_formatted_s(:db), "(date)"
+        assert_equal @date.to_fs(:db), version.built_at.to_fs(:db), "(date)"
         assert_equal "Freewill", version.summary, "(summary)"
         assert_equal "Geddy Lee", version.authors, "(authors)"
       end
@@ -522,7 +525,77 @@ class Api::V1::RubygemsControllerTest < ActionController::TestCase
           assert_equal 2, Rubygem.last.versions.count
         end
         should "disable mfa requirement" do
-          refute_predicate @rubygem, :mfa_required?
+          refute_predicate @rubygem, :metadata_mfa_required?
+        end
+      end
+    end
+
+    context "when mfa is required" do
+      setup do
+        User.any_instance.stubs(:mfa_required?).returns true
+      end
+
+      context "by user with mfa disabled" do
+        setup do
+          post :create, body: gem_file("test-1.0.0.gem").read
+        end
+
+        should respond_with :forbidden
+
+        should "show error message" do
+          mfa_error = <<~ERROR.chomp
+            [ERROR] For protection of your account and your gems, you are required to set up multi-factor authentication \
+            at https://rubygems.org/multifactor_auth/new.
+
+            Please read our blog post for more details (https://blog.rubygems.org/2022/08/15/requiring-mfa-on-popular-gems.html).
+          ERROR
+
+          assert_includes @response.body, mfa_error
+        end
+      end
+
+      context "by user on `ui_only` level" do
+        setup do
+          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+          post :create, body: gem_file("test-1.0.0.gem").read
+        end
+
+        should respond_with :forbidden
+
+        should "show error message" do
+          mfa_error = <<~ERROR.chomp
+            [ERROR] For protection of your account and your gems, you are required to change your MFA level to 'UI and gem signin' or 'UI and API' \
+            at https://rubygems.org/settings/edit.
+
+            Please read our blog post for more details (https://blog.rubygems.org/2022/08/15/requiring-mfa-on-popular-gems.html).
+          ERROR
+
+          assert_includes @response.body, mfa_error
+        end
+      end
+
+      context "by user on `ui_and_gem_signin` level" do
+        setup do
+          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_gem_signin)
+          post :create, body: gem_file("test-1.0.0.gem").read
+        end
+
+        should respond_with :success
+        should "not show error message" do
+          refute_includes @response.body, "For protection of your account and your gems"
+        end
+      end
+
+      context "by user on `ui_and_api` level" do
+        setup do
+          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_api)
+          @request.env["HTTP_OTP"] = ROTP::TOTP.new(@user.mfa_seed).now
+          post :create, body: gem_file("test-1.0.0.gem").read
+        end
+
+        should respond_with :success
+        should "not show error message" do
+          refute_includes @response.body, "For protection of your account and your gems"
         end
       end
     end
@@ -690,6 +763,9 @@ class Api::V1::RubygemsControllerTest < ActionController::TestCase
         post :create, body: gem_file("test-1.0.0.gem").read
       end
       should respond_with :forbidden
+      should "return body that starts with denied access message" do
+        assert @response.body.start_with?("The API key doesn't have access")
+      end
     end
   end
 

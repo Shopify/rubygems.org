@@ -215,8 +215,8 @@ class ProfilesControllerTest < ActionController::TestCase
           end
 
           should redirect_to("the homepage") { root_url }
-          should set_flash.to("Your account deletion request has been enqueued."\
-                              " We will send you a confirmation mail when your request has been processed.")
+          should set_flash.to("Your account deletion request has been enqueued. " \
+                              "We will send you a confirmation mail when your request has been processed.")
         end
       end
 
@@ -234,6 +234,98 @@ class ProfilesControllerTest < ActionController::TestCase
 
           should redirect_to("the profile edit page") { edit_profile_path }
           should set_flash.to("This request was denied. We could not verify your password.")
+        end
+      end
+    end
+
+    context "when user owns a gem with more than MFA_REQUIRED_THRESHOLD downloads" do
+      setup do
+        @rubygem = create(:rubygem)
+        create(:ownership, rubygem: @rubygem, user: @user)
+        GemDownload.increment(
+          Rubygem::MFA_REQUIRED_THRESHOLD + 1,
+          rubygem_id: @rubygem.id
+        )
+      end
+
+      redirect_scenarios = {
+        "GET to adoptions" => { action: :adoptions, request: { method: "GET", params: { id: 1 } }, path: "/profile/adoptions" },
+        "GET to delete" => { action: :delete, request: { method: "GET", params: { id: 1 } }, path: "/profile/delete" },
+        "DELETE to destroy" => { action: :destroy, request: { method: "DELETE", params: { id: 1 } }, path: "/profile" },
+        "GET to edit" => { action: :edit, request: { method: "GET", params: { id: 1 } }, path: "/profile/edit" },
+        "PATCH to update" => { action: :update, request: { method: "PATCH", params: { id: 1 } }, path: "/profile" },
+        "PUT to update" => { action: :update, request: { method: "PUT", params: { id: 1 } }, path: "/profile" }
+      }
+
+      context "user has mfa disabled" do
+        context "on GET to show" do
+          setup { get :show, params: { id: @user.id } }
+
+          should "not redirect to mfa" do
+            assert_response :success
+            assert page.has_content? "Edit Profile"
+          end
+        end
+
+        redirect_scenarios.each do |label, request_params|
+          context "on #{label}" do
+            setup { process(request_params[:action], **request_params[:request]) }
+
+            should redirect_to("the setup mfa page") { new_multifactor_auth_path }
+            should "set mfa_redirect_uri" do
+              assert_equal request_params[:path], @controller.session[:mfa_redirect_uri]
+            end
+          end
+        end
+      end
+
+      context "user has mfa set to weak level" do
+        setup do
+          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+        end
+
+        context "on GET to show" do
+          setup { get :show, params: { id: @user.id } }
+
+          should "not redirect to mfa" do
+            assert_response :success
+            assert page.has_content? "Edit Profile"
+          end
+        end
+
+        redirect_scenarios.each do |label, request_params|
+          context "on #{label}" do
+            setup { process(request_params[:action], **request_params[:request]) }
+
+            should redirect_to("the settings page") { edit_settings_path }
+            should "set mfa_redirect_uri" do
+              assert_equal request_params[:path], @controller.session[:mfa_redirect_uri]
+            end
+          end
+        end
+      end
+
+      context "user has MFA set to strong level, expect normal behaviour" do
+        setup do
+          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_api)
+        end
+
+        context "on GET to show" do
+          setup { get :show, params: { id: @user.id } }
+
+          should "not redirect to mfa" do
+            assert_response :success
+            assert page.has_content? "Edit Profile"
+          end
+        end
+
+        context "on GET to adoptions" do
+          setup { get :adoptions, params: { id: @user.id } }
+
+          should "not redirect to mfa" do
+            assert_response :success
+            refute page.has_content? "multi-factor"
+          end
         end
       end
     end

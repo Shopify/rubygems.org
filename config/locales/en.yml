@@ -23,7 +23,7 @@ en:
   please_sign_up: Access Denied. Please sign up for an account at https://rubygems.org
   please_sign_in: Please sign in to continue.
   otp_incorrect: Your OTP code is incorrect. Please check it and retry.
-  otp_missing: You have enabled multi-factor Authentication but no OTP code provided. Please fill it and retry.
+  otp_missing: You have enabled multifactor authentication but no OTP code provided. Please fill it and retry.
   sign_in: Sign in
   sign_up: Sign up
   dependency_list: Show all transitive dependencies
@@ -294,7 +294,9 @@ en:
     otp_code: OTP code
     require_mfa_disabled: Your multi-factor authentication has been enabled. To reconfigure multi-factor authentication, you'll have to disable it first.
     require_mfa_enabled: Your multi-factor authentication has not been enabled. You have to enable it first.
+    setup_required_html: For protection of your account and your gems, you are required to set up multi-factor authentication. Please read our <a href="https://blog.rubygems.org/2022/08/15/requiring-mfa-on-popular-gems.html">blog post</a> for more details.
     setup_recommended: For protection of your account and your gems, we encourage you to set up multi-factor authentication. Your account will be required to have MFA enabled in the future.
+    strong_mfa_level_required_html: For protection of your account and your gems, you are required to change your MFA level to "UI and gem signin" or "UI and API". Please read our <a href="https://blog.rubygems.org/2022/08/15/requiring-mfa-on-popular-gems.html"">blog post</a> for more details.
     strong_mfa_level_recommended: For protection of your account and your gems, we encourage you to change your MFA level to "UI and gem signin" or "UI and API". Your account will be required to have MFA enabled on one of these levels in the future.
     ui_only_warning: Updating multi-factor authentication to "UI Only" is no longer supported. Please use "UI and gem signin" or "UI and API".
     new:
@@ -333,6 +335,7 @@ en:
       title: Email notifications
       update: Update
       owner_heading: Ownership Notifications
+      owner_request_heading: Ownership Request Notifications
       push_heading: Push Notifications
   owners:
     confirm:
@@ -373,6 +376,7 @@ en:
         key_is_html: Your API key is %{key}.
         link_text: gem commands
         reset: Reset my API key
+        reset_all: Delete all scoped API keys
         title: API Access
       reset_password:
         title: Reset password
@@ -497,6 +501,7 @@ en:
       description: Description
       downloads: Downloads
       updated: Updated
+      yanked: Yanked
     show:
       subtitle: for %{query}
       month_update: Updated last month (%{count})
@@ -535,6 +540,7 @@ en:
       not_hosted_notice: This gem is not currently hosted on RubyGems.org.
       title: All versions of %{name}
       versions_since: "%{count} versions since %{since}"
+      imported_gem_version_notice: "This gem version was imported to RubyGems.org on %{import_date}. The date displayed was specified by the author in the gemspec."
     version:
       yanked: yanked
   will_paginate:

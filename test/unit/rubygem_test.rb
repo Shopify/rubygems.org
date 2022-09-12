@@ -403,7 +403,7 @@ class RubygemTest < ActiveSupport::TestCase
       assert_equal @rubygem.versions.most_recent.metadata, hash["metadata"]
       assert_equal "#{Gemcutter::PROTOCOL}://#{Gemcutter::HOST}/gems/#{@rubygem.name}",
         hash["project_uri"]
-      assert_equal "#{Gemcutter::PROTOCOL}://#{Gemcutter::HOST}/gems/"\
+      assert_equal "#{Gemcutter::PROTOCOL}://#{Gemcutter::HOST}/gems/" \
                    "#{@rubygem.versions.most_recent.full_name}.gem", hash["gem_uri"]
 
       assert_equal JSON.load(dev_dep.to_json), hash["dependencies"]["development"].first
@@ -437,7 +437,7 @@ class RubygemTest < ActiveSupport::TestCase
         doc.at_css("sha").content
       assert_equal "#{Gemcutter::PROTOCOL}://#{Gemcutter::HOST}/gems/#{@rubygem.name}",
         doc.at_css("project-uri").content
-      assert_equal "#{Gemcutter::PROTOCOL}://#{Gemcutter::HOST}/gems/"\
+      assert_equal "#{Gemcutter::PROTOCOL}://#{Gemcutter::HOST}/gems/" \
                    "#{@rubygem.versions.most_recent.full_name}.gem", doc.at_css("gem-uri").content
 
       assert_equal dev_dep.name, doc.at_css("dependencies development dependency name").content
@@ -873,7 +873,7 @@ class RubygemTest < ActiveSupport::TestCase
     end
   end
 
-  context ".mfa_recommended" do
+  context ".mfa_recommended scope" do
     should "not return gems with fewer downloads than the recommended threshold" do
       rubygem = create(:rubygem)
       GemDownload.increment(
@@ -892,6 +892,28 @@ class RubygemTest < ActiveSupport::TestCase
       )
 
       refute_empty Rubygem.mfa_recommended
+    end
+  end
+
+  context ".mfa_required scope" do
+    should "not return gems with fewer downloads than the required threshold" do
+      rubygem = create(:rubygem)
+      GemDownload.increment(
+        Rubygem::MFA_REQUIRED_THRESHOLD,
+        rubygem_id: rubygem.id
+      )
+
+      assert_empty Rubygem.mfa_required
+    end
+
+    should "return gems with more downloads than the required threshold" do
+      rubygem = create(:rubygem)
+      GemDownload.increment(
+        Rubygem::MFA_REQUIRED_THRESHOLD + 1,
+        rubygem_id: rubygem.id
+      )
+
+      assert_includes Rubygem.mfa_required, rubygem
     end
   end
 

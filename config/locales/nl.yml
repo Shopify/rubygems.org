@@ -311,7 +311,9 @@ nl:
     otp_code:
     require_mfa_disabled:
     require_mfa_enabled:
+    setup_required_html:
     setup_recommended:
+    strong_mfa_level_required_html:
     strong_mfa_level_recommended:
     ui_only_warning:
     new:
@@ -348,6 +350,7 @@ nl:
       title:
       update:
       owner_heading:
+      owner_request_heading:
       push_heading:
   owners:
     confirm:
@@ -390,6 +393,7 @@ nl:
         key_is_html: Je API key is %{key}
         link_text: gem commando’s
         reset: Reset mijn API key
+        reset_all:
         title: API toegang
       reset_password:
         title: Reset wachtwoord
@@ -513,6 +517,7 @@ nl:
       description:
       downloads:
       updated:
+      yanked:
     show:
       subtitle: voor %{query}
       month_update:
@@ -551,6 +556,7 @@ nl:
       not_hosted_notice: Deze gem wordt momenteel niet gehost op rubygems.org
       title: Alle versies van %{name}
       versions_since: "%{count} versies sinds %{since}"
+      imported_gem_version_notice:
     version:
       yanked: verwijderd
   will_paginate:

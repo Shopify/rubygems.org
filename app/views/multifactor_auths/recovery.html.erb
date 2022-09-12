@@ -16,5 +16,5 @@
     <%= label_tag "saved", t(".saved"), class: "form__checkbox__label" %>
   </div>
 
-  <%= button_to t(".continue"), edit_settings_path, method: :get, id: "recovery-codes--submit", class: "form__submit form__submit--no-hover", disabled: true %>
+  <%= button_to t(".continue"), @continue_path, method: :get, id: "recovery-codes--submit", class: "form__submit form__submit--no-hover", disabled: true %>
 </div>

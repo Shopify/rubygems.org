@@ -294,7 +294,9 @@ zh-CN:
     otp_code: OTP 码
     require_mfa_disabled:
     require_mfa_enabled: 你的多重要素验证已停用，请先启用。
+    setup_required_html:
     setup_recommended:
+    strong_mfa_level_required_html:
     strong_mfa_level_recommended:
     ui_only_warning:
     new:
@@ -331,6 +333,7 @@ zh-CN:
       title:
       update:
       owner_heading:
+      owner_request_heading:
       push_heading:
   owners:
     confirm:
@@ -372,6 +375,7 @@ zh-CN:
         key_is_html: 你的 API Key：%{key}。
         link_text: Gem 命令
         reset: 重置 API Key
+        reset_all:
         title: API 访问
       reset_password:
         title: 重置密码
@@ -495,6 +499,7 @@ zh-CN:
       description: 描述
       downloads: 下载数
       updated: 更新时间
+      yanked:
     show:
       subtitle: "%{query}"
       month_update:
@@ -533,6 +538,7 @@ zh-CN:
       not_hosted_notice: 此 Gem 目前没有托管在 Gemcutter。
       title: "%{name} 的所有版本"
       versions_since: 自 %{since} 以来有 %{count} 个版本
+      imported_gem_version_notice:
     version:
       yanked: 已废弃
   will_paginate:

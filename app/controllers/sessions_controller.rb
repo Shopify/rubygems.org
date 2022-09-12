@@ -1,5 +1,7 @@
 class SessionsController < Clearance::SessionsController
   before_action :redirect_to_signin, unless: :signed_in?, only: %i[verify authenticate]
+  before_action :redirect_to_new_mfa, if: :mfa_required_not_yet_enabled?, only: %i[verify authenticate]
+  before_action :redirect_to_settings_strong_mfa_required, if: :mfa_required_weak_level_enabled?, only: %i[verify authenticate]
   before_action :ensure_not_blocked, only: :create
 
   def create
@@ -65,7 +67,7 @@ class SessionsController < Clearance::SessionsController
       session[:verification]  = Time.current + Gemcutter::PASSWORD_VERIFICATION_EXPIRY
       redirect_to session.delete(:redirect_uri) || root_path
     else
-      flash[:alert] = t("profiles.request_denied")
+      flash.now[:alert] = t("profiles.request_denied")
       render :verify, status: :unauthorized
     end
   end
