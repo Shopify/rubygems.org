@@ -586,7 +586,7 @@ fr:
     prompt:
       webauthn_credential_note:
       sign_in_with_weauthn_credential:
-      recovery_code:
+      otp_code:
   stats:
     index:
       title:

@@ -289,7 +289,7 @@ en:
       title: Change your password
       will_email_notice: We will email you a link to change your password.
   multifactor_auths:
-    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your multi-factor authentication device or to your additional credentials.'
+    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your multi-factor authentication device or to your security device.'
     incorrect_otp: Your OTP code is incorrect.
     otp_code: OTP code
     require_mfa_disabled: Your multi-factor authentication has been enabled. To reconfigure multi-factor authentication, you'll have to disable it first.
@@ -366,9 +366,9 @@ en:
   settings:
     edit:
       title: Edit settings
-      webauthn_credentials: Additional credentials
-      no_webauthn_credentials: You don't have any additional credentials
-      webauthn_credential_note: An additional credential can be a security key, a fingerprint, a face, or a pin
+      webauthn_credentials: Security device
+      no_webauthn_credentials: You don't have any security devices
+      webauthn_credential_note: A security device can be can be any device that complies with the FIDO2 standard such as security and biometric keys. This device currently can only be used for web login and is therefore not a replacement for OTP based Multi-factor Authentication.
       otp_code: OTP code or recovery code
       api_access:
         confirm_reset: Are you sure? This cannot be undone.
@@ -520,9 +520,9 @@ en:
     create:
       account_blocked: Your account was blocked by rubygems team. Please email support@rubygems.org to recover your account.
     prompt:
-      webauthn_credential_note: An additional credential can be a a fingerprint, a face, a security key or a pin.
-      sign_in_with_weauthn_credential: Sign in with an additional credential
-      recovery_code: Recovery code
+      webauthn_credential_note: Authenticate with a security device such as touch id, yubikey, etc.
+      sign_in_with_weauthn_credential: Sign in
+      otp_code: OTP or recovery code
   stats:
     index:
       title: Stats
@@ -602,8 +602,8 @@ en:
   webauthn_credentials:
     recovery:
       continue: Continue
-      title: You have successfully added an additional credential
-      notice_html: 'Please <strong class="recovery__bold">copy and paste</strong> these recovery codes. You can use these codes to login if you lose your additional credential. Each of the code can be used once.'
+      title: You have successfully added a security device
+      notice_html: 'Please <strong class="recovery__bold">copy and paste</strong> these recovery codes. You can use these codes to login if you lose your security device. Each of the code can be used once.'
       copied: "[ copied ]"
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
@@ -611,4 +611,4 @@ en:
       delete: Delete
     form:
       nickname: Nickname
-      submit: Register an additional credential
+      submit: Register a security device

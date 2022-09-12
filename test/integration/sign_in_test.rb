@@ -72,7 +72,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
 
     within(".mfa-form") do
-      fill_in "OTP code", with: ROTP::TOTP.new("thisisonemfaseed").now
+      fill_in "OTP or recovery code", with: ROTP::TOTP.new("thisisonemfaseed").now
       click_button "Sign in"
     end
 
@@ -88,7 +88,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
 
     within(".mfa-form") do
-      fill_in "OTP code", with: "11111"
+      fill_in "OTP or recovery code", with: "11111"
       click_button "Sign in"
     end
 
@@ -104,7 +104,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
 
     within(".mfa-form") do
-      fill_in "OTP code", with: "0123456789ab"
+      fill_in "OTP or recovery code", with: "0123456789ab"
       click_button "Sign in"
     end
 
@@ -120,7 +120,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
 
     within(".mfa-form") do
-      fill_in "OTP code", with: "ab0123456789"
+      fill_in "OTP or recovery code", with: "ab0123456789"
       click_button "Sign in"
     end
 
@@ -163,7 +163,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
 
     within(".mfa-form") do
-      fill_in "OTP code", with: "0123456789ab"
+      fill_in "OTP or recovery code", with: "0123456789ab"
       click_button "Sign in"
     end
 
@@ -191,7 +191,7 @@ class SignInTest < SystemTest
 
     assert page.has_content? "Multi-factor authentication"
     within(".mfa-form") do
-      fill_in "OTP code", with: "0123456789ab"
+      fill_in "OTP or recovery code", with: "0123456789ab"
       click_button "Sign in"
     end
 
@@ -216,7 +216,7 @@ class SignInTest < SystemTest
 
     assert page.has_content? "Multi-factor authentication"
     within(".mfa-form") do
-      fill_in "OTP code", with: "0123456789ab"
+      fill_in "OTP or recovery code", with: "0123456789ab"
       click_button "Sign in"
     end
 
@@ -236,7 +236,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
 
     within(".mfa-form") do
-      fill_in "OTP code", with: ROTP::TOTP.new("thisisonemfaseed").now
+      fill_in "OTP or recovery code", with: ROTP::TOTP.new("thisisonemfaseed").now
       click_button "Sign in"
     end
 
