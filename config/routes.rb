@@ -211,6 +211,8 @@ Rails.application.routes.draw do
     get '/sign_up' => 'users#new', as: 'sign_up' if Clearance.configuration.allow_sign_up?
   end
 
+  get '/mfa_dashboard' => 'data#mfa_dashboard'
+
   ################################################################################
   # high_voltage static routes
   get 'pages/*id' => 'high_voltage/pages#show', constraints: { id: /(#{HighVoltage.page_ids.join("|")})/ }, as: :page
