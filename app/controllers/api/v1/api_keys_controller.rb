@@ -47,13 +47,21 @@ class Api::V1::ApiKeysController < Api::BaseController
   private
 
   def check_mfa(user)
-    if user&.mfa_gem_signin_authorized?(otp)
-      return render_mfa_setup_required_error if user.mfa_required_not_yet_enabled?
-      return render_mfa_strong_level_required_error if user.mfa_required_weak_level_enabled?
+    if user && user.mfa_gem_signin_authorized?(otp)
+      if user.doesnt_meet_minimum_mfa_level? && user.rubygems.mfa_required.any? && user.mfa_disabled?
+        return render_mfa_setup_required_error
+      end
+      if user.mfa_required? && user.mfa_ui_only?
+        return render_mfa_strong_level_required_error
+      end
 
       yield
-    elsif user&.mfa_enabled?
-      prompt_text = otp.present? ? t(:otp_incorrect) : t(:otp_missing)
+    elsif user && user.mfa_enabled?
+      prompt_text = if otp.present?
+        t(:otp_incorrect)
+        else
+          t(:otp_missing)
+        end
       render plain: prompt_text, status: :unauthorized
     else
       false

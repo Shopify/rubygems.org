@@ -62,6 +62,16 @@ module UserMultifactorMethods
       save!(validate: false)
     end
 
+    def mfa_required?
+      return false if strong_mfa_level?
+
+      rubygems.mfa_required.any?
+    end
+
+    def doesnt_meet_minimum_mfa_level?
+      !strong_mfa_level?
+    end
+
     private
 
     def strong_mfa_level?
@@ -72,12 +82,6 @@ module UserMultifactorMethods
       return false if strong_mfa_level? || mfa_required?
 
       rubygems.mfa_recommended.any?
-    end
-
-    def mfa_required?
-      return false if strong_mfa_level?
-
-      rubygems.mfa_required.any?
     end
 
     def verify_digit_otp(seed, otp)

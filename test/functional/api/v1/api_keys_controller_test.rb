@@ -313,7 +313,7 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
 
     context "when mfa is required" do
       setup do
-        User.any_instance.stubs(:mfa_required?).returns true
+        create(:ownership, rubygem: create(:rubygem, downloads: Rubygem::MFA_REQUIRED_THRESHOLD + 1), user: @user)
         authorize_with("#{@user.email}:#{@user.password}")
       end
 
