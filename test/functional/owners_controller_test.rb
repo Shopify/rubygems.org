@@ -118,7 +118,9 @@ class OwnersControllerTest < ActionController::TestCase
             should respond_with :forbidden
 
             should "show error message" do
-              expected_alert = "The gem has MFA requirement enabled, please setup MFA on your account."
+              expected_alert = "The gem has multi-factor authentication " \
+                               "requirement enabled, please setup multi-factor authentication " \
+                               "on your account."
               assert_equal expected_alert, flash[:alert]
             end
           end
@@ -239,7 +241,9 @@ class OwnersControllerTest < ActionController::TestCase
             should respond_with :forbidden
 
             should "show error message" do
-              expected_alert = "The gem has MFA requirement enabled, please setup MFA on your account."
+              expected_alert = "The gem has multi-factor authentication " \
+                               "requirement enabled, please setup multi-factor authentication " \
+                               "on your account."
               assert_equal expected_alert, flash[:alert]
             end
           end

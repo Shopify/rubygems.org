@@ -340,6 +340,7 @@ pt-BR:
       qrcode_expired:
       success:
     recovery:
+      copied:
       continue:
       title:
       copy:
@@ -391,6 +392,10 @@ pt-BR:
   settings:
     edit:
       title:
+      webauthn_credentials:
+      no_webauthn_credentials:
+      webauthn_credential_note:
+      otp_code:
       api_access:
         confirm_reset: Tem certeza?
         credentials_html: 'Se você quiser usar %{gem_commands_link} pela linha comando,
@@ -553,6 +558,10 @@ pt-BR:
       notice:
     create:
       account_blocked:
+    prompt:
+      webauthn_credential_note:
+      sign_in_with_weauthn_credential:
+      otp_code:
   stats:
     index:
       title: Estatísticas
@@ -629,3 +638,16 @@ pt-BR:
     no_ownership_requests:
     create_req:
     signin_to_create_html:
+  webauthn_credentials:
+    recovery:
+      continue:
+      title:
+      notice_html:
+      copied:
+      copy:
+      saved:
+    webauthn_credential:
+      delete:
+    form:
+      nickname:
+      submit:

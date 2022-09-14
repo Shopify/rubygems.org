@@ -66,7 +66,7 @@ class Mailer < ApplicationMailer
     @user = User.find(user_id)
 
     mail to: @user.email,
-      subject: "Please consider enabling multi-factor authentication for your account"
+      subject: "Please consider enabling Multi-factor Authentication for your account"
   end
 
   def mfa_recommendation_announcement(user_id)

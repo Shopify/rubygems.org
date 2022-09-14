@@ -1,7 +1,8 @@
-function popUp (e) {
-  e.preventDefault();
-  e.returnValue = "";
-};
+$(function () {
+  var popUp = function (e) {
+    e.preventDefault()
+    e.returnValue = ""
+  }
 
 function confirmNoRecoveryCopy (e, from) {
   if (from == null){
@@ -13,28 +14,36 @@ function confirmNoRecoveryCopy (e, from) {
   }
 }
 
-if($("#recovery-code-list").length){
-  new ClipboardJS(".recovery__copy__icon");
+  var $RECOVERY_CODES = $("#recovery-codes--list")
+  var COPY_ICON_SELECTOR = "#recovery-codes--copy-icon"
+  var $COPY_ICON = $(COPY_ICON_SELECTOR)
+  var $CHECKBOX_INPUT = $("#recovery-codes--checkbox")
+  var CHECKBOX_INPUT = $CHECKBOX_INPUT[0]
+  var FORM_SUBMIT = $("#recovery-codes--submit")[0]
 
-  $(".recovery__copy__icon").on("click", function(e){
-    $(this).text("[ copied ]");
+  if ($RECOVERY_CODES.length > 0) {
+    window.addEventListener("beforeunload", popUp)
+    $(".form__submit").on("click", confirmNoRecoveryCopy);
 
-    if( !$(this).is(".clicked") ) {
-      e.preventDefault();
-      $(this).addClass("clicked");
-      window.removeEventListener("beforeunload", popUp);
-      $(".form__submit").unbind("click", confirmNoRecoveryCopy);
-    }
-  });
+    new ClipboardJS(COPY_ICON_SELECTOR)
 
-  window.addEventListener("beforeunload", popUp);
-  $(".form__submit").on("click", confirmNoRecoveryCopy);
+    $COPY_ICON.click(function (e) {
+      $COPY_ICON.text($COPY_ICON.data("copied"))
 
-  $(".form__checkbox__input").change(function() {
-    if(this.checked) {
-      $(".form__submit").prop('disabled', false);
-    } else {
-      $(".form__submit").prop('disabled', true);
-    }
-  });
-}
+      if (!$COPY_ICON.is(".clicked")) {
+        e.preventDefault()
+        $COPY_ICON.addClass("clicked")
+        window.removeEventListener("beforeunload", popUp)
+        $(".form__submit").unbind("click", confirmNoRecoveryCopy);
+      }
+    })
+
+    $CHECKBOX_INPUT.change(function () {
+      if (CHECKBOX_INPUT.checked) {
+        FORM_SUBMIT.disabled = false
+      } else {
+        FORM_SUBMIT.disabled = true
+      }
+    })
+  }
+})
