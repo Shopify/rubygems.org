@@ -3,15 +3,15 @@ require "test_helper"
 class StatsControllerTest < ActionController::TestCase
   context "on GET to index" do
     setup do
-      number_of_gems = 1337
-      number_of_users = 101
-      number_of_downloads = 42
-
-      Rubygem.expects(:total_count).returns(number_of_gems)
-      User.expects(:count).returns(number_of_users)
-
-      create(:gem_download, count: number_of_downloads)
+      @number_of_gems      = 1337
+      @number_of_users     = 101
+      @number_of_downloads = 42
       rails_cinco = create(:rubygem, name: "rails_cinco", number: 1)
+
+      Rubygem.expects(:total_count).returns(@number_of_gems)
+      User.expects(:count).returns(@number_of_users)
+
+      create(:gem_download, count: @number_of_downloads)
       rails_cinco.gem_download.update(count: 1)
 
       get :index
