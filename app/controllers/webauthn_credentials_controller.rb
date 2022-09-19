@@ -15,12 +15,8 @@ class WebauthnCredentialsController < ApplicationController
     if webauthn_credential.save
       redirect_to edit_settings_path
     else
-      render(
-        json: {
-          message: webauthn_credential.errors.full_messages.to_sentence
-        },
-        status: :unprocessable_entity
-      )
+      message = webauthn_credential.errors.full_messages.to_sentence
+      render json: { message: message }, status: :unprocessable_entity
     end
   rescue WebAuthn::Error => e
     render json: { message: e.message }, status: :unprocessable_entity
