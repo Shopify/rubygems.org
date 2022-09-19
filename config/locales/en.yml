@@ -520,7 +520,7 @@ en:
     create:
       account_blocked: Your account was blocked by rubygems team. Please email support@rubygems.org to recover your account.
     prompt:
-      webauthn_credential_note: Authenticate with a security device such as touch id, yubikey, etc.
+      webauthn_credential_note: Authenticate with a security device such as Touch Id, YubiKey, etc.
       sign_in_with_weauthn_credential: Sign in
       otp_code: OTP or recovery code
   stats:
@@ -603,7 +603,7 @@ en:
     recovery:
       continue: Continue
       title: You have successfully added a security device
-      notice_html: 'Please <strong class="recovery__bold">copy and paste</strong> these recovery codes. You can use these codes to login if you lose your security device. Each of the code can be used once.'
+      notice_html: 'Please <strong class="recovery__bold">copy and paste</strong> these recovery codes. You can use these codes to login if you lose your security device. Each code can be used once.'
       copied: "[ copied ]"
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
