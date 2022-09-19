@@ -42,7 +42,7 @@ class SettingsTest < SystemTest
     assert page.has_content? "Recovery codes"
 
     click_link "[ copy ]"
-    check "ack"
+    check "saved"
     click_button "Continue"
 
     assert page.has_content? "You have enabled multi-factor authentication."
@@ -100,10 +100,10 @@ class SettingsTest < SystemTest
 
     assert page.has_content? "Recovery codes"
 
-    recoveries = page.find_by_id("recovery-code-list").text.split
+    recoveries = page.find_by_id("recovery-codes--list").text.split
 
     click_link "[ copy ]"
-    check "ack"
+    check "saved"
     click_button "Continue"
     page.fill_in "otp", with: recoveries.sample
     change_auth_level "Disabled"
@@ -119,7 +119,7 @@ class SettingsTest < SystemTest
     totp = ROTP::TOTP.new(mfa_key)
     page.fill_in "otp", with: totp.now
     click_button "Enable"
-    check "ack"
+    check "saved"
     confirm_text = page.dismiss_confirm do
       click_button "Continue"
     end
@@ -141,7 +141,7 @@ class SettingsTest < SystemTest
     page.fill_in "otp", with: totp.now
     click_button "Enable"
 
-    check "ack"
+    check "saved"
     confirm_text = dismiss_confirm do
       visit root_path
     end

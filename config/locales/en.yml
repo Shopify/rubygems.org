@@ -87,7 +87,7 @@ en:
       show_dashboard: Show dashboard
       reset: Reset
       save_key: "Note that we won't be able to show the key to you again. New API key:"
-      mfa: MFA
+      mfa: Multi-factor Authentication
     new:
       new_api_key: New API key
       multifactor_auth: Multi-factor authentication
@@ -289,7 +289,7 @@ en:
       title: Change your password
       will_email_notice: We will email you a link to change your password.
   multifactor_auths:
-    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your MFA device.'
+    recovery_code_html: 'You can use a valid  <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#using-recovery-codes-and-re-setup-a-previously-enabled-mfa", class="t-link">recovery code</a> if you have lost access to your multi-factor authentication device or to your security device.'
     incorrect_otp: Your OTP code is incorrect.
     otp_code: OTP code
     require_mfa_disabled: Your multi-factor authentication has been enabled. To reconfigure multi-factor authentication, you'll have to disable it first.
@@ -312,11 +312,12 @@ en:
       qrcode_expired: The QR-code and key is expired. Please try registering a new device again.
       success: You have successfully enabled multi-factor authentication.
     recovery:
+      copied: "[ copied ]"
       continue: Continue
       title: Recovery codes
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
-      note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your MFA if your lose your authentication device. Each of the code can be used once."
+      note_html: "Please <strong class='recovery__bold'>copy and save</strong> these recovery codes. You can use these codes to login and reset your multi-factor authentication if your lose your authentication device. Each of the code can be used once."
     destroy:
       success: You have successfully disabled multi-factor authentication.
     update:
@@ -343,7 +344,7 @@ en:
     index:
       add_owner: ADD OWNER
       name: OWNER
-      mfa: MFA STATUS
+      mfa: MULTI-FACTOR AUTHENTICATION STATUS
       status: STATUS
       confirmed_at: CONFIRMED AT
       added_by: ADDED BY
@@ -361,10 +362,14 @@ en:
     destroy:
       removed_notice: "%{owner_name} was removed from the owners successfully"
       failed_notice: Can't remove the only owner of the gem
-    mfa_required: The gem has MFA requirement enabled, please setup MFA on your account.
+    mfa_required: The gem has multi-factor authentication requirement enabled, please setup multi-factor authentication on your account.
   settings:
     edit:
       title: Edit settings
+      webauthn_credentials: Security device
+      no_webauthn_credentials: You don't have any security devices
+      webauthn_credential_note: A security device can be can be any device that complies with the FIDO2 standard such as security and biometric keys. This device currently can only be used for web login and is therefore not a replacement for OTP based Multi-factor Authentication.
+      otp_code: OTP code or recovery code
       api_access:
         confirm_reset: Are you sure? This cannot be undone.
         credentials_html: 'If you want to use %{gem_commands_link} from the command line, you''ll need a %{gem_credentials_file} file, which you can generate using the following command:'
@@ -383,7 +388,7 @@ en:
           Refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems MFA guide</a> for more information on these levels.
         update: Update
         level:
-          title: MFA Level
+          title: Multi-factor Authentication Level
           disabled: Disabled
           ui_only: UI Only
           ui_and_api: UI and API (Recommended)
@@ -514,6 +519,10 @@ en:
       notice: Please confirm your password to continue.
     create:
       account_blocked: Your account was blocked by rubygems team. Please email support@rubygems.org to recover your account.
+    prompt:
+      webauthn_credential_note: Authenticate with a security device such as touch id, yubikey, etc.
+      sign_in_with_weauthn_credential: Sign in
+      otp_code: OTP or recovery code
   stats:
     index:
       title: Stats
@@ -589,4 +598,17 @@ en:
     created_at: Created at
     no_ownership_requests: Requests to join your project will show up here. No ownership requests for %{gem} yet.
     create_req: Create ownership request
-    signin_to_create_html: Please <a href="https://rubygems.org/sign_in">sign in</a> to create an ownership request.
+    signin_to_create_html: Please <a href="https://rubygems.org/sign_in">sign in</a> to create request ownership.
+  webauthn_credentials:
+    recovery:
+      continue: Continue
+      title: You have successfully added a security device
+      notice_html: 'Please <strong class="recovery__bold">copy and paste</strong> these recovery codes. You can use these codes to login if you lose your security device. Each of the code can be used once.'
+      copied: "[ copied ]"
+      copy: "[ copy ]"
+      saved: I acknowledge that I have saved my recovery codes.
+    webauthn_credential:
+      delete: Delete
+    form:
+      nickname: Nickname
+      submit: Register a security device
