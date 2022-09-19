@@ -1,7 +1,7 @@
 $(function () {
   var popUp = function (e) {
-    e.preventDefault()
-    e.returnValue = ""
+    e.preventDefault();
+    e.returnValue = "";
   }
 
 function confirmNoRecoveryCopy (e, from) {
@@ -14,35 +14,35 @@ function confirmNoRecoveryCopy (e, from) {
   }
 }
 
-  var $RECOVERY_CODES = $("#recovery-codes--list")
-  var COPY_ICON_SELECTOR = "#recovery-codes--copy-icon"
-  var $COPY_ICON = $(COPY_ICON_SELECTOR)
-  var $CHECKBOX_INPUT = $("#recovery-codes--checkbox")
-  var CHECKBOX_INPUT = $CHECKBOX_INPUT[0]
-  var FORM_SUBMIT = $("#recovery-codes--submit")[0]
+  var recoveryCodes = $("#recovery-codes--list")
+  var copyIconSelector = "#recovery-codes--copy-icon"
+  var copyIcon = $(copyIconSelector)
+  var checkboxInputField = $("#recovery-codes--checkbox")
+  var checkboxInput = checkboxInputField[0]
+  var formSubmit = $("#recovery-codes--submit")[0]
 
-  if ($RECOVERY_CODES.length > 0) {
+  if (recoveryCodes.length > 0) {
     window.addEventListener("beforeunload", popUp)
     $(".form__submit").on("click", confirmNoRecoveryCopy);
 
-    new ClipboardJS(COPY_ICON_SELECTOR)
+    new ClipboardJS(copyIconSelector)
 
-    $COPY_ICON.click(function (e) {
-      $COPY_ICON.text($COPY_ICON.data("copied"))
+    copyIcon.click(function (e) {
+      copyIcon.text(copyIcon.data("copied"))
 
-      if (!$COPY_ICON.is(".clicked")) {
+      if (!copyIcon.is(".clicked")) {
         e.preventDefault()
-        $COPY_ICON.addClass("clicked")
+        copyIcon.addClass("clicked")
         window.removeEventListener("beforeunload", popUp)
         $(".form__submit").unbind("click", confirmNoRecoveryCopy);
       }
     })
 
-    $CHECKBOX_INPUT.change(function () {
-      if (CHECKBOX_INPUT.checked) {
-        FORM_SUBMIT.disabled = false
+    checkboxInputField.change(function () {
+      if (checkboxInput.checked) {
+        formSubmit.disabled = false
       } else {
-        FORM_SUBMIT.disabled = true
+        formSubmit.disabled = true
       }
     })
   }

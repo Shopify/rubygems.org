@@ -4,20 +4,20 @@
     return event.target
   }
 
-  var setError = function($submit, $error, message) {
-    $submit.attr("disabled", false)
-    $error.attr("hidden", false)
-    $error.text(message)
+  var setError = function(submit, error, message) {
+    submit.attr("disabled", false)
+    error.attr("hidden", false)
+    error.text(message)
   }
 
-  var handleResponse = function($submit, $error, response) {
+  var handleResponse = function(submit, responseError, response) {
     if (response.redirected) {
       window.location.href = response.url
     } else {
       response.json().then(function (json) {
-        setError($submit, $error, json.message)
+        setError(submit, error, json.message)
       }).catch(function (error) {
-        setError($submit, $error, error)
+        setError(submit, responseError, error)
       })
     }
   }
@@ -47,23 +47,19 @@
   }
 
   $(function() {
-    var FORM_SELECTOR = ".js-new-webauthn-credential--form"
-    var SUBMIT_SELECTOR = ".js-new-webauthn-credential--submit"
-    var NICKNAME_INPUT_SELECTOR = ".js-new-webauthn-credential--nickname"
-    var ERROR_SELECTOR = ".js-new-webauthn-credential--error"
-    var $FORM = $(FORM_SELECTOR)
-    var $ERROR = $(ERROR_SELECTOR)
-    var $SUBMIT = $(SUBMIT_SELECTOR)
-    var CSRF_TOKEN = $("[name='csrf-token']").attr("content")
+    var credentialForm = $(".js-new-webauthn-credential--form")
+    var credentialError = $(".js-new-webauthn-credential--error")
+    var credentialSubmit = $(".js-new-webauthn-credential--submit")
+    var csrfToken = $("[name='csrf-token']").attr("content")
 
-    $FORM.submit(function(event) {
+    credentialForm.submit(function(event) {
       var form = handleEvent(event)
-      var nickname = $(NICKNAME_INPUT_SELECTOR).val()
+      var nickname = $(".js-new-webauthn-credential--nickname").val()
 
       fetch(form.action + ".json", {
         method: "POST",
         credentials: "same-origin",
-        headers: { "X-CSRF-Token": CSRF_TOKEN }
+        headers: { "X-CSRF-Token": csrfToken }
       }).then(function (response) {
         return response.json()
       }).then(function (json) {
@@ -78,7 +74,7 @@
           method: "POST",
           credentials: "same-origin",
           headers: {
-            "X-CSRF-Token": CSRF_TOKEN,
+            "X-CSRF-Token": csrfToken,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
@@ -87,23 +83,20 @@
           })
         })
       }).then(function (response) {
-        handleResponse($SUBMIT, $ERROR, response)
+        handleResponse(credentialSubmit, credentialError, response)
       }).catch(function (error) {
-        setError($SUBMIT, $ERROR, error)
+        setError(credentialSubmit, credentialError, error)
       })
     })
   })
 
   $(function() {
-    var FORM_SELECTOR = ".js-webauthn-session--form"
-    var SUBMIT_SELECTOR = ".js-webauthn-session--submit"
-    var ERROR_SELECTOR = ".js-webauthn-session--error"
-    var $FORM = $(FORM_SELECTOR)
-    var $SUBMIT = $(SUBMIT_SELECTOR)
-    var $ERROR = $(ERROR_SELECTOR)
-    var CSRF_TOKEN = $("[name='csrf-token']").attr("content")
+    var sessionForm = $(".js-webauthn-session--form")
+    var sessionSubmit = $(".js-webauthn-session--submit")
+    var sessionError = $(".js-webauthn-session--error")
+    var csrfToken = $("[name='csrf-token']").attr("content")
 
-    $FORM.submit(function(e) {
+    sessionForm.submit(function(e) {
       var form = handleEvent(event)
       var options = JSON.parse(form.dataset.options)
       options.challenge = base64urlToBuffer(options.challenge)
@@ -116,7 +109,7 @@
           method: "POST",
           credentials: "same-origin",
           headers: {
-            "X-CSRF-Token": CSRF_TOKEN,
+            "X-CSRF-Token": csrfToken,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
@@ -124,9 +117,9 @@
           })
         })
       }).then(function (response) {
-        handleResponse($SUBMIT, $ERROR, response)
+        handleResponse(sessionSubmit, sessionError, response)
       }).catch(function (error) {
-        setError($SUBMIT, $ERROR, error)
+        setError(sessionSubmit, sessionError, error)
       })
     })
   })
