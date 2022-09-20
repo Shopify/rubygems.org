@@ -14,7 +14,7 @@ function confirmNoRecoveryCopy (e, from) {
   }
 }
 
-  var recoveryCodes = $("#recovery-codes--list")
+  var recoveryCodes = $("#recovery-code-list")
   var copyIconSelector = "#recovery-codes--copy-icon"
   var copyIcon = $(copyIconSelector)
   var checkboxInputField = $("#recovery-codes--checkbox")

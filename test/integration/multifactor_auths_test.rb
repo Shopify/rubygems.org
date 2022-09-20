@@ -91,7 +91,7 @@ class MultifactorAuthsTest < SystemTest
 
     assert page.has_content? "Recovery codes"
     click_link "[ copy ]"
-    check "saved"
+    check "ack"
     click_button "Continue"
     yield if block_given?
     assert_equal path, current_path, "was not redirected back to original destination: #{path}"

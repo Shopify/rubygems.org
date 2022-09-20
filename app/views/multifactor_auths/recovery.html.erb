@@ -1,19 +1,19 @@
 <% @title = t(".title") %>
 
 <div class="t-body">
-  <p><%= t(".note_html") %></p>
+  <p><%= t ".note_html" %></p>
 
-  <ul id="recovery-codes--list">
+  <ul id="recovery-code-list">
     <% current_user.mfa_recovery_codes.each do |code| %>
       <li class="recovery-code-list__item"><%= code %></li>
     <% end %>
   </ul>
 
-  <p><%= link_to t(".copy"), "#/", class: "t-link--bold", id: "recovery-codes--copy-icon", data: { "clipboard-target": "#recovery-codes--list", copied: t(".copied") } %></p>
+  <p><%= link_to t(".copy"), "#/", class: "t-link--bold", id: "recovery-codes--copy-icon", data: { "clipboard-target": "#recovery-code-list", copied: t(".copied") } %></p>
 
   <div class="form__checkbox__item">
-    <%= check_box_tag "saved", "saved", false, id: "recovery-codes--checkbox", class: "form__checkbox__input" %>
-    <%= label_tag "saved", t(".saved"), class: "form__checkbox__label" %>
+    <%= check_box_tag "ack", "ack", false, id: "recovery-codes--checkbox", class: "form__checkbox__input" %>
+    <%= label_tag "checked", t(".saved"), class: "form__checkbox__label" %>
   </div>
 
   <%= button_to t(".continue"), @continue_path, method: :get, id: "recovery-codes--submit", class: "form__submit form__submit--no-hover", disabled: true %>
