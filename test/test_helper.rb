@@ -69,12 +69,6 @@ class ActiveSupport::TestCase
     Capybara.default_max_wait_time = 2
     Selenium::WebDriver.logger.level = :error
   end
-
-  def headfull_chrome_driver
-    Capybara.current_driver = :selenium_chrome
-    Capybara.default_max_wait_time = 2
-    Selenium::WebDriver.logger.level = :error
-  end
 end
 
 class ActionDispatch::IntegrationTest
