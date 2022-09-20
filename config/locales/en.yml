@@ -87,7 +87,7 @@ en:
       show_dashboard: Show dashboard
       reset: Reset
       save_key: "Note that we won't be able to show the key to you again. New API key:"
-      mfa: Multi-factor Authentication
+      mfa: MFA
     new:
       new_api_key: New API key
       multifactor_auth: Multi-factor authentication
@@ -344,7 +344,7 @@ en:
     index:
       add_owner: ADD OWNER
       name: OWNER
-      mfa: MULTI-FACTOR AUTHENTICATION STATUS
+      mfa: MFA STATUS
       status: STATUS
       confirmed_at: CONFIRMED AT
       added_by: ADDED BY
@@ -362,7 +362,7 @@ en:
     destroy:
       removed_notice: "%{owner_name} was removed from the owners successfully"
       failed_notice: Can't remove the only owner of the gem
-    mfa_required: The gem has multi-factor authentication requirement enabled, please setup multi-factor authentication on your account.
+    mfa_required: The gem has MFA requirement enabled, please setup MFA on your account.
   settings:
     edit:
       title: Edit settings
@@ -388,7 +388,7 @@ en:
           Refer to <a target="_blank" href="https://guides.rubygems.org/setting-up-multifactor-authentication">RubyGems MFA guide</a> for more information on these levels.
         update: Update
         level:
-          title: Multi-factor Authentication Level
+          title: MFA Level
           disabled: Disabled
           ui_only: UI Only
           ui_and_api: UI and API (Recommended)
