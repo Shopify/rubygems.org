@@ -224,7 +224,7 @@ class SessionsControllerTest < ActionController::TestCase
       should "have mfa forms and not webauthn credentials form" do
         assert page.has_content?("multi-factor authentication")
         assert page.has_field?("OTP or recovery code")
-        assert page.has_button?("Sign in")
+        assert page.has_button?("Verify code")
       end
     end
 
@@ -253,7 +253,7 @@ class SessionsControllerTest < ActionController::TestCase
         assert page.has_content?("Multi-factor authentication")
         assert_not page.has_field?("OTP code")
         assert_not page.has_field?("Recovery code")
-        assert page.has_button?("Sign in")
+        assert page.has_button?("Authenticate with security device")
       end
     end
 
@@ -281,7 +281,8 @@ class SessionsControllerTest < ActionController::TestCase
       should "have mfa forms and webauthn credentials form" do
         assert page.has_content?("multi-factor authentication")
         assert page.has_field?("OTP or recovery code")
-        assert page.has_button?("Sign in")
+        assert page.has_button?("Verify code")
+        assert page.has_button?("Authenticate with security device")
       end
     end
   end

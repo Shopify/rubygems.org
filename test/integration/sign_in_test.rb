@@ -73,7 +73,7 @@ class SignInTest < SystemTest
 
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: ROTP::TOTP.new("thisisonemfaseed").now
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     assert page.has_content? "Sign out"
@@ -89,7 +89,7 @@ class SignInTest < SystemTest
 
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: "11111"
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     assert page.has_content? "Sign in"
@@ -105,7 +105,7 @@ class SignInTest < SystemTest
 
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: "0123456789ab"
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     assert page.has_content? "Sign out"
@@ -121,7 +121,7 @@ class SignInTest < SystemTest
 
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: "ab0123456789"
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     assert page.has_content? "Sign in"
@@ -164,7 +164,7 @@ class SignInTest < SystemTest
 
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: "0123456789ab"
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     expected_notice = "For protection of your account and your gems, we encourage you to change your MFA level " \
@@ -192,7 +192,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: "0123456789ab"
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     assert_current_path(dashboard_path)
@@ -217,7 +217,7 @@ class SignInTest < SystemTest
     assert page.has_content? "Multi-factor authentication"
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: "0123456789ab"
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     assert_current_path(dashboard_path)
@@ -237,7 +237,7 @@ class SignInTest < SystemTest
 
     within(".mfa-form") do
       fill_in "OTP or recovery code", with: ROTP::TOTP.new("thisisonemfaseed").now
-      click_button "Sign in"
+      click_button "Verify code"
     end
 
     assert page.has_content? "john@example.com"

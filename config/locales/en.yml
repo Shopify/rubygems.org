@@ -521,8 +521,11 @@ en:
       account_blocked: Your account was blocked by rubygems team. Please email support@rubygems.org to recover your account.
     prompt:
       webauthn_credential_note: Authenticate with a security device such as Touch Id, YubiKey, etc.
-      sign_in_with_weauthn_credential: Sign in
-      otp_code: OTP or recovery code
+      sign_in_with_webauthn_credential: Authenticate with security device
+      otp_code: One Time Passcode
+      otp_or_recovery: OTP or recovery code
+      security_device: Security Device
+      verify_code: Verify code
   stats:
     index:
       title: Stats

@@ -578,8 +578,11 @@ es:
       account_blocked:
     prompt:
       webauthn_credential_note:
-      sign_in_with_weauthn_credential:
+      sign_in_with_webauthn_credential:
       otp_code:
+      otp_or_recovery:
+      security_device:
+      verify_code:
   stats:
     index:
       title:
