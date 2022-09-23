@@ -430,7 +430,7 @@ class SessionsControllerTest < ActionController::TestCase
           :create,
           params: { session: { who: @user.handle, password: @user.password } }
         )
-        @challenge = SecureRandom.hex
+        @wrong_challenge = SecureRandom.hex
         @origin = "http://localhost:3000"
         @rp_id = URI.parse(@origin).host
         @client = WebAuthn::FakeClient.new(@origin, encoding: false)
@@ -444,7 +444,7 @@ class SessionsControllerTest < ActionController::TestCase
             credentials:
               WebauthnHelpers.get_result(
                 client: @client,
-                challenge: @challenge
+                challenge: @wrong_challenge
               )
           },
           format: :json
