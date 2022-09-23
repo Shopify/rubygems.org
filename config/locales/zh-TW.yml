@@ -368,6 +368,7 @@ zh-TW:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: 確定要重設嗎？此動作無法還原
@@ -382,6 +383,7 @@ zh-TW:
         title: 重設密碼
       mfa:
         multifactor_auth: 多重要素驗證
+        otp:
         disabled_html:
         go_settings: 註冊新裝置
         enabled_html:
@@ -524,7 +526,7 @@ zh-TW:
       otp_code:
       otp_or_recovery:
       security_device:
-      verify_code: 
+      verify_code:
 
   stats:
     index:
@@ -614,5 +616,6 @@ zh-TW:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

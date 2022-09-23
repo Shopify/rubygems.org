@@ -367,6 +367,7 @@ ja:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: この操作は取り消せませんが、本当によろしいですか?
@@ -380,6 +381,7 @@ ja:
         title: パスワードのリセット
       mfa:
         multifactor_auth:
+        otp:
         disabled_html:
         go_settings:
         enabled_html:
@@ -614,5 +616,6 @@ ja:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

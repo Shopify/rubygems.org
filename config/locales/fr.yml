@@ -405,6 +405,7 @@ fr:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: Êtes-vous sûr ? Cette action ne peut être annulée.
@@ -420,6 +421,7 @@ fr:
         title: Renvoi de mot de passe
       mfa:
         multifactor_auth: Authentification Multifacteur
+        otp:
         disabled_html:
         go_settings: Enregistrer un nouvel appareil
         enabled_html:
@@ -678,5 +680,6 @@ fr:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

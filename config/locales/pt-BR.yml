@@ -395,6 +395,7 @@ pt-BR:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: Tem certeza?
@@ -410,6 +411,7 @@ pt-BR:
         title: Resetar senha
       mfa:
         multifactor_auth:
+        otp:
         disabled_html:
         go_settings:
         enabled_html:
@@ -564,7 +566,7 @@ pt-BR:
       otp_code:
       otp_or_recovery:
       security_device:
-      verify_code: 
+      verify_code:
   stats:
     index:
       title: Estatísticas
@@ -652,5 +654,6 @@ pt-BR:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

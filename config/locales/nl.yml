@@ -384,6 +384,7 @@ nl:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: Weet je het zeker? Dit kan niet ongedaan worden gemaakt.
@@ -399,6 +400,7 @@ nl:
         title: Reset wachtwoord
       mfa:
         multifactor_auth:
+        otp:
         disabled_html:
         go_settings:
         enabled_html:
@@ -541,7 +543,7 @@ nl:
       otp_code:
       otp_or_recovery:
       security_device:
-      verify_code: 
+      verify_code:
   stats:
     index:
       title:
@@ -629,5 +631,6 @@ nl:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

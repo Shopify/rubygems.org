@@ -367,6 +367,7 @@ zh-CN:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: 确定要重置吗？此动作执行后将无法撤销
@@ -381,6 +382,7 @@ zh-CN:
         title: 重置密码
       mfa:
         multifactor_auth: 多重要素验证
+        otp:
         disabled_html:
         go_settings: 注册新装置
         enabled_html:
@@ -523,7 +525,7 @@ zh-CN:
       otp_code:
       otp_or_recovery:
       security_device:
-      verify_code: 
+      verify_code:
   stats:
     index:
       title:
@@ -612,5 +614,6 @@ zh-CN:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

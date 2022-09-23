@@ -15,10 +15,11 @@ class WebauthnCredentialsTest < SystemTest
   should "have security device form" do
     sign_in
     visit edit_settings_path
+    assert_text "Register a new security device"
     assert_text "Security device"
     assert_text "You don't have any security devices"
     assert page.has_field?("Nickname")
-    assert page.has_button?("Register a security device")
+    assert page.has_button?("Register device")
   end
 
   should "show the security device" do
@@ -28,11 +29,12 @@ class WebauthnCredentialsTest < SystemTest
     visit edit_settings_path
     assert_text "Security device"
     assert_no_text "You don't have any security devices"
+    assert_text "Register a new security device"
     assert_text @primary.nickname
     assert_text @backup.nickname
     assert page.has_button?("Delete")
     assert page.has_field?("Nickname")
-    assert page.has_button?("Register a security device")
+    assert page.has_button?("Register device")
   end
 
   should "be able to delete security devices" do

@@ -380,6 +380,7 @@ de:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: Sind Sie sicher? Das kann nicht rückgängig gemacht werden.
@@ -395,6 +396,7 @@ de:
         title: Zurücksetzen des Passworts
       mfa:
         multifactor_auth:
+        otp:
         disabled_html:
         go_settings:
         enabled_html:
@@ -626,5 +628,6 @@ de:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

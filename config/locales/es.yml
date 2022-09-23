@@ -402,6 +402,7 @@ es:
       webauthn_credentials:
       no_webauthn_credentials:
       webauthn_credential_note:
+      webauthn_warning:
       otp_code:
       api_access:
         confirm_reset: "¿Seguro? Este cambio no puede deshacerse."
@@ -417,6 +418,7 @@ es:
         title: Reestablecer contraseña
       mfa:
         multifactor_auth: Autenticación de múltiples factores
+        otp:
         disabled_html:
         go_settings: Registrar un nuevo dispositivo
         enabled_html:
@@ -671,5 +673,6 @@ es:
     webauthn_credential:
       delete:
     form:
+      new_device:
       nickname:
       submit:

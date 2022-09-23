@@ -1,8 +1,9 @@
 <% @title = t(".title") %>
 
 <div class="t-body">
-  <h2><%= t ".mfa.multifactor_auth" %></h2>
+  <h2 class="page__subheading"><%= t ".mfa.multifactor_auth" %></h2>
   <% if @user.mfa_enabled? %>
+    <h2><%= t(".mfa.otp")%></h2>
     <p><%= t(".mfa.enabled_html") %></p>
     <%= form_tag multifactor_auth_path, method: :put, id: "mfa-edit" do %>
       <%= label_tag :level, t(".mfa.level.title"), class: "form__label" %>
@@ -18,7 +19,7 @@
     <% end %>
   <% else %>
     <div class="t-body">
-      <h2><%= t ".mfa.multifactor_auth" %></h2>
+      <h2><%= t(".mfa.otp")%></h2>
 
       <p>
       <%= t(".mfa.disabled_html") %>
@@ -29,7 +30,7 @@
 
   <h2><%= t(".webauthn_credentials") %></h2>
 
-  <p><%= t(".webauthn_credential_note") %></p>
+  <p><%= t(".webauthn_credential_note")%> <b><%= t(".webauthn_warning")%></b></p>
 
   <% if @user.webauthn_credentials.none? %>
     <p><i><%= t(".no_webauthn_credentials") %></i></p>
