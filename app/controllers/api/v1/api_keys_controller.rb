@@ -47,25 +47,29 @@ class Api::V1::ApiKeysController < Api::BaseController
   private
 
   def check_mfa(user)
-    if user && user.mfa_gem_signin_authorized?(otp)
-      if user.doesnt_meet_minimum_mfa_level? && user.rubygems.mfa_required.any? && user.mfa_disabled?
-        return render_mfa_setup_required_error
-      end
-      if user.mfa_required? && user.mfa_ui_only?
-        return render_mfa_strong_level_required_error
-      end
-
+    if user && user.mfa_gem_signin_authorized?(otp) && user.doesnt_meet_minimum_mfa_level? && user.rubygems.mfa_required.any? && user.mfa_disabled?
+      error = error_message("set up multi-factor authentication at https://rubygems.org/multifactor_auth/new.")
+      return render_forbidden(error)
+    elsif user && user.mfa_gem_signin_authorized?(otp) && user.doesnt_meet_minimum_mfa_level? && user.rubygems.mfa_required.any? && user.mfa_ui_only?
+      error = error_message("change your MFA level to 'UI and gem signin' or 'UI and API' at https://rubygems.org/settings/edit.")
+      return render_forbidden(error)
+    elsif user && user.mfa_gem_signin_authorized?(otp)
       yield
-    elsif user && user.mfa_enabled?
-      prompt_text = if otp.present?
-        t(:otp_incorrect)
-        else
-          t(:otp_missing)
-        end
-      render plain: prompt_text, status: :unauthorized
+    elsif user && user.mfa_enabled? && otp.present? && !user.mfa_gem_signin_authorized?(otp)
+      render plain: t(:otp_incorrect), status: :unauthorized
+    elsif user && user.mfa_enabled? && !otp.present? && !user.mfa_gem_signin_authorized?(otp)
+      render plain: t(:otp_missing), status: :unauthorized
     else
-      false
+      # false
     end
+  end
+
+  def error_message(required_action)
+    error = <<~ERROR.chomp
+      [ERROR] For protection of your account and your gems, you are required to #{required_action}
+
+      Please read our blog post for more details (https://blog.rubygems.org/2022/08/15/requiring-mfa-on-popular-gems.html).
+    ERROR
   end
 
   def save_and_respond(api_key, key)
