@@ -158,4 +158,19 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
       should respond_with :unprocessable_entity
     end
   end
+
+  context "#destroy" do
+    setup do
+      @user = create(:user)
+      @credential = create(:webauthn_credential, user: @user)
+      sign_in_as @user
+      delete :destroy, params: { id: @credential.id }
+    end
+
+    should "destroy the webauthn credential" do
+      assert_equal 0, @user.webauthn_credentials.count
+    end
+
+    should redirect_to :edit_settings
+  end
 end
