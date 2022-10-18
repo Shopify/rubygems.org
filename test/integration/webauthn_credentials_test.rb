@@ -2,6 +2,7 @@ require "test_helper"
 
 class WebauthnCredentialsTest < SystemTest
   setup do
+    headless_chrome_driver
     @user = create(:user)
   end
 
@@ -16,7 +17,7 @@ class WebauthnCredentialsTest < SystemTest
     sign_in
     visit edit_settings_path
     assert_text "Register a new security device"
-    assert_text "Security device"
+    assert_text "SECURITY DEVICE"
     assert_text "You don't have any security devices"
     assert page.has_field?("Nickname")
     assert page.has_button?("Register device")
@@ -27,7 +28,7 @@ class WebauthnCredentialsTest < SystemTest
     @primary = create(:webauthn_credential, :primary, user: @user)
     @backup = create(:webauthn_credential, :backup, user: @user)
     visit edit_settings_path
-    assert_text "Security device"
+    assert_text "SECURITY DEVICE"
     assert_no_text "You don't have any security devices"
     assert_text "Register a new security device"
     assert_text @primary.nickname
@@ -41,11 +42,33 @@ class WebauthnCredentialsTest < SystemTest
     sign_in
     @webauthn_credential = create(:webauthn_credential, user: @user)
     visit edit_settings_path
-    assert_text "Security device"
+    assert_text "SECURITY DEVICE"
     assert_no_text "You don't have any security devices"
     assert_text @webauthn_credential.nickname
     click_on "Delete"
     assert_text "You don't have any security devices"
     assert_no_text @webauthn_credential.nickname
+  end
+
+  should "be able to create security devices" do
+    sign_in
+    visit edit_settings_path
+    assert_text "You don't have any security devices"
+
+    options = ::Selenium::WebDriver::VirtualAuthenticatorOptions.new
+    page.driver.browser.add_virtual_authenticator(options)
+    WebAuthn::PublicKeyCredentialWithAttestation.any_instance.stubs(:verify).returns true
+
+    @credential_nickname = "new cred"
+    fill_in "Nickname", with: @credential_nickname
+    click_on "Register device"
+
+    assert page.has_content? @credential_nickname
+    assert_equal edit_settings_path, current_path
+  end
+
+  teardown do
+    Capybara.reset_sessions!
+    Capybara.use_default_driver
   end
 end
