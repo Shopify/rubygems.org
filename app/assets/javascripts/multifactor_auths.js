@@ -1,8 +1,7 @@
-$(function () {
-  var popUp = function (e) {
-    e.preventDefault();
-    e.returnValue = "";
-  }
+function popUp (e) {
+  e.preventDefault();
+  e.returnValue = "";
+};
 
 function confirmNoRecoveryCopy (e, from) {
   if (from == null){
@@ -14,36 +13,28 @@ function confirmNoRecoveryCopy (e, from) {
   }
 }
 
-  var recoveryCodes = $("#recovery-code-list")
-  var copyIconSelector = "#recovery-codes--copy-icon"
-  var copyIcon = $(copyIconSelector)
-  var checkboxInputField = $("#recovery-codes--checkbox")
-  var checkboxInput = checkboxInputField[0]
-  var formSubmit = $("#recovery-codes--submit")[0]
+if($("#recovery-code-list").length){
+  new ClipboardJS(".recovery__copy__icon");
 
-  if (recoveryCodes.length > 0) {
-    window.addEventListener("beforeunload", popUp)
-    $(".form__submit").on("click", confirmNoRecoveryCopy);
+  $(".recovery__copy__icon").on("click", function(e){
+    $(this).text("[ copied ]");
 
-    new ClipboardJS(copyIconSelector)
+    if( !$(this).is(".clicked") ) {
+      e.preventDefault();
+      $(this).addClass("clicked");
+      window.removeEventListener("beforeunload", popUp);
+      $(".form__submit").unbind("click", confirmNoRecoveryCopy);
+    }
+  });
 
-    copyIcon.click(function (e) {
-      copyIcon.text(copyIcon.data("copied"))
+  window.addEventListener("beforeunload", popUp);
+  $(".form__submit").on("click", confirmNoRecoveryCopy);
 
-      if (!copyIcon.is(".clicked")) {
-        e.preventDefault()
-        copyIcon.addClass("clicked")
-        window.removeEventListener("beforeunload", popUp)
-        $(".form__submit").unbind("click", confirmNoRecoveryCopy);
-      }
-    })
-
-    checkboxInputField.change(function () {
-      if (checkboxInput.checked) {
-        formSubmit.disabled = false
-      } else {
-        formSubmit.disabled = true
-      }
-    })
-  }
-})
+  $(".form__checkbox__input").change(function() {
+    if(this.checked) {
+      $(".form__submit").prop('disabled', false);
+    } else {
+      $(".form__submit").prop('disabled', true);
+    }
+  });
+}

@@ -9,12 +9,10 @@
     <% end %>
   </ul>
 
-  <p><%= link_to t(".copy"), "#/", class: "t-link--bold", id: "recovery-codes--copy-icon", data: { "clipboard-target": "#recovery-code-list", copied: t(".copied") } %></p>
-
-  <div class="form__checkbox__item">
-    <%= check_box_tag "ack", "ack", false, id: "recovery-codes--checkbox", class: "form__checkbox__input" %>
+  <p><%= link_to t(".copy"), "#/", class: "t-link--bold recovery__copy__icon", data: { "clipboard-target": "#recovery-code-list" } %></p>
+  <div class = "form__checkbox__item">
+    <%= check_box_tag "ack", "ack", false, class: "form__checkbox__input" %>
     <%= label_tag "checked", t(".saved"), class: "form__checkbox__label" %>
   </div>
-
-  <%= button_to t(".continue"), @continue_path, method: :get, id: "recovery-codes--submit", class: "form__submit form__submit--no-hover", disabled: true %>
+  <%= button_to t(".continue"), @continue_path, method: "get", class: "form__submit form__submit--no-hover", disabled: true %>
 </div>
