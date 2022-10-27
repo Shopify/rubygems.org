@@ -1,8 +1,8 @@
 class User < ApplicationRecord
   include UserMultifactorMethods
+  include UserWebauthnMethods
   include Clearance::User
   include Gravtastic
-  include WebauthnConcern
   is_gravtastic default: "retro"
 
   PERMITTED_ATTRS = %i[
