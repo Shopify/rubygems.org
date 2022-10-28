@@ -47,18 +47,21 @@ class Api::V1::ApiKeysController < Api::BaseController
   private
 
   def check_mfa(user)
-    if user && user.mfa_gem_signin_authorized?(otp) && user.doesnt_meet_minimum_mfa_level? && user.rubygems.mfa_required.any? && user.mfa_disabled?
-      error = error_message("set up multi-factor authentication at https://rubygems.org/multifactor_auth/new.")
-      return render_forbidden(error)
-    elsif user && user.mfa_gem_signin_authorized?(otp) && user.doesnt_meet_minimum_mfa_level? && user.rubygems.mfa_required.any? && user.mfa_ui_only?
-      error = error_message("change your MFA level to 'UI and gem signin' or 'UI and API' at https://rubygems.org/settings/edit.")
-      return render_forbidden(error)
-    elsif user && user.mfa_gem_signin_authorized?(otp)
+    return unless user
+    if user.mfa_gem_signin_authorized?(otp)
+      return render_forbidden(mfa_level_error_message(user)) if user.mfa_required?
+
       yield
-    elsif user && user.mfa_enabled? && !user.mfa_gem_signin_authorized?(otp)
+    elsif user.mfa_enabled?
       render plain: otp_error_message, status: :unauthorized
-    else
-      # false
+    end
+  end
+
+  def mfa_level_error_message(user)
+    if user.mfa_disabled?
+      error_message("set up multi-factor authentication at https://rubygems.org/multifactor_auth/new.")
+    elsif user.mfa_ui_only?
+      error_message("change your MFA level to 'UI and gem signin' or 'UI and API' at https://rubygems.org/settings/edit.")
     end
   end
 
