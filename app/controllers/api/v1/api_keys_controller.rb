@@ -55,12 +55,18 @@ class Api::V1::ApiKeysController < Api::BaseController
       return render_forbidden(error)
     elsif user && user.mfa_gem_signin_authorized?(otp)
       yield
-    elsif user && user.mfa_enabled? && otp.present? && !user.mfa_gem_signin_authorized?(otp)
-      render plain: t(:otp_incorrect), status: :unauthorized
-    elsif user && user.mfa_enabled? && !otp.present? && !user.mfa_gem_signin_authorized?(otp)
-      render plain: t(:otp_missing), status: :unauthorized
+    elsif user && user.mfa_enabled? && !user.mfa_gem_signin_authorized?(otp)
+      render plain: otp_error_message, status: :unauthorized
     else
       # false
+    end
+  end
+
+  def otp_error_message
+    if otp.present?
+      t(:otp_incorrect)
+    else
+      t(:otp_missing)
     end
   end
 
