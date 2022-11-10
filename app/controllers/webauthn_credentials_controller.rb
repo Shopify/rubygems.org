@@ -25,7 +25,12 @@ class WebauthnCredentialsController < ApplicationController
   end
 
   def destroy
-    current_user.webauthn_credentials.find(params[:id]).destroy!
+    webauthn_credential = current_user.webauthn_credentials.find(params[:id])
+    if webauthn_credential.destroy
+      flash[:notice] = t(".webauthn_credential.confirm_delete")
+    else
+      flash[:error] = webauthn_credential.errors.full_messages.to_sentence
+    end
 
     redirect_to edit_settings_path
   end

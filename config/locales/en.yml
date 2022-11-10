@@ -613,6 +613,8 @@ en:
       copy: "[ copy ]"
       saved: I acknowledge that I have saved my recovery codes.
     webauthn_credential:
+      confirm_delete: "Credential deleted"
+      delete_failed: "Could not delete credential"
       delete: Delete
     form:
       new_device: Register a new security device

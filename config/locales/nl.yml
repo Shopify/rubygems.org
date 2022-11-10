@@ -629,6 +629,8 @@ nl:
       copy:
       saved:
     webauthn_credential:
+      confirm_delete:
+      delete_failed:
       delete:
     form:
       new_device:

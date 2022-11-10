@@ -171,6 +171,19 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
       assert_equal 0, @user.webauthn_credentials.count
     end
 
+    should "set success notice flash" do
+      assert_equal "Credential deleted", flash[:notice]
+    end
+
+    should "set failure notice flash if destroy fails" do
+      @user.stubs(:webauthn_credentials).returns @credential
+      WebauthnCredential.any_instance.stubs(:find).returns @credential
+      @credential.stubs(:destroy).returns false
+
+      delete :destroy, params: { id: @credential.id }
+      refute_nil flash[:error]
+    end
+
     should redirect_to :edit_settings
   end
 end
