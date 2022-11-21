@@ -274,7 +274,7 @@ m_WebauthnCredential [label = <<table border="0" align="center" cellspacing="0.5
 |
 <table border="0" align="left" cellspacing="2" cellpadding="0" width="134">
   <tr><td align="left" width="130" port="external_id">external_id <font face="Arial Italic" color="grey60">string ∗ U</font></td></tr>
-  <tr><td align="left" width="130" port="nickname">nickname <font face="Arial Italic" color="grey60">string ∗</font></td></tr>
+  <tr><td align="left" width="130" port="nickname">nickname <font face="Arial Italic" color="grey60">string ∗ U</font></td></tr>
   <tr><td align="left" width="130" port="public_key">public_key <font face="Arial Italic" color="grey60">string ∗</font></td></tr>
   <tr><td align="left" width="130" port="sign_count">sign_count <font face="Arial Italic" color="grey60">integer (8) ∗</font></td></tr>
 </table>
