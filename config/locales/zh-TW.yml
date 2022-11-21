@@ -617,6 +617,7 @@ zh-TW:
       confirm_delete:
       delete_failed:
       delete:
+      saved:
     form:
       new_device:
       nickname:

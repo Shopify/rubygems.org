@@ -13,6 +13,7 @@ class WebauthnCredentialsController < ApplicationController
     webauthn_credential = build_webauthn_credential
 
     if webauthn_credential.save
+      flash[:notice] = t(".webauthn_credential.saved")
       redirect_to edit_settings_path
     else
       message = webauthn_credential.errors.full_messages.to_sentence

@@ -206,7 +206,7 @@ FactoryBot.define do
     user
     sequence(:external_id) { |n| "webauthn-credential-#{n}" }
     public_key { "abc" }
-    nickname { "Primary key" }
+    nickname { "Key #{SecureRandom.hex(24)}" }
 
     trait :primary
 

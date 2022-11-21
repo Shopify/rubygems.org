@@ -616,6 +616,7 @@ en:
       confirm_delete: "Credential deleted"
       delete_failed: "Could not delete credential"
       delete: Delete
+      saved: Security device succesfully created
     form:
       new_device: Register a new security device
       nickname: Nickname

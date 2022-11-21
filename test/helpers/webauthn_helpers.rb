@@ -21,7 +21,7 @@ module WebauthnHelpers
     result
   end
 
-  def self.create(webauthn_credential:, client:)
+  def self.create_credential(webauthn_credential:, client:)
     credential = create_result(client: client)
     response = WebAuthn::Credential.from_create(credential)
     webauthn_credential.update!(

@@ -381,7 +381,7 @@ class SessionsControllerTest < ActionController::TestCase
         @origin = "http://localhost:3000"
         @rp_id = URI.parse(@origin).host
         @client = WebAuthn::FakeClient.new(@origin, encoding: false)
-        WebauthnHelpers.create(
+        WebauthnHelpers.create_credential(
           webauthn_credential: @webauthn_credential,
           client: @client
         )
@@ -434,7 +434,7 @@ class SessionsControllerTest < ActionController::TestCase
         @origin = "http://localhost:3000"
         @rp_id = URI.parse(@origin).host
         @client = WebAuthn::FakeClient.new(@origin, encoding: false)
-        WebauthnHelpers.create(
+        WebauthnHelpers.create_credential(
           webauthn_credential: @webauthn_credential,
           client: @client
         )

@@ -4,10 +4,10 @@
     return event.target
   }
 
-  var setError = function(submit, error, message) {
+  var setError = function(submit, error, exception) {
     submit.attr("disabled", false)
     error.attr("hidden", false)
-    error.text(message)
+    error.text(exception.message)
   }
 
   var handleResponse = function(submit, responseError, response) {

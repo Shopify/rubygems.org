@@ -131,7 +131,7 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
       should respond_with :unprocessable_entity
     end
 
-    context "when credentials are incorrect" do
+    context "when challenge is incorrect" do
       setup do
         @user = create(:user)
         sign_in_as @user

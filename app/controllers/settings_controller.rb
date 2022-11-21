@@ -4,6 +4,8 @@ class SettingsController < ApplicationController
   before_action :set_cache_headers
 
   def edit
+    # Display notice even after js callback
+    flash.keep(:notice)
     @user = current_user
     @webauthn_credential = WebauthnCredential.new(user: @user)
     @mfa_options = [
