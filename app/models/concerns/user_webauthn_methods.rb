@@ -23,7 +23,7 @@ module UserWebauthnMethods
   def webauthn_options_for_get
     WebAuthn::Credential.options_for_get(
       allow: webauthn_credentials.pluck(:external_id),
-      user_verification: "preferred"
+      user_verification: "discouraged"
     )
   end
 end
