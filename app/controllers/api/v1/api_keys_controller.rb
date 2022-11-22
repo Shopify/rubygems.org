@@ -9,20 +9,6 @@ class Api::V1::ApiKeysController < Api::BaseController
     authenticate_with_mfa_and_create_key(api_key_create_params)
   end
 
-  def authenticate_with_mfa_and_create_key(api_key_params)
-    authenticate_or_request_with_http_basic do |username, password|
-      # strip username mainly to remove null bytes
-      user = User.authenticate(username.strip, password)
-
-      check_mfa(user) do
-        key = generate_unique_rubygems_key
-        api_key = user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
-
-        save_and_respond(api_key, key)
-      end
-    end
-  end
-
   def update
     authenticate_or_request_with_http_basic do |username, password|
       # strip username mainly to remove null bytes
@@ -34,7 +20,7 @@ class Api::V1::ApiKeysController < Api::BaseController
         if api_key.update(api_key_update_params)
           respond_with "Scopes for the API key #{api_key.name} updated"
         else
-          errors = api_key.errors.full_messages
+          errors = api_key.errors.full_messages.to_sentence
           respond_with "Failed to update scopes for the API key #{api_key.name}: #{errors}", status: :unprocessable_entity
         end
       end
@@ -42,6 +28,25 @@ class Api::V1::ApiKeysController < Api::BaseController
   end
 
   private
+
+  def authenticate_with_mfa_and_create_key(api_key_params)
+    authenticate_or_request_with_http_basic do |username, password|
+      # strip username mainly to remove null bytes
+      user = User.authenticate(username.strip, password)
+
+      check_mfa(user) do
+        key = generate_unique_rubygems_key
+        api_key = user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
+
+        if api_key.save
+          Mailer.delay.api_key_created(api_key.id)
+          respond_with key
+        else
+          respond_with api_key.errors.full_messages.to_sentence, status: :unprocessable_entity
+        end
+      end
+    end
+  end
 
   def check_mfa(user)
     return unless user
