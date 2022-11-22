@@ -2,56 +2,49 @@ class Api::V1::ApiKeysController < Api::BaseController
   include ApiKeyable
 
   def show
-    authenticate_with_mfa(legacy_key_defaults)
-  end
-
-  def create
-    authenticate_with_mfa(api_key_create_params)
-  end
-
-  def update
-    authenticate_with_mfa
-  end
-
-  private
-
-  def authenticate_with_mfa(api_key_attributes = nil)
     authenticate_or_request_with_http_basic do |username, password|
       # strip username mainly to remove null bytes
-      @user = User.authenticate(username.strip, password)
+      user = User.authenticate(username.strip, password)
+      check_mfa(user) do
+        key = generate_unique_rubygems_key
+        api_key = user.api_keys.build(legacy_key_defaults.merge(hashed_key: hashed_key(key)))
 
-      check_mfa(@user) do
-        self.send("#{self.action_name}_and_respond", api_key_attributes)
+        save_and_respond(api_key, key)
       end
     end
   end
 
-  def show_and_respond(api_key_attributes)
-    create_and_respond(api_key_attributes)
-  end
+  def create
+    authenticate_or_request_with_http_basic do |username, password|
+      user = User.authenticate(username, password)
 
-  def create_and_respond(api_key_attributes)
-    key = generate_unique_rubygems_key
-    api_key = @user.api_keys.build(api_key_attributes.merge(hashed_key: hashed_key(key)))
+      check_mfa(user) do
+        key = generate_unique_rubygems_key
+        api_key = user.api_keys.build(api_key_create_params.merge(hashed_key: hashed_key(key)))
 
-    if api_key.save
-      Mailer.delay.api_key_created(api_key.id)
-      respond_with key
-    else
-      respond_with api_key.errors.full_messages.to_sentence, status: :unprocessable_entity
+        save_and_respond(api_key, key)
+      end
     end
   end
 
-  def update_and_respond(foo)
-    api_key = @user.api_keys.find_by!(hashed_key: hashed_key(params[:api_key]))
+  def update
+    authenticate_or_request_with_http_basic do |username, password|
+      user = User.authenticate(username, password)
 
-    if api_key.update(api_key_update_params)
-      respond_with "Scopes for the API key #{api_key.name} updated"
-    else
-      errors = api_key.errors.full_messages
-      respond_with "Failed to update scopes for the API key #{api_key.name}: #{errors}", status: :unprocessable_entity
+      check_mfa(user) do
+        api_key = user.api_keys.find_by!(hashed_key: hashed_key(params[:api_key]))
+
+        if api_key.update(api_key_update_params)
+          respond_with "Scopes for the API key #{api_key.name} updated"
+        else
+          errors = api_key.errors.full_messages
+          respond_with "Failed to update scopes for the API key #{api_key.name}: #{errors}", status: :unprocessable_entity
+        end
+      end
     end
   end
+
+  private
 
   def check_mfa(user)
     return unless user
@@ -86,6 +79,15 @@ class Api::V1::ApiKeysController < Api::BaseController
 
       Please read our blog post for more details (https://blog.rubygems.org/2022/08/15/requiring-mfa-on-popular-gems.html).
     ERROR
+  end
+
+  def save_and_respond(api_key, key)
+    if api_key.save
+      Mailer.delay.api_key_created(api_key.id)
+      respond_with key
+    else
+      respond_with api_key.errors.full_messages.to_sentence, status: :unprocessable_entity
+    end
   end
 
   def respond_with(msg, status: :ok)
