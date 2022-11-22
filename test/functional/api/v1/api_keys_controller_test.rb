@@ -421,21 +421,37 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
     end
 
     context "with correct credentials" do
-      setup do
-        @api_key = create(:api_key, user: @user, key: "12345", push_rubygem: true)
-        authorize_with("#{@user.email}:#{@user.password}")
-        put :update, params: { api_key: "12345", index_rubygems: "true", mfa: "true" }
-        @api_key.reload
+      context "with valid api key params" do
+        setup do
+          @api_key = create(:api_key, user: @user, key: "12345", push_rubygem: true)
+          authorize_with("#{@user.email}:#{@user.password}")
+          put :update, params: { api_key: "12345", index_rubygems: "true", mfa: "true" }
+          @api_key.reload
+        end
+
+        should respond_with :success
+        should "keep current scope enabled and update scope in params" do
+          assert_predicate @api_key, :can_index_rubygems?
+          assert_predicate @api_key, :can_push_rubygem?
+        end
+
+        should "update MFA" do
+          assert @api_key.mfa
+        end
       end
 
-      should respond_with :success
-      should "keep current scope enabled and update scope in params" do
-        assert_predicate @api_key, :can_index_rubygems?
-        assert_predicate @api_key, :can_push_rubygem?
-      end
+      context "with invalid api key params" do
+        setup do
+          @api_key = create(:api_key, user: @user, key: "12345", push_rubygem: true)
+          authorize_with("#{@user.email}:#{@user.password}")
+          put :update, params: { api_key: "12345", index_rubygems: "true", show_dashboard: "true" }
+          @api_key.reload
+        end
 
-      should "update MFA" do
-        assert @api_key.mfa
+        should respond_with :unprocessable_entity
+        should "respond with error" do
+          assert_equal @response.body, "Failed to update scopes for the API key ci-key: Show dashboard scope must be enabled exclusively"
+        end
       end
     end
 
