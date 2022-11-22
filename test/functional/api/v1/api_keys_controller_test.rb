@@ -176,6 +176,30 @@ class Api::V1::ApiKeysControllerTest < ActionController::TestCase
     end
   end
 
+  context "on POST to create with invalid credentials" do
+    setup do
+      @user = create(:user)
+      authorize_with("bad\0:creds")
+      post :create
+    end
+    should "deny access" do
+      assert_response 401
+      assert_match "HTTP Basic: Access denied.", @response.body
+    end
+  end
+
+  context "on PUT to update with invalid credentials" do
+    setup do
+      @user = create(:user)
+      authorize_with("bad\0:creds")
+      put :update
+    end
+    should "deny access" do
+      assert_response 401
+      assert_match "HTTP Basic: Access denied.", @response.body
+    end
+  end
+
   context "on GET to show" do
     should_respond_to(:json) do |body|
       JSON.load body

@@ -5,6 +5,7 @@ class Api::V1::ApiKeysController < Api::BaseController
     authenticate_or_request_with_http_basic do |username, password|
       # strip username mainly to remove null bytes
       user = User.authenticate(username.strip, password)
+
       check_mfa(user) do
         key = generate_unique_rubygems_key
         api_key = user.api_keys.build(legacy_key_defaults.merge(hashed_key: hashed_key(key)))
@@ -16,7 +17,8 @@ class Api::V1::ApiKeysController < Api::BaseController
 
   def create
     authenticate_or_request_with_http_basic do |username, password|
-      user = User.authenticate(username, password)
+      # strip username mainly to remove null bytes
+      user = User.authenticate(username.strip, password)
 
       check_mfa(user) do
         key = generate_unique_rubygems_key
@@ -29,7 +31,8 @@ class Api::V1::ApiKeysController < Api::BaseController
 
   def update
     authenticate_or_request_with_http_basic do |username, password|
-      user = User.authenticate(username, password)
+      # strip username mainly to remove null bytes
+      user = User.authenticate(username.strip, password)
 
       check_mfa(user) do
         api_key = user.api_keys.find_by!(hashed_key: hashed_key(params[:api_key]))
