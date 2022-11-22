@@ -2,27 +2,21 @@ class Api::V1::ApiKeysController < Api::BaseController
   include ApiKeyable
 
   def show
-    authenticate_or_request_with_http_basic do |username, password|
-      # strip username mainly to remove null bytes
-      user = User.authenticate(username.strip, password)
-
-      check_mfa(user) do
-        key = generate_unique_rubygems_key
-        api_key = user.api_keys.build(legacy_key_defaults.merge(hashed_key: hashed_key(key)))
-
-        save_and_respond(api_key, key)
-      end
-    end
+    authenticate_with_mfa_and_create_key(legacy_key_defaults)
   end
 
   def create
+    authenticate_with_mfa_and_create_key(api_key_create_params)
+  end
+
+  def authenticate_with_mfa_and_create_key(api_key_params)
     authenticate_or_request_with_http_basic do |username, password|
       # strip username mainly to remove null bytes
       user = User.authenticate(username.strip, password)
 
       check_mfa(user) do
         key = generate_unique_rubygems_key
-        api_key = user.api_keys.build(api_key_create_params.merge(hashed_key: hashed_key(key)))
+        api_key = user.api_keys.build(api_key_params.merge(hashed_key: hashed_key(key)))
 
         save_and_respond(api_key, key)
       end
