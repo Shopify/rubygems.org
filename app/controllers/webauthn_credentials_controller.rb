@@ -1,5 +1,6 @@
 class WebauthnCredentialsController < ApplicationController
-  before_action :redirect_to_signin, unless: :signed_in?
+  before_action :redirect_to_signin, unless: :signed_in?, except: [:prompt]
+  before_action :set_user, only: :prompt
 
   def create
     @create_options = current_user.webauthn_options_for_create
@@ -34,6 +35,16 @@ class WebauthnCredentialsController < ApplicationController
     redirect_to edit_settings_path
   end
 
+  def prompt
+    # return if @user.webauthn_credentials.none?
+    @webauthn_options = @user.webauthn_options_for_get
+
+    session[:webauthn_authentication] = {
+      "challenge" => @webauthn_options.challenge,
+      "user" => @user.id
+    }
+  end
+
   private
 
   def webauthn_credential_params
@@ -51,5 +62,23 @@ class WebauthnCredentialsController < ApplicationController
         sign_count: credential.sign_count
       )
     )
+  end
+
+  def set_user
+    @user = User.find_by(webauthn_token: webauthn_token_param)
+    render_not_found if @user.webauthn_token_expires_at < Time.now
+  end
+
+  def webauthn_token_param
+    params.permit(:webauthn_token).require(:webauthn_token)
+  end
+
+  def render_prompt(message, status)
+    respond_to do |format|
+      format.html do
+        flash.now.notice = message
+        render template: "webauthn_credentials/prompt", status: status
+      end
+    end
   end
 end

@@ -183,6 +183,7 @@ Rails.application.routes.draw do
 
     resources :ownership_calls, only: :index
     resources :webauthn_credentials, only: :destroy
+    get 'authn/:webauthn_token', to: 'webauthn_credentials#prompt', as: 'webauthn_prompt'
 
     ################################################################################
     # Clearance Overrides and Additions
