@@ -112,7 +112,7 @@
       navigator.credentials.get({
         publicKey: options
       }).then(function (credentials) {
-        return fetch(form.action + ".json", {
+        return fetch(form.action + ".html", {
           method: "POST",
           credentials: "same-origin",
           headers: {
@@ -124,10 +124,10 @@
           })
         })
       }).then(function (response) {
-        handleResponse($SUBMIT, $ERROR, response)
-      }).catch(function (error) {
-        setError($SUBMIT, $ERROR, error)
-      })
+        return response.text();
+      }).then((html) => {
+        document.body.innerHTML = html
+      });
     })
   })
 })()

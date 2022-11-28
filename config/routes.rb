@@ -184,6 +184,8 @@ Rails.application.routes.draw do
     resources :ownership_calls, only: :index
     resources :webauthn_credentials, only: :destroy
     get 'authn/:webauthn_token', to: 'webauthn_credentials#prompt', as: 'webauthn_prompt'
+    # Look at constraints
+    post 'authn', to: 'webauthn_credentials#verify', as: 'webauthn_verify', constraints: { format: /json|html/ }
 
     ################################################################################
     # Clearance Overrides and Additions
