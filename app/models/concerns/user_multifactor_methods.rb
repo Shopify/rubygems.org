@@ -57,8 +57,16 @@ module UserMultifactorMethods
       otp = otp.to_s
       return true if verify_digit_otp(mfa_seed, otp)
 
+      if otp == webauthn_otp  && webauthn_otp_expires_at > Time.now
+        self.webauthn_otp = nil
+        self.webauthn_otp_expires_at = nil
+        save!(validate: false)
+        return true
+      end
+
       return false unless mfa_recovery_codes.include? otp
       mfa_recovery_codes.delete(otp)
+
       save!(validate: false)
     end
 
