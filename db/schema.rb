@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_08_17324) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_08_224939) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
@@ -223,6 +223,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_08_17324) do
     t.string "webauthn_id"
     t.string "webauthn_token", limit: 128
     t.datetime "webauthn_token_expires_at"
+    t.string "webauthn_otp", limit: 128
+    t.datetime "webauthn_otp_expires_at"
     t.index ["email"], name: "index_users_on_email"
     t.index ["handle"], name: "index_users_on_handle"
     t.index ["id", "confirmation_token"], name: "index_users_on_id_and_confirmation_token"
