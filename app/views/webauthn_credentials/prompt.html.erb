@@ -1,0 +1,16 @@
+<% @title = "Verify with Security Device" %>
+
+<% if @user.webauthn_credentials.any? %>
+  <div class="t-body">
+    <h2>Verifying as <%= @user.name %></h2>
+    <p>A security device can be can be any device that complies with the FIDO2 standard such as security and biometric keys. This device currently can only be used for web login and is therefore not a replacement for OTP based Multi-factor Authentication.</p>
+  </div>
+
+  <%= form_tag webauthn_verify_path, method: :post, class: "js-webauthn-session--form", data: { options: @webauthn_options.to_json } do %>
+    <div class="form_bottom">
+      <p hidden class="l-text-red-600 js-webauthn-session--error"></p>
+
+      <%= submit_tag "Verify", class: 'js-webauthn-session--submit form__submit form__submit--no-hover' %>
+    </div>
+  <% end %>
+<% end %>
