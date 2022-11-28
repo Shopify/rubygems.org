@@ -24,4 +24,12 @@ module WebauthnConcern
       allow: webauthn_credentials.pluck(:external_id)
     )
   end
+
+  # name wip
+  def refresh_webauthn_token
+    self.webauthn_token = Clearance::Token.new
+    self.webauthn_token_expires_at = 5.minutes.from_now
+    save!(validate: false)
+    webauthn_token
+  end
 end

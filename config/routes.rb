@@ -22,6 +22,7 @@ Rails.application.routes.draw do
           post :revoke, to: "github_secret_scanning#revoke", defaults: { format: :json }
         end
       end
+      resources :webauthn, only: :create
       resource :multifactor_auth, only: :show
       resources :profiles, only: :show
       get "profile/me", to: "profiles#me"
