@@ -45,6 +45,39 @@ class WebauthnCredentialsController < ApplicationController
     }
   end
 
+  def verify
+    @user = User.find(session.dig(:webauthn_authentication, "user"))
+    @challenge = session.dig(:webauthn_authentication, "challenge")
+
+    if params[:credentials].blank?
+      render_prompt("Credentials required", :unauthorized)
+      return
+    end
+
+    @credential = WebAuthn::Credential.from_get(params[:credentials])
+
+    @webauthn_credential = @user.webauthn_credentials.find_by(
+      external_id: @credential.id
+    )
+
+    @credential.verify(
+      @challenge,
+      public_key: @webauthn_credential.public_key,
+      sign_count: @webauthn_credential.sign_count
+    )
+
+    @webauthn_credential.update!(sign_count: @credential.sign_count)
+    @user.webauthn_otp = SecureRandom.hex(6)
+    @user.webauthn_otp_expires_at = 1.minute.from_now
+    @user.save!(validate: false)
+
+    render plain: "success"
+  rescue WebAuthn::Error => e
+    render_prompt(e.message, :unauthorized)
+  ensure
+    session.delete(:webauthn_authentication)
+  end
+
   private
 
   def webauthn_credential_params
