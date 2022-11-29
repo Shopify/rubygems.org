@@ -41,7 +41,8 @@ class WebauthnCredentialsController < ApplicationController
 
     session[:webauthn_authentication] = {
       "challenge" => @webauthn_options.challenge,
-      "user" => @user.id
+      "user" => @user.id,
+      "redirect_uri" => params[:redirect_uri]
     }
   end
 
@@ -71,7 +72,12 @@ class WebauthnCredentialsController < ApplicationController
     @user.webauthn_otp_expires_at = 1.minute.from_now
     @user.save!(validate: false)
 
-    render plain: "success"
+    uri = session.dig(:webauthn_authentication, "redirect_uri")
+    if uri
+      redirect_to "#{uri}?code=#{@user.webauthn_otp}"
+    else
+      render_prompt("success", :ok)
+    end
   rescue WebAuthn::Error => e
     render_prompt(e.message, :unauthorized)
   ensure
@@ -108,6 +114,10 @@ class WebauthnCredentialsController < ApplicationController
 
   def render_prompt(message, status)
     respond_to do |format|
+      format.json do
+        render json: { message: message }, status: :unauthorized
+      end
+
       format.html do
         flash.now.notice = message
         render template: "webauthn_credentials/prompt", status: status
