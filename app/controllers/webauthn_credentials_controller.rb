@@ -72,11 +72,21 @@ class WebauthnCredentialsController < ApplicationController
     @user.webauthn_otp_expires_at = 1.minute.from_now
     @user.save!(validate: false)
 
-    uri = session.dig(:webauthn_authentication, "redirect_uri")
-    if uri
-      redirect_to "#{uri}?code=#{@user.webauthn_otp}"
+    url = session.dig(:webauthn_authentication, "redirect_uri")
+    #localhost:5678
+    if url
+      url_with_code = URI.parse("#{url}?code=#{@user.webauthn_otp}")
+      # req = Net::HTTP::Get.new(url_with_code.to_s)
+      # res = Net::HTTP.start(url_with_code.host, url_with_code.port) {|http|
+      #   http.request(req)
+      # }
+
+      # notice isn't working
+      #localhost:5678?code=23478234678
+      redirect_to url_with_code.to_s
     else
-      render_prompt("success", :ok)
+      # render OTP manually if url isn't specified?
+      redirect_to :root, notice: "URL not specified"
     end
   rescue WebAuthn::Error => e
     render_prompt(e.message, :unauthorized)

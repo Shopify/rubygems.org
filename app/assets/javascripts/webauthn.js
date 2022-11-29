@@ -11,15 +11,22 @@
   }
 
   var handleResponse = function($submit, $error, response) {
-    if (response.redirected) {
-      window.location.href = response.url
-    } else {
-      response.json().then(function (json) {
-        setError($submit, $error, json.message)
-      }).catch(function (error) {
-        setError($submit, $error, error)
-      })
-    }
+    response.text().then(function (text) {
+      debugger
+      if (text == "Webauthn success") {
+        $("#verify-device").attr("hidden", true)
+        $("#verify-success").attr("hidden", false)
+      }
+      else if (response.redirected) {
+        window.location.href = response.url
+      } else {
+        response.json().then(function (json) {
+          setError($submit, $error, json.message)
+        }).catch(function (error) {
+          setError($submit, $error, error)
+        })
+      }
+    })
   }
 
   var credentialsToBase64 = function(credentials) {
