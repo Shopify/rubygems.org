@@ -6,6 +6,19 @@ class Api::V1::WebauthnController < Api::BaseController
     render plain: webauthn_prompt_url(webauthn_token: token)
   end
 
+  def status
+    webauthn_token = params[:token] # should use strong params
+    user = User.find_by(webauthn_token: webauthn_token)
+
+    if user.nil?
+      render plain: "token invalid", status: :forbidden
+    elsif user.webauthn_otp_expires_at < Time.now
+      render plain: "otp has expired", status: :forbidden
+    else
+      render plain: user.webauthn_otp
+    end
+  end
+
   private
 
   def authenticate_with_credentials

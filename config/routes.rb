@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         end
       end
       resources :webauthn, only: :create
+      get "webauthn/:token/status", to: "webauthn#status", as: "webauthn_status"
       resource :multifactor_auth, only: :show
       resources :profiles, only: :show
       get "profile/me", to: "profiles#me"
