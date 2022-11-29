@@ -308,6 +308,8 @@ en:
       account: "Account: %{account}"
       key: "Key: %{key}"
       time_based: "Time based: Yes"
+      webauthn_credentials: Security device
+      webauthn_credential_note: A security device can be can be any device that complies with the FIDO2 standard such as security and biometric keys.
     create:
       qrcode_expired: The QR-code and key is expired. Please try registering a new device again.
       success: You have successfully enabled multi-factor authentication.

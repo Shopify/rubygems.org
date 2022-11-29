@@ -104,6 +104,38 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
         assert_equal @nickname, @user.webauthn_credentials.last.nickname
         assert_equal 1, @user.webauthn_credentials.count
       end
+
+      should "set the mfa level" do
+        assert_predicate @user, :mfa_enabled?
+        assert_equal "ui_and_gem_signin", @user.mfa_level
+      end
+    end
+
+    context "when higher mfa level is already set" do
+      setup do
+        @user = create(:user, :mfa_enabled)
+        sign_in_as @user
+        post :create
+        @nickname = SecureRandom.hex
+        challenge = JSON.parse(response.body)["challenge"]
+        origin = "http://localhost:3000"
+        client = WebAuthn::FakeClient.new(origin, encoding: false)
+        post(
+          :callback,
+          params: {
+            credentials: WebauthnHelpers.create_result(
+              client: client,
+              challenge: challenge
+            ),
+            webauthn_credential: { nickname: @nickname }
+          },
+          format: :json
+        )
+      end
+
+      should "not lower user mfa level" do
+        assert_equal "ui_and_api", @user.mfa_level
+      end
     end
 
     context "when nickname is not present" do
@@ -163,6 +195,7 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
     setup do
       @user = create(:user)
       @credential = create(:webauthn_credential, user: @user)
+      @user.update(mfa_level: "ui_and_gem_signin")
       sign_in_as @user
       delete :destroy, params: { id: @credential.id }
     end
@@ -184,6 +217,23 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
       refute_nil flash[:error]
     end
 
+    should "disable mfa if user does not have otp mfa" do
+      assert_equal "disabled", @user.mfa_level
+    end
+
     should redirect_to :edit_settings
+  end
+
+  context "#destroy when user has otp mfa" do
+    setup do
+      @user = create(:user, :mfa_enabled)
+      @credential = create(:webauthn_credential, user: @user)
+      sign_in_as @user
+      delete :destroy, params: { id: @credential.id }
+    end
+
+    should "not disable otp mfa" do
+      assert_equal "ui_and_api", @user.mfa_level
+    end
   end
 end

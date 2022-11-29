@@ -308,6 +308,8 @@ zh-CN:
       account: '帐号: %{account}'
       key: '金钥: %{key}'
       time_based: '基于时间的: 是'
+      webauthn_credentials:
+      webauthn_credential_note:
     create:
       qrcode_expired: 二维码和密钥已过期。请再重新注册装置。
       success: 你已成功启用多重要素验证。

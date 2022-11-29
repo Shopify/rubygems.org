@@ -345,6 +345,8 @@ fr:
       account: 'Compte: %{account}'
       key: 'Clé: %{key}'
       time_based:
+      webauthn_credentials:
+      webauthn_credential_note:
     create:
       qrcode_expired: Le QR code et la clé sont expirés. Veuillez essayer d'enregistrer
         un nouvel appareil.

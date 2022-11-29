@@ -309,6 +309,8 @@ zh-TW:
       account: '帳號: %{account}'
       key: '金鑰: %{key}'
       time_based: '基於時間的: 是'
+      webauthn_credentials:
+      webauthn_credential_note:
     create:
       qrcode_expired: QR-code 和金鑰已過期。請再重新註冊裝置。
       success: 你已成功啟用多重要素驗證。

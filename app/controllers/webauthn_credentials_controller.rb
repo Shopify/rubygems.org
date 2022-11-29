@@ -13,6 +13,7 @@ class WebauthnCredentialsController < ApplicationController
     webauthn_credential = build_webauthn_credential
 
     if webauthn_credential.save
+      current_user.update(mfa_level: "ui_and_gem_signin") if current_user.mfa_seed.blank?
       flash[:notice] = t(".webauthn_credential.saved")
       redirect_to edit_settings_path
     else
@@ -28,6 +29,7 @@ class WebauthnCredentialsController < ApplicationController
   def destroy
     webauthn_credential = current_user.webauthn_credentials.find(params[:id])
     if webauthn_credential.destroy
+      current_user.disable_mfa! if current_user.mfa_seed.blank?
       flash[:notice] = t(".webauthn_credential.confirm_delete")
     else
       flash[:error] = webauthn_credential.errors.full_messages.to_sentence

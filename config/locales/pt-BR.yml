@@ -336,6 +336,8 @@ pt-BR:
       account:
       key:
       time_based:
+      webauthn_credentials:
+      webauthn_credential_note:
     create:
       qrcode_expired:
       success:
