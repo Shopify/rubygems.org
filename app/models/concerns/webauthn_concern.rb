@@ -29,6 +29,8 @@ module WebauthnConcern
   def refresh_webauthn_token
     self.webauthn_token = Clearance::Token.new
     self.webauthn_token_expires_at = 5.minutes.from_now
+    self.webauthn_otp = nil
+    self.webauthn_otp_expires_at = nil
     save!(validate: false)
     webauthn_token
   end
