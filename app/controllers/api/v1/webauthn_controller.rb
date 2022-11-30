@@ -2,8 +2,18 @@ class Api::V1::WebauthnController < Api::BaseController
   before_action :authenticate_with_credentials
 
   def create
-    token = @user.refresh_webauthn_token
-    render plain: webauthn_prompt_url(webauthn_token: token)
+    token = @user.webauthn_credentials.any? ? @user.refresh_webauthn_token : nil
+
+    mfa_types = []
+    mfa_types << :webauthn if @user.webauthn_credentials.any?
+    mfa_types << :totp if @user.mfa_enabled?
+
+    payload = {
+      url: webauthn_prompt_url(webauthn_token: token),
+      mfa_types: mfa_types
+    }
+    # render plain: webauthn_prompt_url(webauthn_token: token)
+    render json: payload.to_json
   end
 
   def status
