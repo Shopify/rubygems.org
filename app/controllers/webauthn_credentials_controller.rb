@@ -71,7 +71,7 @@ class WebauthnCredentialsController < ApplicationController
     @user.webauthn_otp_expires_at = 1.minute.from_now
     @user.save!(validate: false)
 
-    render :success
+    redirect_to :root
   rescue WebAuthn::Error => e
     render_prompt(e.message, :unauthorized)
   ensure
