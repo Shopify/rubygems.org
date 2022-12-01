@@ -14,8 +14,8 @@
     if (response.redirected) {
       window.location.href = response.url
     } else {
-      response.json().then(function (json) {
-        setError($submit, $error, json.message)
+      response.text().then(function (html) {
+        document.body.innerHTML = html
       }).catch(function (error) {
         setError($submit, $error, error)
       })
@@ -112,7 +112,7 @@
       navigator.credentials.get({
         publicKey: options
       }).then(function (credentials) {
-        return fetch(form.action + ".html", {
+        return fetch(form.action, {
           method: "POST",
           credentials: "same-origin",
           headers: {
@@ -124,10 +124,10 @@
           })
         })
       }).then(function (response) {
-        return response.text();
-      }).then((html) => {
-        document.body.innerHTML = html
-      });
+        handleResponse($SUBMIT, $ERROR, response)
+      }).catch(function (error) {
+        setError($SUBMIT, $ERROR, error)
+      })
     })
   })
 })()
