@@ -370,6 +370,11 @@ es:
       owner_heading:
       owner_request_heading:
       push_heading:
+  webauthn_verification:
+    not_found:
+    title:
+    verifying_as: 
+    verify:
   owners:
     confirm:
       confirmed_email:
