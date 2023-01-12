@@ -97,13 +97,14 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
               ),
             webauthn_token: @token
           },
-          format: :json
+          format: :html
         )
       end
 
       should respond_with :success
-      should "return success message" do
-        assert_equal "success", JSON.parse(response.body)["message"]
+      should "render success with OTP" do
+        # TODO: check with webauthn verification otp
+        assert page.has_content?("12345")
       end
     end
 
@@ -114,13 +115,13 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
           params: {
             webauthn_token: @token
           },
-          format: :json
+          format: :html
         )
       end
 
       should respond_with :unauthorized
-      should "return error message" do
-        assert_equal "Credentials required", JSON.parse(response.body)["message"]
+      should "set flash notice" do
+        assert_equal "Credentials required", flash[:notice]
       end
     end
 
@@ -144,13 +145,13 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
               ),
             webauthn_token: @token
           },
-          format: :json
+          format: :html
         )
       end
 
       should respond_with :unauthorized
-      should "return error message" do
-        assert_equal "WebAuthn::ChallengeVerificationError", JSON.parse(response.body)["message"]
+      should "set flash notice" do
+        assert_equal "WebAuthn::ChallengeVerificationError", flash[:notice]
       end
     end
 
@@ -175,7 +176,7 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
               ),
             webauthn_token: @wrong_webuthn_token
           },
-          format: :json
+          format: :html
         )
       end
 
