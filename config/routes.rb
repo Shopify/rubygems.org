@@ -185,8 +185,7 @@ Rails.application.routes.draw do
     resources :webauthn_credentials, only: :destroy
     resource :webauthn_verification, only: [] do
       get ':webauthn_token', to: 'webauthn_verifications#prompt', as: ''
-      # TODO: add html as a valid format
-      post ':webauthn_token', to: 'webauthn_verifications#authenticate', as: :authenticate, constraints: { format: /json/ }
+      post ':webauthn_token', to: 'webauthn_verifications#authenticate', as: :authenticate, constraints: { format: /json|html/ }
     end
 
     ################################################################################
@@ -219,12 +218,12 @@ Rails.application.routes.draw do
   end
 
   ################################################################################
-  # UI API
-  scope constraints: { format: :json }, defaults: { format: :json } do
-    resource :session, only: [] do
-      post 'webauthn_create', to: 'sessions#webauthn_create', as: :webauthn_create
-    end
+  # # UI API
+  # resource :session, only: [] do
+    post 'session/webauthn_create', to: 'sessions#webauthn_create', as: :webauthn_create
+  # end
 
+  scope constraints: { format: :json }, defaults: { format: :json } do
     resources :webauthn_credentials, only: :create do
       post :callback, on: :collection
     end

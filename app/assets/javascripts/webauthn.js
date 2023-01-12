@@ -1,4 +1,10 @@
 (function() {
+  // var flashBannerTemplate = `<div id="flash-border" class="flash">
+  //                             <div class="flash-wrap">
+  //                               <div id="flash_notice" class="l-wrap--b"><span><b>${lolMessage}</b></span></div>
+  //                             </div>
+  //                           </div>`;
+
   var handleEvent = function(event) {
     event.preventDefault();
     return event.target;
@@ -8,17 +14,42 @@
     submit.attr("disabled", false);
     error.attr("hidden", false);
     error.text(message);
+    // add a flash banner with the message
   };
+
+  var htmlResponseType = function(response) {
+    return response.headers.get("content-type")?.includes("html");
+  }
+
+  var setHtml = function(submit, responseError, response) {
+    response.text().then(function (html) {
+      document.body.innerHTML = html;
+    }).catch(function (error) {
+      setError(submit, responseError, error);
+    });
+  }
+
+  var setJsonError = function(submit, responseError, response) {
+    response.json().then(function (json) {
+      if (json["html"]) {
+        document.body.innerHTML = json["html"];
+      }
+      setError(submit, responseError, json.message);
+    }).catch(function (error) {
+      setError(submit, responseError, error);
+    });
+  }
 
   var handleResponse = function(submit, responseError, response) {
     if (response.redirected) {
       window.location.href = response.url;
     } else {
-      response.json().then(function (json) {
-        setError(submit, responseError, json.message);
-      }).catch(function (error) {
-        setError(submit, responseError, error);
-      });
+      if (htmlResponseType(response)) {
+        setHtml(submit, responseError, response);
+      }
+      else {
+        setJsonError(submit, responseError, response);
+      }
     }
   };
 
@@ -104,7 +135,7 @@
       navigator.credentials.get({
         publicKey: options
       }).then(function (credentials) {
-        return fetch(form.action + ".json", {
+        return fetch(form.action + ".html", {
           method: "POST",
           credentials: "same-origin",
           headers: {
@@ -123,3 +154,17 @@
     });
   });
 })();
+
+
+
+// re-compose a flash banner in this JS file (<h1> fjhdsklafjdsa </h1>)
+// On page load, find the element you want to attach the flash banner to (document/./getElementById('theHeader'))
+// theHeader.innerHtml = <recoposed flash banner>
+
+// all to be json
+// have a key that would store the html? naughty?
+
+// all to be html
+// instead of setting the error with json
+// set a flash banner with the error
+// render the same view with the error banner

@@ -21,8 +21,9 @@ class SessionsController < Clearance::SessionsController
     @user = User.find(session.dig(:webauthn_authentication, "user"))
     @challenge = session.dig(:webauthn_authentication, "challenge")
 
+    byebug
     if params[:credentials].blank?
-      login_failure("Credentials required")
+      render_prompt("Credentials required")
       return
     end
 
@@ -42,8 +43,10 @@ class SessionsController < Clearance::SessionsController
 
     do_login
   rescue WebAuthn::Error => e
-    login_failure(e.message)
+    render_prompt(e.message)
   ensure
+    # when should we delete the webauthn token?
+
     session.delete(:webauthn_authentication)
   end
 
@@ -154,5 +157,10 @@ class SessionsController < Clearance::SessionsController
   def setup_mfa_authentication
     return if @user.mfa_disabled?
     session[:mfa_user] = @user.id
+  end
+
+  def render_prompt(message = nil)
+    flash.now[:notice] = message
+    render "sessions/prompt"
   end
 end

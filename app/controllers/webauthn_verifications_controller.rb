@@ -22,8 +22,8 @@ class WebauthnVerificationsController < ApplicationController
     user_webauthn_credential.update!(sign_count: webauthn_credential.sign_count)
     # TODO: generate webauthn verification otp
 
-    # TODO: render html with webauthn verification otp instead of json
-    render json: { message: "success" }
+    render json: { html: "<h1>djfghsk</h1>" }
+    # render :success
   rescue WebAuthn::Error => e
     render json: { message: e.message }, status: :unauthorized
   rescue ActionController::ParameterMissing
