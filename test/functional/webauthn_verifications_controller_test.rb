@@ -64,7 +64,8 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       @user = create(:user)
       @webauthn_credential = create(:webauthn_credential, user: @user)
       travel_to Time.utc(2023, 1, 1, 0, 0, 0) do
-        @token = create(:webauthn_verification, user: @user, otp: nil, otp_expires_at: nil).path_token
+        @verification = create(:webauthn_verification, user: @user, otp: nil, otp_expires_at: nil)
+        @token = @verification.path_token
         get :prompt, params: { webauthn_token: @token }
       end
     end
@@ -94,7 +95,7 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
             format: :html
           )
         end
-        @user.webauthn_verification.reload
+        @verification.reload
       end
 
       should respond_with :success
@@ -104,9 +105,8 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       end
 
       should "render success with OTP" do
-        otp = @user.webauthn_verification.reload.otp
-        assert_not_nil otp
-        assert page.has_content?(otp)
+        assert_not_nil @verification.otp
+        assert page.has_content?(@verification.otp)
       end
 
       should "expire the path token by setting its expiry to 1 second prior" do
@@ -126,7 +126,7 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
             format: :html
           )
         end
-        @user.webauthn_verification.reload
+        @verification.reload
       end
 
       should respond_with :unauthorized
@@ -140,8 +140,8 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       end
 
       should "not generate OTP" do
-        assert_nil @user.webauthn_verification.otp
-        assert_nil @user.webauthn_verification.otp_expires_at
+        assert_nil @verification.otp
+        assert_nil @verification.otp_expires_at
       end
     end
 
@@ -169,6 +169,7 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
             format: :html
           )
         end
+        @verification.reload
       end
 
       should respond_with :unauthorized
@@ -177,8 +178,8 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       end
 
       should "not generate OTP" do
-        assert_nil @user.webauthn_verification.otp
-        assert_nil @user.webauthn_verification.otp_expires_at
+        assert_nil @verification.otp
+        assert_nil @verification.otp_expires_at
       end
     end
 
