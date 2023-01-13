@@ -22,9 +22,8 @@ class WebauthnVerificationsController < ApplicationController
     )
 
     user_webauthn_credential.update!(sign_count: webauthn_credential.sign_count)
-    # TODO: generate webauthn verification otp
-    @webauthn_otp = 12_345
 
+    @verification.generate_otp
     @verification.expire_path_token
 
     render :success

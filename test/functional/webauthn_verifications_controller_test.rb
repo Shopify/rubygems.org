@@ -64,7 +64,7 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       @user = create(:user)
       @webauthn_credential = create(:webauthn_credential, user: @user)
       travel_to Time.utc(2023, 1, 1, 0, 0, 0) do
-        @token = create(:webauthn_verification, user: @user).path_token
+        @token = create(:webauthn_verification, user: @user, otp: nil, otp_expires_at: nil).path_token
         get :prompt, params: { webauthn_token: @token }
       end
     end
@@ -79,7 +79,8 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
           webauthn_credential: @webauthn_credential,
           client: @client
         )
-        travel_to Time.utc(2023, 1, 1, 0, 0, 3) do
+        @generated_time = Time.utc(2023, 1, 1, 0, 0, 3)
+        travel_to @generated_time do
           post(
             :authenticate,
             params: {
@@ -93,12 +94,19 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
             format: :html
           )
         end
+        @user.webauthn_verification.reload
       end
 
       should respond_with :success
+      should "set OTP with expiry" do
+        assert_equal 20, @user.webauthn_verification.otp.length
+        assert_equal @generated_time + 2.minutes, @user.webauthn_verification.otp_expires_at
+      end
+
       should "render success with OTP" do
-        # TODO: check with webauthn verification otp
-        assert page.has_content?("12345")
+        otp = @user.webauthn_verification.reload.otp
+        assert_not_nil otp
+        assert page.has_content?(otp)
       end
 
       should "expire the path token by setting its expiry to 1 second prior" do
@@ -118,6 +126,7 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
             format: :html
           )
         end
+        @user.webauthn_verification.reload
       end
 
       should respond_with :unauthorized
@@ -128,6 +137,11 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       should "not expire the path token" do
         verification = WebauthnVerification.find_by!(path_token: @token)
         assert_equal Time.utc(2023, 1, 1, 0, 2, 0), verification.path_token_expires_at
+      end
+
+      should "not generate OTP" do
+        assert_nil @user.webauthn_verification.otp
+        assert_nil @user.webauthn_verification.otp_expires_at
       end
     end
 
@@ -160,6 +174,11 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       should respond_with :unauthorized
       should "set flash notice" do
         assert_equal "WebAuthn::ChallengeVerificationError", flash[:notice]
+      end
+
+      should "not generate OTP" do
+        assert_nil @user.webauthn_verification.otp
+        assert_nil @user.webauthn_verification.otp_expires_at
       end
     end
 
