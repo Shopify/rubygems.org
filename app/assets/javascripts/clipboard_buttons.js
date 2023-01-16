@@ -1,8 +1,8 @@
 $(function() {
-  var clipboard = new ClipboardJS('.gem__code__icon');
-  var copyTooltip = $('.gem__code__tooltip--copy');
-  var copiedTooltip = $('.gem__code__tooltip--copied');
-  var copyButtons = $('.gem__code__icon');
+  var clipboard = new ClipboardJS('.clipboard-icon');
+  var copyTooltip = $('.clipboard-icon__tooltip--copy');
+  var copiedTooltip = $('.clipboard-icon__tooltip--copied');
+  var copyButtons = $('.clipboard-icon');
 
   function hideCopyShowCopiedTooltips(e) {
     copyTooltip.removeClass("clipboard-is-hover");

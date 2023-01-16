@@ -28,6 +28,7 @@
     } else {
       response.text().then(function (html) {
         document.body.innerHTML = html;
+        handleClipboard();
       }).catch(function (error) {
         setError(submit, responseError, error);
       });
@@ -134,4 +135,29 @@
       });
     });
   });
+
+  var handleClipboard = function() {
+    var clipboard = new ClipboardJS('.clipboard-icon');
+    var copiedTooltip = $('.clipboard-icon__tooltip--copied');
+    var copyButtons = $('.clipboard-icon');
+
+    function hideCopyShowCopiedTooltips(e) {
+      copiedTooltip.insertAfter(e.trigger);
+      copiedTooltip.addClass("clipboard-is-active");
+    };
+
+    clipboard.on('success', function(e) {
+      hideCopyShowCopiedTooltips(e);
+      e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+      hideCopyShowCopiedTooltips(e);
+      copiedTooltip.text("Ctrl-C to Copy");
+    });
+
+    copyButtons.mouseout(function() {
+      copiedTooltip.removeClass("clipboard-is-active");
+    });
+  };
 })();

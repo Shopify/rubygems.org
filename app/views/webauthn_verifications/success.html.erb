@@ -3,5 +3,10 @@
 <div class="t-body">
   <h2>Verified as <%= @user.name %></h2>
   <p>Please enter this code in the command line</p>
-  <pre><%= @webauthn_otp %></pre>
+  <div class="otp__text-wrap">
+    <input type="text" class="otp__text" id="webauthn_otp" value="<%= @webauthn_otp %>" readonly="readonly">
+    <span class="clipboard-icon otp__text__icon" id="js-otp__text--webauthn_otp" data-clipboard-target="#webauthn_otp">=</span>
+    <span class="clipboard-icon__tooltip--copy">Copy to clipboard</span>
+    <span class="clipboard-icon__tooltip--copied">Copied</span>
+  </div>
 </div>

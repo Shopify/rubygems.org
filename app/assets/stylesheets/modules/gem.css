@@ -156,15 +156,15 @@
     width: 10px;
     background-image: linear-gradient(to right, transparent 0%, white 100%); }
 
-.gem__code__tooltip--copy,
-.gem__code__tooltip--copied {
+.clipboard-icon__tooltip--copy,
+.clipboard-icon__tooltip--copied {
   display: none; }
 
 .clipboard-is-hover,
 .clipboard-is-active {
   display: block;
   position: absolute;
-  top: 45px;
+  top: 50px;
   right: 0;
   width: auto;
   padding-left: 10px;
@@ -180,7 +180,7 @@
   .clipboard-is-active:before {
     content: "";
     position: absolute;
-    top: -4px;
+    top: 0px;
     right: 8px;
     height: 15px;
     width: 15px;
