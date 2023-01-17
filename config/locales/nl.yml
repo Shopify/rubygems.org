@@ -359,6 +359,10 @@ nl:
       authenticating_as:
       authenticate:
       no_webauthn_devices:
+    success:
+      title:
+      authenticated_as:
+      enter_otp:
   owners:
     confirm:
       confirmed_email:

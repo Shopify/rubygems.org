@@ -344,6 +344,10 @@ en:
       authenticating_as: Authenticating as
       authenticate: Authenticate
       no_webauthn_devices: You don't have any security devices enabled
+    success:
+      title: Authenticate with Security Device
+      authenticated_as: Authenticated as
+      enter_otp: Please paste this one-time password into your command line.
   owners:
     confirm:
       confirmed_email: You were added as an owner to %{gem} gem

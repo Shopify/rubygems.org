@@ -1,7 +1,7 @@
-<% @title = "Verify with Security Device" %>
+<% @title = t(".title") %>
 
 <div class="t-body">
-  <h2>Verified as <%= @user.name %></h2>
-  <p>Please enter this code in the command line</p>
+  <h2><%= t(".authenticated_as") %> <%= @user.name %></h2>
+  <p><%= t(".enter_otp") %></p>
   <pre><%= @webauthn_otp %></pre>
 </div>
