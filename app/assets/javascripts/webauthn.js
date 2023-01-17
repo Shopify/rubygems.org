@@ -28,11 +28,18 @@
     } else {
       response.text().then(function (html) {
         document.body.innerHTML = html;
+        handleClipboard();
       }).catch(function (error) {
         setError(submit, responseError, error);
       });
     }
   };
+
+  var handleClipboard = function() {
+    var clipboard = new ClipboardJS('.clipboard--otp__icon');
+
+    clipboard.on('success', function(e) { e.clearSelection() });
+  }
 
   var credentialsToBase64 = function(credentials) {
     return {

@@ -3,5 +3,8 @@
 <div class="t-body">
   <h2><%= t(".authenticated_as") %> <%= @user.name %></h2>
   <p><%= t(".enter_otp") %></p>
-  <pre><%= @webauthn_otp %></pre>
+  <div class="clipboard--otp">
+    <input type="text" class="clipboard--otp__text" id="webauthn_otp" value="<%= @webauthn_otp %>" readonly="readonly">
+    <span class="clipboard--otp__icon" data-clipboard-target="#webauthn_otp">=</span>
+  </div>
 </div>

@@ -104,7 +104,7 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
       should respond_with :success
       should "render success with OTP" do
         # TODO: check with webauthn verification otp
-        assert page.has_content?("12345")
+        assert page.has_selector?("input[value='12345']")
       end
     end
 
