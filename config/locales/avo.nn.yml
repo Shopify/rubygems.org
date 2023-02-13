@@ -1,120 +1,615 @@
 ---
-nn:
-  avo:
-    action_ran_successfully: Suksess!
-    actions: Handlingar
-    and_x_other_resources: og %{count} andre ressursar
-    are_you_sure: Er du sikker?
-    are_you_sure_detach_item: Er du sikker på at du vil koble frå %{item}.
-    are_you_sure_you_want_to_run_this_option: Er du sikker?
-    attach: Legg til
-    attach_and_attach_another: Legg til & Legg til ny
-    attach_item: Legg til %{item}
-    attachment_class_attached: "%{attachment_class} lagt til."
-    attachment_class_detached: "%{attachment_class} fjerna."
-    attachment_destroyed: Vedlegg sletta
-    cancel: Avbryt
-    choose_a_country: Vel eit land
-    choose_an_option: Vel eit alternativ
-    choose_item: Vel %{item}
-    clear_value: Nullstill verdi
-    click_to_reveal_filters: Vis filter
-    confirm: Stadfest
-    create_new_item: Lag ny %{item}
-    dashboard: Dashboard
-    dashboards: Dashboards
-    delete: slett
-    delete_file: Slett fil
-    delete_item: Slett %{item}
-    detach_item: koble frå %{item}
-    details: detaljar
-    download: Last ned
-    download_file: Last ned fil
-    download_item: Last ned %{item}
-    edit: endre
-    edit_item: endre %{item}
-    empty_dashboard_message: Legg til kort i dette dashbordet
-    failed: Feila
-    failed_to_find_attachment: Fann ikkje vedlegg
-    failed_to_load: Lasting feila
-    field_translations:
-      file:
-        one: fil
-        other: filer
-        zero: filer
-      people:
-        one: person
-        other: personar
-        zero: personar
-    filter_by: Filtrer etter
-    filters: Filter
-    go_back: Gå tilbake
-    grid_view: Gridvisning
-    hide_content: Skjul innhald
-    home: Heim
-    key_value_field:
-      add_row: Legg til rad
-      delete_row: Slett rad
-      key: Nøkkel
-      value: Verdi
-    list_is_empty: Lista er tom
-    loading: Lastar
-    more: Meir
-    new: ny
-    next_page: Neste side
-    no_cards_present: Ingen kort til stades
-    no_item_found: Fann ingen
-    no_options_available: Ingen tilgjengelege alternativ
-    no_related_item_found: Fann ingen relaterte
-    not_authorized: Du er ikkje autorisert til å gjere denne handlinga.
-    number_of_items:
-      one: en %{item}
-      other: "%{count} %{item}"
-      zero: ingen %{item}
-    oops_nothing_found: Oops! Fann ikkje noko...
-    order:
-      higher: Flytt elementet opp
-      lower: Flytt elementet ned
-      reorder_record: Sorter element
-      to_bottom: Flytt elementet til botnen
-      to_top: Flytt elementet til toppen
-    per_page: Per side
-    prev_page: Førre side
-    remove_selection: Fjern val
-    reset_filters: Nullstill filter
-    resource_created: Ressurs generert
-    resource_destroyed: Ressurs sletta
-    resource_translations:
+avo:
+  credentials_required:
+  edit:
+  failure_when_forbidden:
+  feed_latest:
+  feed_subscribed:
+  footer_about_html:
+  footer_sponsors_html:
+  footer_join_rt_html:
+  form_disable_with:
+  invalid_page:
+  locale_name:
+  none:
+  not_found:
+  api_key_forbidden:
+  please_sign_up:
+  please_sign_in:
+  otp_incorrect:
+  otp_missing:
+  sign_in:
+  sign_up:
+  dependency_list:
+  multifactor_authentication:
+  subtitle:
+  this_rubygem_could_not_be_found:
+  time_ago:
+  title:
+  update:
+  try_again:
+  advanced_search:
+  authenticate:
+  activerecord:
+    attributes:
+      linkset:
+        bugs:
+        changelog:
+        code:
+        docs:
+        mail:
+        wiki:
+        funding:
+      session:
+        password:
+        who:
       user:
-        one: brukar
-        other: brukarar
-        zero: brukarar
-    resource_updated: Ressurs oppdatert
-    resources: Ressursar
-    run: Køyr
-    save: Lagre
+        avatar:
+        email:
+        handle:
+        password:
+    errors:
+      messages:
+        unpwn:
+        blocked:
+    models:
+      user:
+  api_keys:
+    create:
+      success:
+      invalid_gem:
+    destroy:
+      success:
+    index:
+      api_keys:
+      name:
+      scopes:
+      gem:
+      age:
+      last_access:
+      action:
+      delete:
+      confirm:
+      confirm_all:
+      new_key:
+      index_rubygems:
+      push_rubygem:
+      yank_rubygem:
+      add_owner:
+      remove_owner:
+      access_webhooks:
+      show_dashboard:
+      reset:
+      save_key:
+      mfa:
+    new:
+      new_api_key:
+      multifactor_auth:
+      enable_mfa:
+      rubygem_scope:
+      rubygem_scope_info:
+    reset:
+      success:
+    update:
+      success:
+      invalid_gem:
+    edit:
+      edit_api_key:
+      multifactor_auth:
+      enable_mfa:
+      rubygem_scope:
+      rubygem_scope_info:
+      invalid_key:
+    all_gems:
+    gem_ownership_removed:
+  clearance_mailer:
+    change_password:
+      title:
+      subtitle:
+  dashboards:
+    show:
+      creating_link_text:
+      gem_link_text:
+      latest:
+      latest_title:
+      migrating_link_text:
+      mine:
+      my_subscriptions:
+      no_owned_html:
+      no_subscriptions_html:
+      title:
+  dependencies:
+    show:
+      click_to_expand:
+  email_confirmations:
+    create:
+      promise_resend:
+    new:
+      submit:
+      title:
+      will_email_notice:
+    update:
+      confirmed_email:
+  home:
+    index:
+      downloads_counting_html:
+      find_blurb:
+      learn:
+        install_rubygems:
+  layouts:
+    application:
+      footer:
+        about:
+        api:
+        blog:
+        contribute:
+        data:
+        designed_by:
+        discussion_forum:
+        gems_served_by:
+        guides:
+        help:
+        hosted_by:
+        monitored_by:
+        optimized_by:
+        resolved_with:
+        security:
+        source_code:
+        statistics:
+        status:
+        supported_by:
+        tested_by:
+        tracking_by:
+        uptime:
+        verified_by:
+        secured_by:
+        looking_for_maintainers:
+      header:
+        dashboard:
+        settings:
+        edit_profile:
+        search_gem_html:
+        sign_in:
+        sign_out:
+        sign_up:
+  mailer:
+    confirm_your_email:
+    confirmation_subject:
+    link_expiration_explanation_html:
+    email_confirmation:
+      title:
+      subtitle:
+      confirmation_link:
+      welcome_message:
+    email_reset:
+      title:
+      subtitle:
+      visit_link_instructions:
+    deletion_complete:
+      title:
+      subtitle:
+      subject:
+      body_html:
+    deletion_failed:
+      title:
+      subtitle:
+      subject:
+      body_html:
+    notifiers_changed:
+      subject:
+      title:
+      subtitle:
+      'on':
+      off_html:
+    gem_pushed:
+      subject:
+      title:
+    gem_yanked:
+      subject:
+      title:
+    reset_api_key:
+      subject:
+      title:
+      subtitle:
+    email_reset_update:
+      subject:
+      title:
+    ownership_confirmation:
+      subject:
+      title:
+      subtitle:
+      body_text:
+      body_html:
+      link_expiration_explanation_html:
+    owner_added:
+      subject_self:
+      subject_others:
+      title:
+      subtitle:
+      body_self_html:
+      body_others_html:
+    owner_removed:
+      subject:
+      title:
+      subtitle:
+      body_html:
+    ownerhip_request_closed:
+      title:
+      subtitle:
+      body_html:
+    ownerhip_request_approved:
+      body_html:
+    new_opwnership_requests:
+      body_html:
+      button:
+      disable_notifications:
+      owners_page:
+  news:
+    show:
+      title:
+      all_gems:
+      popular_gems:
+    popular:
+      title:
+  pages:
+    about:
+      founding_html:
+      support_html:
+      technical_html:
+      title:
+      purpose:
+        better_api:
+        enable_community:
+        header:
+        transparent_pages:
+    data:
+      title:
+    download:
+      title:
+    faq:
+      title:
+    migrate:
+      title:
+    security:
+      title:
+    sponsors:
+      title:
+  passwords:
+    edit:
+      submit:
+      title:
+    new:
+      submit:
+      title:
+      will_email_notice:
+  multifactor_auths:
+    recovery_code_html:
+    incorrect_otp:
+    session_expired:
+    otp_code:
+    require_mfa_disabled:
+    require_mfa_enabled:
+    setup_required_html:
+    setup_recommended:
+    strong_mfa_level_required_html:
+    strong_mfa_level_recommended:
+    ui_only_warning:
+    new:
+      title:
+      scan_prompt:
+      otp_prompt:
+      confirm:
+      enable:
+      account:
+      key:
+      time_based:
+    create:
+      qrcode_expired:
+      success:
+    recovery:
+      copied:
+      continue:
+      title:
+      copy:
+      saved:
+      note_html:
+    destroy:
+      success:
+    update:
+      success:
+  notifiers:
+    update:
+      success:
+    show:
+      info:
+      'on':
+      'off':
+      recommended:
+      title:
+      update:
+      owner_heading:
+      owner_request_heading:
+      push_heading:
+  owners:
+    confirm:
+      confirmed_email:
+      token_expired:
+    index:
+      add_owner:
+      name:
+      mfa:
+      status:
+      confirmed_at:
+      added_by:
+      action:
+      email_field:
+      submit_button:
+      info:
+      confirmed:
+      pending:
+      confirm_remove:
+    resend_confirmation:
+      resent_notice:
+    create:
+      success_notice:
+    destroy:
+      removed_notice:
+      failed_notice:
+    mfa_required:
+  settings:
+    edit:
+      title:
+      webauthn_credentials:
+      no_webauthn_credentials:
+      webauthn_credential_note:
+      webauthn_warning:
+      otp_code:
+      api_access:
+        confirm_reset:
+        credentials_html:
+        key_is_html:
+        link_text:
+        reset:
+        reset_all:
+        title:
+      reset_password:
+        title:
+      mfa:
+        multifactor_auth:
+        otp:
+        disabled_html:
+        go_settings:
+        enabled_html:
+        update:
+        level:
+          title:
+          disabled:
+          ui_only:
+          ui_and_api:
+          ui_and_gem_signin:
+  profiles:
+    adoptions:
+      no_ownership_calls:
+      no_ownership_requests:
+      title:
+      subtitle_html:
+    edit:
+      change_avatar:
+      email_awaiting_confirmation:
+      enter_password:
+      hide_email:
+      optional_twitter_username:
+      title:
+      delete:
+        delete:
+        delete_profile:
+        warning:
+    delete:
+      title:
+      confirm:
+      instructions:
+      list_only_owner_html:
+      list_multi_owner:
+      warning:
+    rubygem:
+      owners_header:
+    destroy:
+      request_queued:
+    update:
+      confirmation_mail_sent:
+      updated:
+    request_denied:
+  rubygems:
+    aside:
+      bundler_header:
+      copied:
+      copy_to_clipboard:
+      downloads_for_this_version:
+      install:
+      required_ruby_version:
+      required_rubygems_version:
+      requires_mfa:
+      released_with_mfa:
+      links:
+        badge:
+        bugs:
+        changelog:
+        code:
+        docs:
+        download:
+        header:
+        home:
+        mail:
+        report_abuse:
+        reverse_dependencies:
+        review_changes:
+        rss:
+        subscribe:
+        unsubscribe:
+        wiki:
+        resend_ownership_confirmation:
+        ownership:
+    reserved:
+      reserved_namespace:
+    dependencies:
+      header:
+    gem_members:
+      authors_header:
+      self_no_mfa_warning_html:
+      not_using_mfa_warning_show:
+      not_using_mfa_warning_hide:
+      owners_header:
+      pushed_by:
+      using_mfa_info:
+      yanked_by:
+      sha_256_checksum:
+      signature_period:
+      expired:
+    index:
+      downloads:
+      title:
+    show:
+      licenses_header:
+        one:
+        other:
+      no_licenses:
+      requirements_header:
+      show_all_versions:
+      versions_header:
+      yanked_notice:
+    show_yanked:
+      not_hosted_notice:
+      reserved_namespace_html:
+        one:
+        other:
+  reverse_dependencies:
+    index:
+      title:
+      subtitle:
     search:
-      cancel_button: Avbryt
-      placeholder: Søk
-    select_all: Vel alle
-    select_all_matching: Vel alle samsvarende
-    select_item: Vel
-    show_content: Vis innhald
-    sign_out: Logg ut
-    switch_to_view: Bytt til %{view_type} vis
-    table_view: Tabellvisning
-    tools: Reiskapane
-    type_to_search: Søk.
-    unauthorized: Ikkje autorisert
-    undo: angre
-    view: Vis
-    view_item: vis %{item}
-    was_successfully_created: vart oppretta
-    was_successfully_updated: vart oppdatert
-    x_items_more:
-      one: eitt element til
-      other: "%{count} fleire element"
-      zero: ingen fleire element
-    x_records_selected_from_a_total_of_x_html: <span class="font-bold text-gray-700">%{selected}</span> valde postar på denne sida av totalt <span class="font-bold text-gray-700">%{count}</span>
-    x_records_selected_from_all_pages_html: <span class="font-bold text-gray-700">%{count}</span> valde postar frå alle sider
-    you_missed_something_check_form: Her manglar du noko. Ver venleg og sjekk skjemaet.
+      search_reverse_dependencies_html:
+  searches:
+    advanced:
+      name:
+      summary:
+      description:
+      downloads:
+      updated:
+      yanked:
+    show:
+      subtitle:
+      month_update:
+      week_update:
+      filter:
+      yanked:
+      suggestion:
+  sessions:
+    new:
+      forgot_password:
+      resend_confirmation:
+    verify:
+      title:
+      confirm:
+      notice:
+    create:
+      account_blocked:
+    prompt:
+      webauthn_credential_note:
+      sign_in_with_webauthn_credential:
+      otp_code:
+      otp_or_recovery:
+      security_device:
+      verify_code:
+  stats:
+    index:
+      title:
+      all_time_most_downloaded:
+      total_downloads:
+      total_gems:
+      total_users:
+  users:
+    create:
+      email_sent:
+    new:
+      have_account:
+  versions:
+    index:
+      not_hosted_notice:
+      title:
+      versions_since:
+      imported_gem_version_notice:
+    version:
+      yanked:
+  will_paginate:
+    next_label:
+    page_gap:
+    previous_label:
+    page_entries_info:
+      multi_page:
+      multi_page_html:
+      single_page:
+        one:
+        other:
+        zero:
+      single_page_html:
+        one:
+        other:
+        zero:
+  adoptions:
+    index:
+      title:
+      subtitle_owner_html:
+      subtitle_user_html:
+      ownership_calls:
+      no_ownership_calls:
+  ownership_calls:
+    update:
+      success_notice:
+    create:
+      success_notice:
+    index:
+      title:
+      subtitle_html:
+    share_requirements:
+    note_for_applicants:
+    created_by:
+    details:
+    apply:
+    close:
+    markup_supported_html:
+    create_call:
+  ownership_requests:
+    create:
+      success_notice:
+    update:
+      approved_notice:
+      closed_notice:
+    close:
+      success_notice:
+    ownership_requests:
+    note_for_owners:
+    your_ownership_requests:
+    close_all:
+    approve:
+    gems_published:
+    created_at:
+    no_ownership_requests:
+    create_req:
+    signin_to_create_html:
+  webauthn_credentials:
+    recovery:
+      continue:
+      title:
+      notice_html:
+      copied:
+      copy:
+      saved:
+    webauthn_credential:
+      confirm_delete:
+      delete_failed:
+      delete:
+      saved:
+    form:
+      new_device:
+      nickname:
+      submit:
