@@ -128,7 +128,50 @@
           })
         });
       }).then(function (response) {
+        console.log("boo")
         handleHtmlResponse(sessionSubmit, sessionError, response);
+      }).catch(function (error) {
+        setError(sessionSubmit, sessionError, error);
+      });
+    });
+  });
+
+  $(function() {
+    var sessionForm = $(".js-webauthn-session-cli--form");
+    var sessionSubmit = $(".js-webauthn-session-cli--submit");
+    var sessionError = $(".js-webauthn-session-cli--error");
+    var csrfToken = $("[name='csrf-token']").attr("content");
+
+    sessionForm.submit(function(event) {
+      var form = handleEvent(event);
+      var options = JSON.parse(form.dataset.options);
+      options.challenge = base64urlToBuffer(options.challenge);
+      options.allowCredentials = credentialsToBuffer(options.allowCredentials);
+      navigator.credentials.get({
+        publicKey: options
+      }).then(function (credentials) {
+        return fetch(form.action, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "X-CSRF-Token": csrfToken,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            credentials: credentialsToBase64(credentials)
+          })
+        });
+      }).then(function (response) {
+        $("#verify-device").attr("hidden", true);
+        $("#verify-result").attr("hidden", false);
+        switch (response.status) {
+          case 200:
+            var text = "Success! Please close this browser";
+            break;
+          default:
+            var text = "Failure! Please close this browser and try again.";
+        }
+        $("#verify-result-text").text(text);
       }).catch(function (error) {
         setError(sessionSubmit, sessionError, error);
       });

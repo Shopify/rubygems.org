@@ -9,7 +9,8 @@ class WebauthnVerificationsController < ApplicationController
     @webauthn_options = @user.webauthn_options_for_get
 
     session[:webauthn_authentication] = {
-      "challenge" => @webauthn_options.challenge
+      "challenge" => @webauthn_options.challenge,
+      "port" => params[:port]
     }
   end
 
@@ -24,9 +25,10 @@ class WebauthnVerificationsController < ApplicationController
 
     @verification.generate_otp
     @verification.expire_path_token
+    port = session[:webauthn_authentication]['port']
 
     # TODO: render html with webauthn verification otp instead of json
-    render json: { message: "success" }
+    redirect_to URI.parse("http://localhost:#{port}\?code=#{@verification.otp}").to_s
   rescue WebAuthn::Error => e
     render json: { message: e.message }, status: :unauthorized
   rescue ActionController::ParameterMissing

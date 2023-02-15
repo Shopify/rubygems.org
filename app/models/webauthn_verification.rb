@@ -33,6 +33,7 @@ class WebauthnVerification < ApplicationRecord
   end
 
   def otp_expired?
+    return false if otp_expires_at.nil?
     otp_expires_at < Time.now.utc
   end
 end
