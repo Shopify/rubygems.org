@@ -103,7 +103,7 @@ class SessionsControllerTest < ActionController::TestCase
         setup do
           @start_time = @current_time
           @end_time = Time.utc(2023, 1, 1, 0, 2, 0)
-          @duration = @end_time - @start_time
+          @duration = (@end_time - @start_time).in_milliseconds
           @controller.session[:mfa_user] = @user.id
         end
 

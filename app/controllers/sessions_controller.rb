@@ -182,7 +182,7 @@ class SessionsController < Clearance::SessionsController
 
   def record_mfa_login_duration(mfa_type:)
     started_at = Time.zone.parse(session[:mfa_login_started_at]).utc
-    duration = Time.now.utc - started_at
+    duration = (Time.now.utc - started_at).in_milliseconds
 
     StatsD.measure("login.mfa.#{mfa_type}.duration", duration)
   end
