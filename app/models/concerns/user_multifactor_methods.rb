@@ -10,17 +10,10 @@ module UserMultifactorMethods
       !mfa_disabled?
     end
 
-    def disable_mfa!
-      mfa_disabled!
-      self.mfa_seed = ""
-      self.mfa_recovery_codes = []
-      save!(validate: false)
-    end
-
     def verify_and_enable_mfa!(seed, level, otp, expiry)
       if expiry < Time.now.utc
         errors.add(:base, I18n.t("multifactor_auths.create.qrcode_expired"))
-      elsif verify_digit_otp(seed, otp)
+      elsif verify_totp(seed, otp)
         enable_mfa!(seed, level)
       else
         errors.add(:base, I18n.t("multifactor_auths.incorrect_otp"))

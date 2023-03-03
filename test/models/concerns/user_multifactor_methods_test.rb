@@ -12,15 +12,15 @@ class UserMultifactorMethodsTest < ActiveSupport::TestCase
     end
 
     should "return true if multifactor auth is disabled" do
-      @user.disable_mfa!
+      @user.disable_totp!
       refute_predicate @user, :mfa_enabled?
     end
   end
 
-  context "#disable_mfa!" do
+  context "#disable_totp!" do
     setup do
       @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
-      @user.disable_mfa!
+      @user.disable_totp!
     end
 
     should "disable mfa" do
@@ -190,7 +190,7 @@ class UserMultifactorMethodsTest < ActiveSupport::TestCase
 
     should "return false if instance owns a gem that exceeds recommended threshold and has mfa disabled" do
       create(:ownership, user: @user, rubygem: @popular_rubygem)
-      @user.disable_mfa!
+      @user.disable_totp!
 
       refute_predicate @user, :mfa_recommended_weak_level_enabled?
     end
@@ -249,7 +249,7 @@ class UserMultifactorMethodsTest < ActiveSupport::TestCase
 
     should "return false if instance owns a gem that exceeds required threshold and has mfa disabled" do
       create(:ownership, user: @user, rubygem: @popular_rubygem)
-      @user.disable_mfa!
+      @user.disable_totp!
 
       refute_predicate @user, :mfa_required_weak_level_enabled?
     end
