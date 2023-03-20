@@ -2,6 +2,7 @@
 # by the APIv1 WebauthnVerificationsController (controllers/api/v1/webauthn_verifications_controller).
 class WebauthnVerificationsController < ApplicationController
   before_action :set_verification, :set_user, except: %i[successful_verification failed_verification]
+  after_action :remove_verification_cookie, only: %i[successful_verification failed_verification]
 
   def prompt
     redirect_to root_path, alert: t(".no_port") unless (port = params[:port])
@@ -43,7 +44,20 @@ class WebauthnVerificationsController < ApplicationController
     session.delete(:webauthn_authentication)
   end
 
+  def successful_verification
+    redirect_to root_path, alert: t(".try_again") unless cookies[:webauthn_verification] == "success"
+  end
+
+  def failed_verification
+    redirect_to root_path, alert: t(".try_again") unless cookies[:webauthn_verification] == "failed"
+  end
+
+
   private
+
+  def remove_verification_cookie
+    cookies.delete(:webauthn_verification)
+  end
 
   def set_verification
     @verification = WebauthnVerification.find_by(path_token: webauthn_token_param)

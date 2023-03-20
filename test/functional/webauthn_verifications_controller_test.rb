@@ -242,26 +242,70 @@ class WebauthnVerificationsControllerTest < ActionController::TestCase
   end
 
   context "#successful_verification" do
-    setup do
-      get :successful_verification
+    context "when cookie is set" do
+      setup do
+        @request.cookies[:webauthn_verification] = "success"
+        get :successful_verification
+      end
+
+      should respond_with :success
+      should "display the title and body" do
+        assert_includes response.body, "Success!"
+        assert_includes response.body, "Please close this browser."
+      end
+
+      should "delete the cookie after one use" do
+        assert_includes response.body, "Success!"
+        redirect_to root_url
+        get :successful_verification
+        assert redirect_to(root_url)
+      end
     end
 
-    should respond_with :success
-    should "set the title and body" do
-      assert_includes response.body, "Success!"
-      assert_includes response.body, "Please close this browser."
+    context "when cookie is not set" do
+      setup do
+        get :successful_verification
+      end
+
+      should respond_with :redirect
+      should redirect_to("the homepage") { root_url }
+      should "say to try again" do
+        assert_equal "To authenticate via security device, please visit the Rubygems client and try again.", flash[:alert]
+      end
     end
   end
 
   context "#failed_verification" do
-    setup do
-      get :failed_verification
+    context "when cookie is set" do
+      setup do
+        @request.cookies[:webauthn_verification] = "failed"
+        get :failed_verification
+      end
+
+      should respond_with :success
+      should "display the title and body" do
+        assert_includes response.body, "Error - Verification Failed"
+        assert_includes response.body, "Please close this browser and try again."
+      end
+
+      should "delete the cookie after one use" do
+        assert_includes response.body, "Error - Verification Failed"
+        redirect_to root_url
+        get :failed_verification
+        assert redirect_to(root_url)
+      end
     end
 
-    should respond_with :success
-    should "set the title and body" do
-      assert_includes response.body, "Error - Verification Failed"
-      assert_includes response.body, "Please close this browser and try again."
+    context "when cookie is not set" do
+      setup do
+        get :failed_verification
+      end
+
+      should respond_with :redirect
+      should redirect_to("the homepage") { root_url }
+      should "say to try again" do
+        assert_equal "To authenticate via security device, please visit the Rubygems client and try again.", flash[:alert]
+      end
     end
   end
 

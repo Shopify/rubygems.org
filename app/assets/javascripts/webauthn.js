@@ -129,13 +129,16 @@
       }).then(function (response) {
         response.text().then(function (text) {
           if (text == "success") {
-            window.location.href = `${location.origin}/webauthn_verification/successful_verification`
+            document.cookie = "webauthn_verification=success";
+            window.location.href = `${location.origin}/webauthn_verification/successful_verification`;
           } else {
-            window.location.href = `${location.origin}/webauthn_verification/failed_verification`
+            document.cookie = "webauthn_verification=failed";
+            window.location.href = `${location.origin}/webauthn_verification/failed_verification`;
           }
         });
       }).catch(function (_) {
-        window.location.href = `${location.origin}/webauthn_verification/failed_verification`
+        document.cookie = "webauthn_verification=failed";
+        window.location.href = `${location.origin}/webauthn_verification/failed_verification`;
       });
     });
   });
