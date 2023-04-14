@@ -8,33 +8,9 @@ module UserMultifactorMethods
       !mfa_disabled?
     end
 
-    def disable_mfa!
-      mfa_disabled!
-      self.otp_seed = ""
-      self.mfa_recovery_codes = []
-      save!(validate: false)
-    end
-
-    def verify_and_enable_mfa!(seed, level, otp, expiry)
-      if expiry < Time.now.utc
-        errors.add(:base, I18n.t("multifactor_auths.create.qrcode_expired"))
-      elsif verify_digit_otp(seed, otp)
-        enable_mfa!(seed, level)
-      else
-        errors.add(:base, I18n.t("multifactor_auths.incorrect_otp"))
-      end
-    end
-
-    def enable_mfa!(seed, level)
-      self.mfa_level = level
-      self.otp_seed = seed
-      self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
-      save!(validate: false)
-    end
-
     def mfa_gem_signin_authorized?(otp)
       return true unless strong_mfa_level? || webauthn_credentials.present?
-      api_otp_verified?(otp)
+      api_mfa_verified?(otp)
     end
 
     def mfa_recommended_not_yet_enabled?
@@ -61,7 +37,7 @@ module UserMultifactorMethods
       save!(validate: false)
     end
 
-    def api_otp_verified?(otp)
+    def api_mfa_verified?(otp)
       return true if verify_webauthn_otp(otp)
       return true if ui_otp_verified?(otp)
       false
@@ -83,19 +59,6 @@ module UserMultifactorMethods
       return false if strong_mfa_level?
 
       rubygems.mfa_required.any?
-    end
-
-    def verify_digit_otp(seed, otp)
-      return false if seed.blank?
-
-      totp = ROTP::TOTP.new(seed)
-      return false unless totp.verify(otp, drift_behind: 30, drift_ahead: 30)
-
-      save!(validate: false)
-    end
-
-    def verify_webauthn_otp(otp)
-      webauthn_verification&.verify_otp(otp)
     end
   end
 

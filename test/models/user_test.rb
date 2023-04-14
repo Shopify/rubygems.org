@@ -336,7 +336,7 @@ class UserTest < ActiveSupport::TestCase
 
       context "when enabled" do
         setup do
-          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+          @user.enable_otp!(ROTP::Base32.random_base32, :ui_only)
         end
 
         should "be able to use a recovery code only once" do
@@ -392,7 +392,7 @@ class UserTest < ActiveSupport::TestCase
 
       context "when disabled" do
         setup do
-          @user.disable_mfa!
+          @user.disable_otp!
         end
 
         should "return false for verifying OTP" do
@@ -475,7 +475,7 @@ class UserTest < ActiveSupport::TestCase
 
       context "when mfa `ui_only` user owns a gem with more downloads than the recommended threshold but less than the required threshold" do
         setup do
-          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+          @user.enable_otp!(ROTP::Base32.random_base32, :ui_only)
 
           GemDownload.increment(
             Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
@@ -498,7 +498,7 @@ class UserTest < ActiveSupport::TestCase
 
       context "when mfa `ui_only` user owns a gem with more downloads than the required threshold" do
         setup do
-          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_only)
+          @user.enable_otp!(ROTP::Base32.random_base32, :ui_only)
 
           GemDownload.increment(
             Rubygem::MFA_REQUIRED_THRESHOLD + 1,
@@ -517,7 +517,7 @@ class UserTest < ActiveSupport::TestCase
 
       context "when strong user owns a gem with more downloads than the recommended threshold but less than the required threshold" do
         setup do
-          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_api)
+          @user.enable_otp!(ROTP::Base32.random_base32, :ui_and_api)
 
           GemDownload.increment(
             Rubygem::MFA_RECOMMENDED_THRESHOLD + 1,
@@ -540,7 +540,7 @@ class UserTest < ActiveSupport::TestCase
 
       context "when strong user owns a gem with more downloads than the required threshold" do
         setup do
-          @user.enable_mfa!(ROTP::Base32.random_base32, :ui_and_api)
+          @user.enable_otp!(ROTP::Base32.random_base32, :ui_and_api)
 
           GemDownload.increment(
             Rubygem::MFA_REQUIRED_THRESHOLD + 1,
