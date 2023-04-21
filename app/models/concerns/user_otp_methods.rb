@@ -1,6 +1,8 @@
 module UserOtpMethods
   def disable_otp!
-    mfa_disabled!
+    if self.webauthn_credentials.none?
+      mfa_disabled!
+    end
     self.otp_seed = ""
     self.mfa_recovery_codes = []
     save!(validate: false)

@@ -13,6 +13,7 @@ class WebauthnCredentialsController < ApplicationController
     webauthn_credential = build_webauthn_credential
 
     if webauthn_credential.save
+      set_mfa_level_create
       redirect_to edit_settings_path
     else
       message = webauthn_credential.errors.full_messages.to_sentence
@@ -27,6 +28,8 @@ class WebauthnCredentialsController < ApplicationController
   def destroy
     webauthn_credential = current_user.webauthn_credentials.find(params[:id])
     if webauthn_credential.destroy
+      set_mfa_level_destroy
+
       flash[:notice] = t(".webauthn_credential.confirm_delete")
     else
       flash[:error] = webauthn_credential.errors.full_messages.to_sentence
@@ -36,6 +39,18 @@ class WebauthnCredentialsController < ApplicationController
   end
 
   private
+
+  def set_mfa_level_create
+    if current_user.webauthn_credentials.count == 1 && !current_user.otp_enabled?
+      current_user.update!(mfa_level: "ui_and_api")
+    end
+  end
+
+  def set_mfa_level_destroy
+    if current_user.webauthn_credentials.empty? && !current_user.otp_enabled?
+      current_user.update!(mfa_level: "disabled")
+    end
+  end
 
   def webauthn_credential_params
     params.require(:webauthn_credential).permit(:nickname)
