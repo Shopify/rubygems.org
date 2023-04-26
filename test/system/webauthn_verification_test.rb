@@ -40,11 +40,21 @@ class WebAuthnVerificationTest < ApplicationSystemTestCase
     visit webauthn_verification_path(webauthn_token: @verification.path_token, params: { port: @port })
     WebAuthn::AuthenticatorAssertionResponse.any_instance.stubs(:verify).returns true
 
-    assert_match "It looks like you are using Safari. Due to limitations within Safari, " \
-                 "you will be unable to authenticate using this browser. Please use a different browser. " \
-                 'Refer to the <a target="_blank" href="https://guides.rubygems.org/using-webauthn-mfa-in-command-line">' \
-                 "WebAuthn MFA CLI guide</a> for more information on this limitation.",
-      page.html
+    # assert_match "It looks like you are using Safari. Due to limitations within Safari, " \
+    #              "you will be unable to authenticate using this browser. Please use a different browser. " \
+    #              'Refer to the <a target="_blank" href="https://guides.rubygems.org/using-webauthn-mfa-in-command-line">' \
+    #              "WebAuthn MFA CLI guide</a> for more information on this limitation.",
+    #   page.html
+    #
+    assert_match "Authenticate with Security Device", page.html
+    assert_match "Authenticating as #{@user.handle}", page.html
+
+    click_on "Authenticate"
+
+    # assert redirect_to("http://localhost:#{@port}?code=#{@verification.otp}")
+    assert redirect_to(successful_verification_webauthn_verification_path)
+    assert page.has_content?("Success!")
+    assert_link_is_expired
   end
 
   test "when client closes connection during verification" do

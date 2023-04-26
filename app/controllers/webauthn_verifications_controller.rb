@@ -45,6 +45,8 @@ class WebauthnVerificationsController < ApplicationController
     @verification.generate_otp
     @verification.expire_path_token
 
+    @url = "http://localhost:#{port}?code=#{@verification.otp}"
+
     render
   end
 
