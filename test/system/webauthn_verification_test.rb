@@ -45,7 +45,7 @@ class WebAuthnVerificationTest < ApplicationSystemTestCase
     #              'Refer to the <a target="_blank" href="https://guides.rubygems.org/using-webauthn-mfa-in-command-line">' \
     #              "WebAuthn MFA CLI guide</a> for more information on this limitation.",
     #   page.html
-    #
+
     assert_match "Authenticate with Security Device", page.html
     assert_match "Authenticating as #{@user.handle}", page.html
 
