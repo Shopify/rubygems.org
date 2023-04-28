@@ -13,7 +13,10 @@
   <% end %>
 
   <% if @user.otp_enabled? %>
-    <h2><%= t(".mfa.otp")%></h2>
+    <h2 class='pill-header'><%= t(".mfa.otp")%></h2>
+    <div class='pill'>
+      <%= t(".mfa.enabled") %>
+    </div>
     <p><%= t(".mfa.enabled_html") %></p>
     <%= form_tag multifactor_auth_path, method: :delete, id: "mfa-delete" do %>
       <div class="text_field">
@@ -24,8 +27,10 @@
     <% end %>
   <% else %>
     <div class="t-body">
-      <h2><%= t(".mfa.otp")%></h2>
-
+      <h2 class='pill-header'><%= t(".mfa.otp")%></h2>
+      <div class='pill'>
+        <%= t(".mfa.disabled") %>
+      </div>
       <p>
       <%= t(".mfa.disabled_html") %>
       <%= button_to t(".mfa.go_settings"), new_multifactor_auth_path, method: "get", class: "form__submit" %>
@@ -33,7 +38,16 @@
     </div>
   <% end %>
 
-  <h2><%= t(".webauthn_credentials") %></h2>
+  <div>
+    <h2 class='pill-header'><%= t(".webauthn_credentials") %></h2>
+    <div class='pill'>
+      <% if @user.webauthn_credentials.none?%>
+        <%= t(".mfa.disabled") %>
+      <% else %>
+        <%= t(".mfa.enabled") %>
+      <% end %>
+    </div>
+  </div>
 
   <p><%= t(".webauthn_credential_note")%></p>
 

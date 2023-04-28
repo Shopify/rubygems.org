@@ -445,6 +445,8 @@ en:
           You have enabled multi-factor authentication. Please input your OTP from your authenticator or one of your active recovery codes to disable it.
         update: Update
         disable: Disable
+        enabled: Enabled
+        disabled: Disabled
         level:
           title: MFA Level
           disabled: Disabled

@@ -13,3 +13,24 @@
     gap: 1rem;
   }
 }
+
+.pill {
+  margin-bottom: 20px;
+  margin-left: 10px;
+  width: 10%;
+  max-width: 320px;
+  background-color: #e9573f;
+  color: #ffffff;
+  transition-duration: 0.25s;
+  transition-property: opacity;
+  border-radius: 20px;
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+  display: inline-block;
+}
+
+
+.pill-header {
+  display: inline-block;
+}
