@@ -2,9 +2,9 @@ module UserOtpMethods
   def disable_otp!
     if self.webauthn_credentials.none?
       mfa_disabled!
+      self.mfa_recovery_codes = []
     end
     self.otp_seed = ""
-    self.mfa_recovery_codes = []
     save!(validate: false)
   end
 
@@ -21,7 +21,11 @@ module UserOtpMethods
   def enable_otp!(seed, level)
     self.mfa_level = level
     self.otp_seed = seed
-    self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
+
+    if webauthn_disabled?
+      self.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
+    end
+
     save!(validate: false)
   end
 

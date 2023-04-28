@@ -82,7 +82,7 @@
           publicKey: json
         });
       }).then(function (credentials) {
-        return fetch(form.action + "/callback.json", {
+        return fetch(form.action + "/callback", {
           method: "POST",
           credentials: "same-origin",
           headers: {
@@ -95,7 +95,8 @@
           })
         });
       }).then(function (response) {
-        handleJsonResponse(credentialSubmit, credentialError, response);
+        // handleJsonResponse(credentialSubmit, credentialError, response);
+        handleHtmlResponse(credentialSubmit, credentialError, response);
       }).catch(function (error) {
         setError(credentialSubmit, credentialError, error);
       });

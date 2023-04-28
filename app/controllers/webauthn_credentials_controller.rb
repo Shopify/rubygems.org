@@ -14,7 +14,14 @@ class WebauthnCredentialsController < ApplicationController
 
     if webauthn_credential.save
       set_mfa_level_create
-      redirect_to edit_settings_path
+      if current_user.otp_disabled? && current_user.count_webauthn_credentials == 1
+        current_user.mfa_recovery_codes = Array.new(10).map { SecureRandom.hex(6) }
+        current_user.save!(validate: false)
+
+        redirect_to recovery_multifactor_auth_path
+      else
+        redirect_to edit_settings_path
+      end
     else
       message = webauthn_credential.errors.full_messages.to_sentence
       render json: { message: message }, status: :unprocessable_entity
@@ -48,7 +55,7 @@ class WebauthnCredentialsController < ApplicationController
 
   def set_mfa_level_destroy
     if current_user.webauthn_credentials.empty? && !current_user.otp_enabled?
-      current_user.update!(mfa_level: "disabled")
+      current_user.update!(mfa_level: "disabled", mfa_recovery_codes: [])
     end
   end
 

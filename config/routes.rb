@@ -140,6 +140,7 @@ Rails.application.routes.draw do
     resource :multifactor_auth, only: %i[new create update destroy] do
       post 'mfa_update', to: 'multifactor_auths#mfa_update', as: :mfa_update
       post 'webauthn_update', to: 'multifactor_auths#webauthn_update', as: :webauthn_update
+      get 'recovery'
     end
     resource :settings, only: :edit
     resource :profile, only: %i[edit update] do
@@ -230,11 +231,11 @@ Rails.application.routes.draw do
   ################################################################################
   # UI API
 
-  scope constraints: { format: :json }, defaults: { format: :json } do
+  # scope constraints: { format: :json }, defaults: { format: :json } do
     resources :webauthn_credentials, only: :create do
       post :callback, on: :collection
     end
-  end
+  # end
 
   ################################################################################
   # high_voltage static routes

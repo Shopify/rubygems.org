@@ -12,6 +12,22 @@ module UserMultifactorMethods
       otp_seed.present?
     end
 
+    def otp_disabled?
+      otp_seed.blank?
+    end
+
+    def webauthn_enabled?
+      webauthn_credentials.present?
+    end
+
+    def webauthn_disabled?
+      webauthn_credentials.none?
+    end
+
+    def count_webauthn_credentials
+      webauthn_credentials.count
+    end
+
     def mfa_gem_signin_authorized?(otp)
       return true unless strong_mfa_level? || webauthn_credentials.present?
       api_mfa_verified?(otp)
