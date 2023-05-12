@@ -331,6 +331,7 @@ en:
     incorrect_otp: Your OTP code is incorrect.
     session_expired: Your login page session has expired.
     otp_code: OTP code
+    recovery_code: Recovery code
     require_mfa_disabled: Your multi-factor authentication has been enabled. To reconfigure multi-factor authentication, you'll have to disable it first.
     require_mfa_enabled: Your multi-factor authentication has not been enabled. You have to enable it first.
     setup_required_html: For protection of your account and your gems, you are required to set up multi-factor authentication. Please read our <a href="https://blog.rubygems.org/2022/08/15/requiring-mfa-on-popular-gems.html">blog post</a> for more details.
