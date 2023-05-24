@@ -30,34 +30,6 @@ class UserMultifactorMethodsTest < ActiveSupport::TestCase
     end
   end
 
-  context "#totp_enabled?" do
-    should "return true if totp is enabled" do
-      @user.enable_totp!(ROTP::Base32.random_base32, :ui_only)
-
-      assert_predicate @user, :totp_enabled?
-    end
-
-    should "return false if totp is disabled" do
-      @user.disable_totp!
-
-      refute_predicate @user, :totp_enabled?
-    end
-  end
-
-  context "#totp_disabled?" do
-    should "return true if totp is disabled" do
-      @user.disable_totp!
-
-      assert_predicate @user, :totp_disabled?
-    end
-
-    should "return false if totp is enabled" do
-      @user.enable_totp!(ROTP::Base32.random_base32, :ui_only)
-
-      refute_predicate @user, :totp_disabled?
-    end
-  end
-
   context "#webauthn_enabled?" do
     should "return true if webauthn is enabled" do
       create(:webauthn_credential, user: @user)

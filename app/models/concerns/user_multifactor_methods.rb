@@ -12,14 +12,6 @@ module UserMultifactorMethods
     !mfa_disabled?
   end
 
-  def totp_enabled?
-    mfa_seed.present?
-  end
-
-  def totp_disabled?
-    mfa_seed.blank?
-  end
-
   def webauthn_enabled?
     webauthn_credentials.present?
   end
