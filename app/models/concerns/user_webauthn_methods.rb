@@ -10,6 +10,18 @@ module UserWebauthnMethods
     end
   end
 
+  def webauthn_enabled?
+    webauthn_credentials.present?
+  end
+
+  def webauthn_disabled?
+    webauthn_credentials.none?
+  end
+
+  def count_webauthn_credentials
+    webauthn_credentials.count
+  end
+
   def webauthn_options_for_create
     WebAuthn::Credential.options_for_create(
       user: {
