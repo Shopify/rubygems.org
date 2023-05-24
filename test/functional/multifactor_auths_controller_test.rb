@@ -39,6 +39,75 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
       end
 
       context "on PUT to update mfa level" do
+        context "on updating to ui_and_api" do
+          setup do
+            freeze_time
+            put :update, params: { level: "ui_and_api" }
+          end
+
+          should "render totp prompt" do
+            assert page.has_content?("OTP code")
+          end
+
+          should "not update mfa level" do
+            assert_predicate @user.reload, :mfa_ui_only?
+          end
+
+          should "set mfa level in session" do
+            assert_equal "ui_and_api", @controller.session[:level]
+          end
+
+          should "set expiry in session" do
+            assert_equal 15.minutes.from_now.to_s, session[:mfa_expires_at]
+          end
+
+          teardown do
+            travel_back
+          end
+        end
+
+        context "on updating to ui_and_gem_signin" do
+          setup do
+            freeze_time
+            put :update, params: { level: "ui_and_api" }
+          end
+
+          should "render totp prompt" do
+            assert page.has_content?("OTP code")
+          end
+
+          should "not update mfa level" do
+            assert_predicate @user.reload, :mfa_ui_only?
+          end
+
+          should "set mfa level in session" do
+            assert_equal "ui_and_api", @controller.session[:level]
+          end
+
+          should "set expiry in session" do
+            assert_equal 15.minutes.from_now.to_s, session[:mfa_expires_at]
+          end
+
+          teardown do
+            travel_back
+          end
+        end
+
+        context "on updating to invalid level" do
+          setup do
+            put :update, params: { level: "disabled" }
+          end
+
+          should "redirect to settings page" do
+            assert_redirected_to edit_settings_path
+            assert_equal "Invalid MFA level.", flash[:error]
+          end
+
+          should "not set session variables" do
+            assert_nil @controller.session[:level]
+            assert_nil @controller.session[:mfa_expires_at]
+          end
+        end
       end
     end
 

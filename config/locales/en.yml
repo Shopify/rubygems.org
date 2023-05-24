@@ -369,6 +369,7 @@ en:
     destroy:
       success: You have successfully disabled multi-factor authentication.
     update:
+      invalid_level: Invalid MFA level.
       success: You have successfully updated your multi-factor authentication level.
   notifiers:
     update:

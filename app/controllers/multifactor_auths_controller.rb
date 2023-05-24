@@ -41,6 +41,11 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def update
+    unless valid_mfa_level?
+      redirect_to edit_settings_path, flash: { error: t(".invalid_level") }
+      return
+    end
+
     session[:level] = level_param
     @user = current_user
 
@@ -86,12 +91,12 @@ class MultifactorAuthsController < ApplicationController
     )
 
     @webauthn_credential.update!(sign_count: @credential.sign_count)
-    
+
     update_level
   rescue WebAuthn::Error => e
     login_failure(e.message)
   end
-  
+
   private
 
   def otp_param
@@ -148,7 +153,7 @@ class MultifactorAuthsController < ApplicationController
 
   def setup_webauthn_authentication
     return if current_user.webauthn_disabled?
-    
+
     @webauthn_verification_url = webauthn_update_multifactor_auth_url(token: current_user.confirmation_token)
 
     @webauthn_options = current_user.webauthn_options_for_get
@@ -163,6 +168,10 @@ class MultifactorAuthsController < ApplicationController
     redirect_to session.fetch("mfa_redirect_uri", edit_settings_path)
     session.delete("mfa_redirect_uri")
     session.delete(:level)
+  end
+
+  def valid_mfa_level?
+    %w[ui_only ui_and_api].include?(level_param)
   end
 
   def mfa_update_conditions_met?
