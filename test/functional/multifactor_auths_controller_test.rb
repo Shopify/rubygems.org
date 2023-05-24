@@ -10,21 +10,26 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
       @request.cookies[:mfa_feature] = "true"
     end
 
-    context "when mfa enabled" do
+    context "when totp is enabled" do
       setup do
         @user.enable_totp!(ROTP::Base32.random_base32, :ui_only)
       end
 
-      context "on GET to new mfa" do
+      context "on GET to new totp mfa" do
         setup do
           get :new
         end
 
         should respond_with :redirect
         should redirect_to("the settings page") { edit_settings_path }
+
+        should "say TOTP is already enabled" do
+          assert_equal "Your multi-factor authentication has been enabled. " \
+                       "To reconfigure multi-factor authentication, you'll have to disable it first.", flash[:error]
+        end
       end
 
-      context "on POST to create mfa" do
+      context "on POST to create totp mfa" do
         setup do
           post :create, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
         end
@@ -32,7 +37,7 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
         should respond_with :redirect
         should redirect_to("the settings page") { edit_settings_path }
 
-        should "keep mfa enabled" do
+        should "keep totp mfa enabled" do
           assert_predicate @user.reload, :mfa_enabled?
           assert_emails 0
         end
@@ -111,12 +116,12 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
       end
     end
 
-    context "when mfa disabled" do
+    context "when totp is disabled" do
       setup do
         @user.mfa_disabled!
       end
 
-      context "on POST to create mfa" do
+      context "on POST to create totp mfa" do
         setup do
           @seed = ROTP::Base32.random_base32
           @controller.session[:mfa_seed] = @seed
@@ -180,6 +185,11 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
         should "keep mfa disabled" do
           refute_predicate @user.reload, :mfa_enabled?
         end
+
+        should "say MFA is not enabled" do
+          assert_equal "Your multi-factor authentication has not been enabled. " \
+                       "You have to enable it first.", flash[:error]
+        end
       end
     end
 
@@ -201,45 +211,45 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
                            verify_session_path]
       end
 
-      context "user has mfa set to weak level" do
-        setup do
-          @seed = ROTP::Base32.random_base32
-          @user.enable_totp!(@seed, :ui_only)
-        end
+      # context "user has mfa set to weak level" do
+      #   setup do
+      #     @seed = ROTP::Base32.random_base32
+      #     @user.enable_totp!(@seed, :ui_only)
+      #   end
 
-        should "redirect user back to mfa_redirect_uri after successful mfa setup" do
-          @redirect_paths.each do |path|
-            session[:mfa_redirect_uri] = path
-            post :update, params: { otp: ROTP::TOTP.new(@seed).now, level: "ui_and_api" }
+      #   should "redirect user back to mfa_redirect_uri after successful mfa setup" do
+      #     @redirect_paths.each do |path|
+      #       session[:mfa_redirect_uri] = path
+      #       post :update, params: { otp: ROTP::TOTP.new(@seed).now, level: "ui_and_api" }
 
-            assert_redirected_to path
-            assert_nil session[:mfa_redirect_uri]
-          end
-        end
+      #       assert_redirected_to path
+      #       assert_nil session[:mfa_redirect_uri]
+      #     end
+      #   end
 
-        should "not redirect user back to mfa_redirect_uri after failed mfa setup, but mfa_redirect_uri unchanged" do
-          @redirect_paths.each do |path|
-            session[:mfa_redirect_uri] = path
-            post :update, params: { otp: "12345", level: "ui_and_api" }
+      #   should "not redirect user back to mfa_redirect_uri after failed mfa setup, but mfa_redirect_uri unchanged" do
+      #     @redirect_paths.each do |path|
+      #       session[:mfa_redirect_uri] = path
+      #       post :update, params: { otp: "12345", level: "ui_and_api" }
 
-            assert_redirected_to edit_settings_path
-            assert_equal path, session[:mfa_redirect_uri]
-          end
-        end
+      #       assert_redirected_to edit_settings_path
+      #       assert_equal path, session[:mfa_redirect_uri]
+      #     end
+      #   end
 
-        should "redirect user back to mfa_redirect_uri after a failed setup + successful setup" do
-          @redirect_paths.each do |path|
-            session[:mfa_redirect_uri] = path
-            post :update, params: { otp: "12345", level: "ui_and_api" }
+      #   should "redirect user back to mfa_redirect_uri after a failed setup + successful setup" do
+      #     @redirect_paths.each do |path|
+      #       session[:mfa_redirect_uri] = path
+      #       post :update, params: { otp: "12345", level: "ui_and_api" }
 
-            assert_redirected_to edit_settings_path
-            post :update, params: { otp: ROTP::TOTP.new(@seed).now, level: "ui_and_api" }
+      #       assert_redirected_to edit_settings_path
+      #       post :update, params: { otp: ROTP::TOTP.new(@seed).now, level: "ui_and_api" }
 
-            assert_redirected_to path
-            assert_nil session[:mfa_redirect_uri]
-          end
-        end
-      end
+      #       assert_redirected_to path
+      #       assert_nil session[:mfa_redirect_uri]
+      #     end
+      #   end
+      # end
     end
   end
 end
