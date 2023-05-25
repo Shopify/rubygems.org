@@ -557,6 +557,27 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
       end
     end
 
+    context "when totp and webauthn are enabled" do
+      setup do
+        @user.enable_totp!(ROTP::Base32.random_base32, :ui_only)
+        create(:webauthn_credential, user: @user)
+      end
+
+      context "on PUT to update mfa level" do
+        setup do
+          put :update, params: { level: "ui_and_api" }
+        end
+
+        should "render totp prompt" do
+          assert page.has_content?("OTP code")
+        end
+
+        should "render webauthn prompt" do
+          assert page.has_content?("Security Device")
+        end
+      end
+    end
+
     context "when user owns a gem with more than MFA_REQUIRED_THRESHOLD downloads" do
       setup do
         @rubygem = create(:rubygem)
