@@ -103,7 +103,7 @@ class MultifactorAuthsController < ApplicationController
 
   def require_totp_disabled
     return unless current_user.totp_enabled?
-    flash[:error] = t("multifactor_auths.require_mfa_disabled")
+    flash[:error] = t("multifactor_auths.require_totp_disabled")
     redirect_to edit_settings_path
   end
 
@@ -130,7 +130,6 @@ class MultifactorAuthsController < ApplicationController
 
   def delete_mfa_level_update_session_variables
     session.delete(:level)
-    session.delete(:mfa_redirect_uri)
     session.delete(:webauthn_authentication)
     delete_mfa_expiry_session
   end
@@ -170,6 +169,7 @@ class MultifactorAuthsController < ApplicationController
   def update_level_and_redirect
     handle_new_level_param
     redirect_to session.fetch("mfa_redirect_uri", edit_settings_path)
+    session.delete(:mfa_redirect_uri)
   end
 
   def valid_mfa_level?

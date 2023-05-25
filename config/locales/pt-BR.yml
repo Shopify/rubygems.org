@@ -359,7 +359,7 @@ pt-BR:
     incorrect_otp:
     session_expired:
     otp_code:
-    require_mfa_disabled:
+    require_totp_disabled:
     require_mfa_enabled:
     setup_required_html:
     setup_recommended:
