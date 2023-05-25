@@ -1,10 +1,13 @@
 class MultifactorAuthsController < ApplicationController
   include MfaExpiryMethods
+  include WebauthnVerifiable
 
   before_action :redirect_to_signin, unless: :signed_in?
   before_action :require_totp_disabled, only: %i[new create]
   before_action :require_mfa_enabled, only: %i[update destroy]
   before_action :seed_and_expire, only: :create
+  before_action :verify_session_expiration, only: %i[mfa_update webauthn_update]
+  after_action :delete_mfa_level_update_session_variables, only: %i[mfa_update webauthn_update]
   helper_method :issuer
 
   def new
@@ -59,42 +62,18 @@ class MultifactorAuthsController < ApplicationController
 
   def mfa_update
     if mfa_update_conditions_met?
-      update_level
-    elsif !session_active?
-      login_failure(t("multifactor_auths.session_expired"))
+      update_level_and_redirect
     else
-      login_failure(t("multifactor_auths.incorrect_otp"))
+      redirect_to edit_settings_path, flash: { error: t("multifactor_auths.incorrect_otp") }
     end
   end
 
   def webauthn_update
-    @challenge = session.dig(:webauthn_authentication, "challenge")
-
-    if params[:credentials].blank?
-      login_failure(t("credentials_required"))
-      return
-    elsif !session_active?
-      login_failure(t("multifactor_auths.session_expired"))
-      return
+    if webauthn_credential_verified?
+      update_level_and_redirect
+    else
+      redirect_to edit_settings_path, flash: { error: t(".invalid_level") }
     end
-
-    @credential = WebAuthn::Credential.from_get(params[:credentials])
-
-    @webauthn_credential = current_user.webauthn_credentials.find_by(
-      external_id: @credential.id
-    )
-
-    @credential.verify(
-      @challenge,
-      public_key: @webauthn_credential.public_key,
-      sign_count: @webauthn_credential.sign_count
-    )
-
-    @webauthn_credential.update!(sign_count: @credential.sign_count)
-
-    update_level
-  rescue WebAuthn::Error => e
-    login_failure(e.message)
   end
 
   private
@@ -131,6 +110,19 @@ class MultifactorAuthsController < ApplicationController
     end
   end
 
+  def verify_session_expiration
+    return if session_active?
+
+    delete_mfa_level_update_session_variables
+    redirect_to edit_settings_path, flash: { error: t("multifactor_auths.session_expired") }
+  end
+
+  def delete_mfa_level_update_session_variables
+    session.delete(:level)
+    session.delete("mfa_redirect_uri")
+    delete_mfa_expiry_session
+  end
+
   # rubocop:disable Rails/ActionControllerFlashBeforeRender
   def handle_new_level_param
     case session[:level]
@@ -163,11 +155,9 @@ class MultifactorAuthsController < ApplicationController
     }
   end
 
-  def update_level
+  def update_level_and_redirect
     handle_new_level_param
     redirect_to session.fetch("mfa_redirect_uri", edit_settings_path)
-    session.delete("mfa_redirect_uri")
-    session.delete(:level)
   end
 
   def valid_mfa_level?

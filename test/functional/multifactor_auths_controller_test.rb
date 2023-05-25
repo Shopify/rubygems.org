@@ -114,13 +114,99 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
           end
         end
       end
-    end
 
-    context "when totp is disabled" do
-      setup do
-        @user.mfa_disabled!
+      context "on PUT to mfa_update" do
+        context "when otp is correct" do
+          context "when redirect url is not set" do
+            setup do
+              put :update, params: { level: "ui_and_api" }
+              put :mfa_update, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
+            end
+
+            should redirect_to("the settings page") { edit_settings_path }
+
+            should "update mfa level" do
+              assert_predicate @user.reload, :mfa_ui_and_api?
+            end
+
+            should "clear session variables" do
+              assert_nil @controller.session[:mfa_expires_at]
+              assert_nil @controller.session[:level]
+            end
+          end
+
+          context "when redirect url is set" do
+            setup do
+              @controller.session["mfa_redirect_uri"] = profile_api_keys_path
+              put :update, params: { level: "ui_and_api" }
+              put :mfa_update, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
+            end
+
+            should redirect_to("the api keys index") { profile_api_keys_path }
+          end
+        end
+
+        context "when otp is incorrect" do
+          setup do
+            put :update, params: { level: "ui_and_api" }
+            put :mfa_update, params: { otp: "123456" }
+          end
+
+          should redirect_to("the settings page") { edit_settings_path }
+
+          should "not update mfa level" do
+            assert_predicate @user.reload, :mfa_ui_only?
+          end
+
+          should "set flash error" do
+            assert_equal "Your OTP code is incorrect.", flash[:error]
+          end
+
+          should "clear session variables" do
+            assert_nil @controller.session[:mfa_expires_at]
+            assert_nil @controller.session[:level]
+            assert_nil @controller.session[:mfa_redirect_uri]
+          end
+        end
+
+        context "when session is expired" do
+          setup do
+            get :update, params: { level: "ui_and_api" }
+
+            travel 16.minutes do
+              post :mfa_update, params: { otp: ROTP::TOTP.new(@user.mfa_seed).now }
+            end
+          end
+
+          should redirect_to("the settings page") { edit_settings_path }
+
+          should "not update mfa level" do
+            assert_predicate @user.reload, :mfa_ui_only?
+          end
+
+          should "set flash error" do
+            assert_equal "Your login page session has expired.", flash[:error]
+          end
+
+          should "clear session variables" do
+            assert_nil @controller.session[:mfa_expires_at]
+            assert_nil @controller.session[:level]
+            assert_nil @controller.session[:mfa_redirect_uri]
+          end
+        end
       end
 
+      context "on PUT to webauthn_update" do
+      end
+    end
+
+    context "when a webauthn device is enabled" do
+      setup do
+        create(:webauthn_credential, user: @user)
+      end
+    end
+
+    context "when there are no mfa devices" do
       context "on POST to create totp mfa" do
         setup do
           @seed = ROTP::Base32.random_base32
