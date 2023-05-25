@@ -339,6 +339,8 @@ zh-TW:
     strong_mfa_level_required_html:
     strong_mfa_level_recommended:
     ui_only_warning:
+    require_webauthn_enabled:
+    require_totp_enabled:
     new:
       title: 啟用多重要素驗證
       scan_prompt: 請用你的驗證裝置掃描 QR-code。如果你沒辦法掃描，手動輸入下面的資料。
@@ -361,6 +363,7 @@ zh-TW:
     destroy:
       success: 你已成功停用多重要素驗證。
     update:
+      invalid_level:
       success: 你已成功修改多重驗證等級。
   notifiers:
     update:
@@ -439,8 +442,10 @@ zh-TW:
         otp:
         disabled_html:
         go_settings: 註冊新裝置
-        enabled_html:
+        level_html:
+        enabled:
         update: 更新
+        disable:
         level:
           title: 多重驗證等級
           disabled: 停用

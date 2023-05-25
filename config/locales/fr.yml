@@ -371,6 +371,8 @@ fr:
     strong_mfa_level_required_html:
     strong_mfa_level_recommended:
     ui_only_warning:
+    require_webauthn_enabled:
+    require_totp_enabled:
     new:
       title: Activer l'authentification multifacteur
       scan_prompt: Veuillez scanner le QR code avec votre app d'authentification.
@@ -397,6 +399,7 @@ fr:
     destroy:
       success: Vous avez désactivé l'authentification multifacteur.
     update:
+      invalid_level:
       success:
   notifiers:
     update:
@@ -476,8 +479,10 @@ fr:
         otp:
         disabled_html:
         go_settings: Enregistrer un nouvel appareil
-        enabled_html:
+        level_html:
+        enabled:
         update:
+        disable:
         level:
           title:
           disabled:
