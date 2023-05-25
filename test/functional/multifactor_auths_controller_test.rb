@@ -197,6 +197,18 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
       end
 
       context "on PUT to webauthn_update" do
+        context "with webauthn enabled" do
+          setup do
+            put :update, params: { level: "ui_and_api" }
+            post :webauthn_update
+          end
+
+          should redirect_to("the settings page") { edit_settings_path }
+
+          should "set flash error" do
+            assert_equal "You don't have any security devices enabled.", flash[:error]
+          end
+        end
       end
     end
 

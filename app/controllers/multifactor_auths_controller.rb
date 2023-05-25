@@ -69,10 +69,15 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def webauthn_update
+    unless current_user.webauthn_enabled?
+      redirect_to edit_settings_path, flash: { error: t("multifactor_auths.no_webauthn_devices") }
+      return
+    end
+
     if webauthn_credential_verified?
       update_level_and_redirect
     else
-      redirect_to edit_settings_path, flash: { error: t(".invalid_level") }
+      redirect_to edit_settings_path, flash: { error: @webauthn_error }
     end
   end
 
