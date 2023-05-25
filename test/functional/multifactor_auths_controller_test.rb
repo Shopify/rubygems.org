@@ -37,7 +37,7 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
         should respond_with :redirect
         should redirect_to("the settings page") { edit_settings_path }
 
-        should "keep totp mfa enabled" do
+        should "keep mfa enabled" do
           assert_predicate @user.reload, :mfa_enabled?
           assert_emails 0
         end
@@ -52,6 +52,7 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
 
           should "render totp prompt" do
             assert page.has_content?("OTP code")
+            refute page.has_content?("Security Device")
           end
 
           should "not update mfa level" do
@@ -79,6 +80,7 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
 
           should "render totp prompt" do
             assert page.has_content?("OTP code")
+            refute page.has_content?("Security Device")
           end
 
           should "not update mfa level" do
@@ -197,24 +199,131 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
       end
 
       context "on PUT to webauthn_update" do
-        context "with webauthn enabled" do
-          setup do
-            put :update, params: { level: "ui_and_api" }
-            post :webauthn_update
-          end
+        setup do
+          put :update, params: { level: "ui_and_api" }
+          post :webauthn_update
+        end
 
-          should redirect_to("the settings page") { edit_settings_path }
+        should redirect_to("the settings page") { edit_settings_path }
 
-          should "set flash error" do
-            assert_equal "You don't have any security devices enabled.", flash[:error]
-          end
+        should "set flash error" do
+          assert_equal "You don't have any security devices enabled.", flash[:error]
+        end
+
+        should "not update mfa level" do
+          assert_predicate @user.reload, :mfa_ui_only?
+        end
+
+        should "clear session variables" do
+          assert_nil @controller.session[:mfa_expires_at]
+          assert_nil @controller.session[:level]
+          assert_nil @controller.session[:mfa_redirect_uri]
         end
       end
     end
 
     context "when a webauthn device is enabled" do
       setup do
+        @user.update!(mfa_level: "ui_only") # remove this when we enable mfa when a webauthn device is created
         create(:webauthn_credential, user: @user)
+      end
+
+      context "on POST to create totp mfa" do
+        setup do
+          @seed = ROTP::Base32.random_base32
+          @controller.session[:mfa_seed] = @seed
+          @controller.session[:mfa_seed_expire] = Gemcutter::MFA_KEY_EXPIRY.from_now.utc.to_i
+
+          perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+            post :create, params: { otp: ROTP::TOTP.new(@seed).now }
+          end
+        end
+
+        should respond_with :success
+
+        should "keep mfa enabled" do
+          assert_predicate @user.reload, :mfa_enabled?
+        end
+
+        should "send totp enabled email" do
+          assert_emails 1
+          assert_equal "Multi-factor authentication enabled on RubyGems.org", last_email.subject
+          assert_equal [@user.email], last_email.to
+        end
+      end
+
+      context "on PUT to update mfa level" do
+        context "on updating to ui_and_api" do
+          setup do
+            freeze_time
+            put :update, params: { level: "ui_and_api" }
+          end
+
+          should "render totp prompt" do
+            refute page.has_content?("OTP code")
+            assert page.has_content?("Security Device")
+          end
+
+          should "not update mfa level" do
+            assert_predicate @user.reload, :mfa_ui_only?
+          end
+
+          should "set mfa level in session" do
+            assert_equal "ui_and_api", @controller.session[:level]
+          end
+
+          should "set expiry in session" do
+            assert_equal 15.minutes.from_now.to_s, session[:mfa_expires_at]
+          end
+
+          teardown do
+            travel_back
+          end
+        end
+
+        context "on updating to ui_and_gem_signin" do
+          setup do
+            freeze_time
+            put :update, params: { level: "ui_and_api" }
+          end
+
+          should "render totp prompt" do
+            refute page.has_content?("OTP code")
+            assert page.has_content?("Security Device")
+          end
+
+          should "not update mfa level" do
+            assert_predicate @user.reload, :mfa_ui_only?
+          end
+
+          should "set mfa level in session" do
+            assert_equal "ui_and_api", @controller.session[:level]
+          end
+
+          should "set expiry in session" do
+            assert_equal 15.minutes.from_now.to_s, session[:mfa_expires_at]
+          end
+
+          teardown do
+            travel_back
+          end
+        end
+
+        context "on updating to invalid level" do
+          setup do
+            put :update, params: { level: "disabled" }
+          end
+
+          should "redirect to settings page" do
+            assert_redirected_to edit_settings_path
+            assert_equal "Invalid MFA level.", flash[:error]
+          end
+
+          should "not set session variables" do
+            assert_nil @controller.session[:level]
+            assert_nil @controller.session[:mfa_expires_at]
+          end
+        end
       end
     end
 
