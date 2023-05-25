@@ -74,7 +74,8 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def webauthn_update
-    unless current_user.webauthn_enabled?
+    @user = current_user
+    unless @user.webauthn_enabled?
       redirect_to edit_settings_path, flash: { error: t("multifactor_auths.require_webauthn_enabled") }
       return
     end
@@ -129,7 +130,8 @@ class MultifactorAuthsController < ApplicationController
 
   def delete_mfa_level_update_session_variables
     session.delete(:level)
-    session.delete("mfa_redirect_uri")
+    session.delete(:mfa_redirect_uri)
+    session.delete(:webauthn_authentication)
     delete_mfa_expiry_session
   end
 
