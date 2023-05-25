@@ -61,7 +61,12 @@ class MultifactorAuthsController < ApplicationController
   end
 
   def mfa_update
-    if mfa_update_conditions_met?
+    unless current_user.totp_enabled?
+      redirect_to edit_settings_path, flash: { error: t("multifactor_auths.require_totp_enabled") }
+      return
+    end
+
+    if current_user.ui_mfa_verified?(params[:otp])
       update_level_and_redirect
     else
       redirect_to edit_settings_path, flash: { error: t("multifactor_auths.incorrect_otp") }
@@ -70,7 +75,7 @@ class MultifactorAuthsController < ApplicationController
 
   def webauthn_update
     unless current_user.webauthn_enabled?
-      redirect_to edit_settings_path, flash: { error: t("multifactor_auths.no_webauthn_devices") }
+      redirect_to edit_settings_path, flash: { error: t("multifactor_auths.require_webauthn_enabled") }
       return
     end
 
@@ -167,9 +172,5 @@ class MultifactorAuthsController < ApplicationController
 
   def valid_mfa_level?
     %w[ui_only ui_and_api].include?(level_param)
-  end
-
-  def mfa_update_conditions_met?
-    current_user.mfa_enabled? && current_user.ui_mfa_verified?(params[:otp]) && session_active?
   end
 end

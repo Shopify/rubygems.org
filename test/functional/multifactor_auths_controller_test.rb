@@ -207,7 +207,8 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
         should redirect_to("the settings page") { edit_settings_path }
 
         should "set flash error" do
-          assert_equal "You don't have any security devices enabled.", flash[:error]
+          assert_equal "You don't have any security devices enabled. " \
+                       "You have to associate a device to your account first.", flash[:error]
         end
 
         should "not update mfa level" do
@@ -323,6 +324,29 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
             assert_nil @controller.session[:level]
             assert_nil @controller.session[:mfa_expires_at]
           end
+        end
+      end
+
+      context "on PUT to mfa_update" do
+        setup do
+          put :update, params: { level: "ui_and_api" }
+          post :mfa_update
+        end
+
+        should redirect_to("the settings page") { edit_settings_path }
+
+        should "set flash error" do
+          assert_equal "You don't have an authenticator app enabled. You have to enable it first.", flash[:error]
+        end
+
+        should "not update mfa level" do
+          assert_predicate @user.reload, :mfa_ui_only?
+        end
+
+        should "clear session variables" do
+          assert_nil @controller.session[:mfa_expires_at]
+          assert_nil @controller.session[:level]
+          assert_nil @controller.session[:mfa_redirect_uri]
         end
       end
     end
