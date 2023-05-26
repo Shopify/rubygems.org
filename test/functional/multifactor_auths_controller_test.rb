@@ -286,7 +286,6 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
 
     context "when a webauthn device is enabled" do
       setup do
-        @user.update!(mfa_level: "ui_only") # remove this when we enable mfa when a webauthn device is created
         @webauthn_credential = create(:webauthn_credential, user: @user)
       end
 
@@ -327,7 +326,7 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
           end
 
           should "not update mfa level" do
-            assert_predicate @user.reload, :mfa_ui_only?
+            assert_predicate @user.reload, :mfa_ui_and_api?
           end
 
           should "set mfa level in session" do
@@ -355,7 +354,7 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
           end
 
           should "not update mfa level" do
-            assert_predicate @user.reload, :mfa_ui_only?
+            assert_predicate @user.reload, :mfa_ui_and_api?
           end
 
           should "set mfa level in session" do
@@ -401,7 +400,7 @@ class MultifactorAuthsControllerTest < ActionController::TestCase
         end
 
         should "not update mfa level" do
-          assert_predicate @user.reload, :mfa_ui_only?
+          assert_predicate @user.reload, :mfa_ui_and_api?
         end
 
         should "clear session variables" do

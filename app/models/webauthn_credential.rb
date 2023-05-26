@@ -8,6 +8,8 @@ class WebauthnCredential < ApplicationRecord
 
   after_create :send_creation_email
   after_destroy :send_deletion_email
+  after_create :set_user_mfa_level_create
+  after_destroy :set_user_mfa_level_destroy
 
   private
 
@@ -17,5 +19,17 @@ class WebauthnCredential < ApplicationRecord
 
   def send_deletion_email
     Mailer.webauthn_credential_removed(user_id, nickname, Time.now.utc).deliver_later
+  end
+
+  def set_user_mfa_level_create
+    if user.count_webauthn_credentials && user.totp_disabled?
+      user.update!(mfa_level: "ui_and_api")
+    end
+  end
+
+  def set_user_mfa_level_destroy
+    if user.webauthn_credentials.empty? && user.totp_disabled?
+      user.update!(mfa_level: "disabled")
+    end
   end
 end

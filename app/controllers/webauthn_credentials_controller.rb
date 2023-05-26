@@ -26,6 +26,7 @@ class WebauthnCredentialsController < ApplicationController
 
   def destroy
     webauthn_credential = current_user.webauthn_credentials.find(params[:id])
+
     if webauthn_credential.destroy
       flash[:notice] = t(".webauthn_credential.confirm_delete")
     else
@@ -52,5 +53,17 @@ class WebauthnCredentialsController < ApplicationController
         sign_count: credential.sign_count
       )
     )
+  end
+
+  def set_mfa_level_create
+    if current_user.count_webauthn_credentials && current_user.totp_disabled?
+      current_user.update!(mfa_level: "ui_and_api")
+    end
+  end
+
+  def set_mfa_level_destroy
+    if current_user.webauthn_credentials.empty? && current_user.totp_disabled?
+      current_user.update!(mfa_level: "disabled")
+    end
   end
 end

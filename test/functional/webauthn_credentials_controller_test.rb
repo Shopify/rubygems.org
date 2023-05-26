@@ -171,6 +171,68 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
 
       should respond_with :unprocessable_entity
     end
+
+    context "when otp is not yet registered" do
+      setup do
+        @user = create(:user)
+        sign_in_as @user
+        post :create
+        @nickname = SecureRandom.hex
+        challenge = JSON.parse(response.body)["challenge"]
+        origin = "http://localhost:3000"
+        client = WebAuthn::FakeClient.new(origin, encoding: false)
+
+        perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+          post(
+            :callback,
+            params: {
+              credentials: WebauthnHelpers.create_result(
+                client: client,
+                challenge: challenge
+              ),
+              webauthn_credential: { nickname: @nickname }
+            },
+            format: :json
+          )
+        end
+      end
+
+      should "set the users mfa_level to 'ui_and_api'" do
+        assert_equal "ui_and_api", @user.reload.mfa_level
+      end
+    end
+
+    context "when otp is already registered on the user" do
+      setup do
+        @user = create(:user)
+        @seed = ROTP::Base32.random_base32
+        @user.enable_totp!(@seed, :ui_and_gem_signin)
+        sign_in_as @user
+        post :create
+        @nickname = SecureRandom.hex
+        challenge = JSON.parse(response.body)["challenge"]
+        origin = "http://localhost:3000"
+        client = WebAuthn::FakeClient.new(origin, encoding: false)
+
+        perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+          post(
+            :callback,
+            params: {
+              credentials: WebauthnHelpers.create_result(
+                client: client,
+                challenge: challenge
+              ),
+              webauthn_credential: { nickname: @nickname }
+            },
+            format: :json
+          )
+        end
+      end
+
+      should "not change the users mfa_level" do
+        assert_equal "ui_and_gem_signin", @user.reload.mfa_level
+      end
+    end
   end
 
   context "#destroy" do
@@ -212,5 +274,75 @@ class WebauthnCredentialsControllerTest < ActionController::TestCase
     end
 
     should redirect_to :edit_settings
+
+    context "when the user has no other webauthn credentials" do
+      setup do
+        @user = create(:user)
+        @credential = create(:webauthn_credential, user: @user)
+        sign_in_as @user
+        
+        perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+          delete :destroy, params: { id: @credential.id }
+        end
+      end
+
+      should "set the users mfa_level to disabled" do
+        assert_equal "disabled", @user.reload.mfa_level
+      end
+    end
+
+    context "when the user has other webauthn credentials but no otp" do
+      setup do
+        @user = create(:user)
+        @credential1 = create(:webauthn_credential, user: @user)
+        @credential2 = create(:webauthn_credential, user: @user)
+        sign_in_as @user
+        
+        perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+          delete :destroy, params: { id: @credential1.id }
+        end
+      end
+
+      should "not change the users mfa_level" do
+        assert_equal "ui_and_api", @user.reload.mfa_level
+      end
+    end
+
+    context "when the user has one webauthn credential and totp" do
+      setup do
+        @user = create(:user)
+        @seed = ROTP::Base32.random_base32
+        @user.enable_totp!(@seed, :ui_and_api)
+        @credential = create(:webauthn_credential, user: @user)
+        sign_in_as @user
+        
+        perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+          delete :destroy, params: { id: @credential.id }
+        end
+      end
+
+      should "not change the users mfa_level" do
+        assert_equal "ui_and_api", @user.reload.mfa_level
+      end
+    end
+
+    context "when the user has other webauthn credentials and an otp" do
+      setup do
+        @user = create(:user)
+        @seed = ROTP::Base32.random_base32
+        @user.enable_totp!(@seed, :ui_and_api)
+        @credential1 = create(:webauthn_credential, user: @user)
+        @credential2 = create(:webauthn_credential, user: @user)
+        sign_in_as @user
+        
+        perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+          delete :destroy, params: { id: @credential1.id }
+        end
+      end
+
+      should "not change the users mfa_level" do
+        assert_equal "ui_and_api", @user.reload.mfa_level
+      end
+    end
   end
 end

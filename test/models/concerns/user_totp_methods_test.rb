@@ -56,6 +56,16 @@ class UserTotpMethodsTest < ActiveSupport::TestCase
       assert_equal "Multi-factor authentication disabled on RubyGems.org", last_email.subject
       assert_equal [@user.email], last_email.to
     end
+
+    should "set mfa_level to disabled if webauthn is also disabled" do
+      assert_equal "disabled", @user.mfa_level
+    end
+
+    should "maintain the mfa_level if webauthn is enabled" do
+      @credential = create(:webauthn_credential, user: @user)
+
+      assert_equal "ui_and_api", @user.mfa_level
+    end
   end
 
   context "#verify_and_enable_totp!" do
@@ -105,7 +115,7 @@ class UserTotpMethodsTest < ActiveSupport::TestCase
   context "#enable_totp!" do
     setup do
       @seed = ROTP::Base32.random_base32
-      @level = :ui_and_api
+      @level = "ui_and_api"
       @user.enable_totp!(@seed, @level)
     end
 
@@ -113,6 +123,18 @@ class UserTotpMethodsTest < ActiveSupport::TestCase
       assert_equal @seed, @user.mfa_seed
       assert_predicate @user, :mfa_ui_and_api?
       assert_equal 10, @user.mfa_recovery_codes.length
+    end
+
+    should "set the mfa level if no webauthn credentials" do
+      assert_equal @level, @user.mfa_level
+    end
+
+    should "not set the mfa level if webauthn credentials exists" do
+      create(:webauthn_credential, user: @user)
+      @user.mfa_level = "ui_and_gem_signin"
+      @user.save!
+
+      assert_equal "ui_and_gem_signin", @user.mfa_level
     end
   end
 end
