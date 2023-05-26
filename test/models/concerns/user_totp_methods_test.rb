@@ -46,7 +46,7 @@ class UserTotpMethodsTest < ActiveSupport::TestCase
 
     should "disable mfa" do
       assert_predicate @user, :mfa_disabled?
-      assert_empty @user.mfa_seed
+      assert_empty @user.totp_seed
       assert_empty @user.mfa_recovery_codes
     end
 
@@ -120,7 +120,7 @@ class UserTotpMethodsTest < ActiveSupport::TestCase
     end
 
     should "enable mfa" do
-      assert_equal @seed, @user.mfa_seed
+      assert_equal @seed, @user.totp_seed
       assert_predicate @user, :mfa_ui_and_api?
       assert_equal 10, @user.mfa_recovery_codes.length
     end

@@ -2,16 +2,16 @@ module UserTotpMethods
   extend ActiveSupport::Concern
 
   def totp_enabled?
-    mfa_seed.present?
+    totp_seed.present?
   end
 
   def totp_disabled?
-    mfa_seed.blank?
+    totp_seed.blank?
   end
 
   def disable_totp!
     mfa_disabled!
-    self.mfa_seed = ""
+    self.totp_seed = ""
     
     if webauthn_disabled?
       self.mfa_level = "disabled"
@@ -33,7 +33,7 @@ module UserTotpMethods
   end
 
   def enable_totp!(seed, level)
-    self.mfa_seed = seed
+    self.totp_seed = seed
 
     if webauthn_disabled?
       self.mfa_level = level
