@@ -79,7 +79,7 @@ GEM
     ast (2.4.2)
     autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
-    avo (2.33.0)
+    avo (2.34.5)
       actionview (>= 6.0)
       active_link_to
       activerecord (>= 6.0)
@@ -393,7 +393,7 @@ GEM
       activesupport (>= 3.0.0)
     pwned (2.3.0)
     raabro (1.4.0)
-    racc (1.6.2)
+    racc (1.7.0)
     rack (2.2.7)
     rack-attack (6.6.1)
       rack (>= 1.0, < 3)
