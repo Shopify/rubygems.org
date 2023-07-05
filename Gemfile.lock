@@ -79,7 +79,7 @@ GEM
     ast (2.4.2)
     autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
-    avo (2.35.0)
+    avo (2.36.0)
       actionview (>= 6.0)
       active_link_to
       activerecord (>= 6.0)
@@ -417,8 +417,9 @@ GEM
       activesupport (= 7.0.5)
       bundler (>= 1.15.0)
       railties (= 7.0.5)
-    rails-dom-testing (2.0.3)
-      activesupport (>= 4.2.0)
+    rails-dom-testing (2.1.1)
+      activesupport (>= 5.0.0)
+      minitest
       nokogiri (>= 1.6)
     rails-erd (1.7.2)
       activerecord (>= 4.2)
