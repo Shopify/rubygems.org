@@ -6,7 +6,8 @@
     <p><%= t("settings.edit.webauthn_credential_note") %></p>
   </div>
 
-  <%= form_tag @webauthn_verification_url, method: :post, class: "js-webauthn-session-cli--form", data: { options: @webauthn_options.to_json } do %>
+  <% form_class = browser.safari? ? "js-webauthn-session-cli-manual--form" : "js-webauthn-session-cli--form"%>
+  <%= form_tag @webauthn_verification_url, method: :post, class: form_class, data: { options: @webauthn_options.to_json } do %>
     <div class="form_bottom">
       <p hidden class="l-text-red-600 js-webauthn-session-cli--error"></p>
 
