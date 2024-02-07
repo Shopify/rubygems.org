@@ -3,8 +3,6 @@ module MailerHelper
     case mfa_level
     when "disabled"
       "[Action Required] Enable multi-factor authentication on your RubyGems account by August 15"
-    when "ui_only"
-      "[Action Required] Upgrade the multi-factor authentication level on your RubyGems account by August 15"
     end
   end
 
@@ -12,8 +10,6 @@ module MailerHelper
     case mfa_level
     when "disabled"
       "Enable multi-factor authentication on your RubyGems account"
-    when "ui_only"
-      "Upgrade the multi-factor authentication level on your RubyGems account"
     end
   end
 
@@ -21,8 +17,6 @@ module MailerHelper
     case mfa_level
     when "disabled"
       "[Action Required] Enabling multi-factor authentication is required on your RubyGems account"
-    when "ui_only"
-      "[Action Required] Upgrading the multi-factor authentication level is required on your RubyGems account"
     end
   end
 
@@ -30,8 +24,6 @@ module MailerHelper
     case mfa_level
     when "disabled"
       "Enable multi-factor authentication on your RubyGems account"
-    when "ui_only"
-      "Upgrade the multi-factor authentication level on your RubyGems account"
     end
   end
 end
