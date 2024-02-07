@@ -45,26 +45,6 @@ class MailerTest < ActionMailer::TestCase
       assert_match "Sending 1 MFA reminder email", @io_output
     end
 
-    should "send mail to users with with more than 180M+ downloads and have weak MFA" do
-      user = create(:user)
-      user.enable_totp!(ROTP::Base32.random_base32, :ui_only)
-
-      create(:rubygem, owners: [user], downloads: MIN_DOWNLOADS_FOR_MFA_REQUIRED_POLICY)
-
-      perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
-        @io_output, _error = capture_io { Rake::Task["mfa_policy:reminder_enable_mfa"].execute }
-      end
-
-      refute_empty ActionMailer::Base.deliveries
-      email = ActionMailer::Base.deliveries.last
-
-      assert_equal [user.email], email.to
-      assert_equal ["no-reply@mailer.rubygems.org"], email.from
-      assert_equal "[Action Required] Upgrade the multi-factor authentication level on your RubyGems account by August 15", email.subject
-      assert_match "Recently, we've announced our security-focused ambitions to the community", email.text_part.body.to_s
-      assert_match "Sending 1 MFA reminder email", @io_output
-    end
-
     should "not send mail to users with with more than 180M+ downloads and have strong MFA" do
       user = create(:user)
       user.enable_totp!(ROTP::Base32.random_base32, :ui_and_api)
@@ -106,25 +86,6 @@ class MailerTest < ActionMailer::TestCase
       assert_equal [user.email], email.to
       assert_equal ["no-reply@mailer.rubygems.org"], email.from
       assert_equal "[Action Required] Enabling multi-factor authentication is required on your RubyGems account", email.subject
-      assert_match "Effective today, multi-factor authentication (MFA) is required on your RubyGems account.", email.text_part.body.to_s
-      assert_match "Sending 1 MFA required for popular gems email", @io_output
-    end
-
-    should "send mail to users with more than 180M+ downloads and have weak MFA enabled" do
-      user = create(:user)
-      user.enable_totp!(ROTP::Base32.random_base32, :ui_only)
-      create(:rubygem, owners: [user], downloads: MIN_DOWNLOADS_FOR_MFA_REQUIRED_POLICY)
-
-      perform_enqueued_jobs only: ActionMailer::MailDeliveryJob do
-        @io_output, _error = capture_io { Rake::Task["mfa_policy:announce_enforcement_for_popular_gems"].execute }
-      end
-
-      refute_empty ActionMailer::Base.deliveries
-      email = ActionMailer::Base.deliveries.last
-
-      assert_equal [user.email], email.to
-      assert_equal ["no-reply@mailer.rubygems.org"], email.from
-      assert_equal "[Action Required] Upgrading the multi-factor authentication level is required on your RubyGems account", email.subject
       assert_match "Effective today, multi-factor authentication (MFA) is required on your RubyGems account.", email.text_part.body.to_s
       assert_match "Sending 1 MFA required for popular gems email", @io_output
     end

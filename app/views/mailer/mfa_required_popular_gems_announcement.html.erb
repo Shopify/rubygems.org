@@ -23,27 +23,8 @@
           </p>
           <br/>
 
-          <p> 
+          <p>
             To re-enable these operations for your account, <b>please enable multi-factor authentication 🙏.</b>
-          </p>
-          <br/>
-        <% elsif @user.mfa_ui_only? %>
-          <p>
-            Your current MFA level is no longer recommended. In fact, it's deprecated.
-            <b>You need to upgrade your RubyGems account to a stronger MFA level 🙏.</b>
-          </p>
-          <br/>
-
-          <p>
-            We recommend setting the
-            <a href="https://guides.rubygems.org/setting-up-multifactor-authentication/#authentication-levels" target="_blank">MFA level</a>
-            to <b><i>UI and API</i></b>. However, <b><i>UI and gem signin</i></b> is acceptable too.
-          </p>
-          <br/>
-
-          <p>
-            A number of operations are restricted until you upgrade your MFA setting.
-            These restrictions include editing profile pages on the web, signing in on the command line, and performing <a href="https://guides.rubygems.org/mfa-requirement-opt-in/#privileged-operations" target="_blank">privileged actions</a> (ie. push, yank, add/remove owners).
           </p>
           <br/>
         <% end %>
@@ -58,7 +39,7 @@
 
       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="30" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%">&nbsp;</td></tr></table>
 
-      <% if @user.mfa_disabled? || @user.mfa_ui_only? %>
+      <% if @user.mfa_disabled? %>
 
         <!-- Button -->
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -80,8 +61,7 @@
                           <div class="text-btn" style="color:#ffffff; font-family:Arial, sans-serif; min-width:auto !important; font-size:16px; line-height:20px; text-align:center">
                             <a href=<%= new_multifactor_auth_url %> target="_blank" class="link-white" style="color:#ffffff; text-decoration:none">
                               <span class="link-white" style="color:#ffffff; text-decoration:none">
-                                <%= "ENABLE MFA" if @user.mfa_disabled? %>
-                                <%= "STRENGTHEN MFA LEVEL" if @user.mfa_ui_only? %>
+                                "ENABLE MFA"
                               </span>
                             </a>
                           </div>
