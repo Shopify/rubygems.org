@@ -93,10 +93,11 @@ GEM
     attr_required (1.0.2)
     autoprefixer-rails (10.4.16.0)
       execjs (~> 2)
-    avo (2.47.0)
-      actionview (>= 6.0)
+    avo (3.4.1)
+      actionview (>= 6.1)
       active_link_to
-      activerecord (>= 6.0)
+      activerecord (>= 6.1)
+      activesupport (>= 6.1)
       addressable
       docile
       dry-initializer
@@ -105,9 +106,9 @@ GEM
       meta-tags
       pagy
       turbo-rails
-      turbo_power (~> 0.5.0)
-      view_component (>= 2.54.0)
-      zeitwerk (>= 2.6.2)
+      turbo_power (>= 0.6.0)
+      view_component (>= 3.7.0)
+      zeitwerk (>= 2.6.12)
     awrence (1.2.1)
     aws-eventstream (1.3.0)
     aws-partitions (1.887.0)
@@ -298,7 +299,7 @@ GEM
       activesupport (>= 3.0)
       nokogiri (>= 1.6)
     io-console (0.7.2)
-    irb (1.11.1)
+    irb (1.11.2)
       rdoc
       reline (>= 0.4.2)
     jmespath (1.6.2)
@@ -463,7 +464,7 @@ GEM
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
     optimist (3.1.0)
-    pagy (6.4.2)
+    pagy (7.0.2)
     parallel (1.24.0)
     parser (3.3.0.5)
       ast (~> 2.4.1)
@@ -697,12 +698,12 @@ GEM
       bindata (~> 2.4)
       openssl (> 2.0)
       openssl-signature_algorithm (~> 1.0)
-    turbo-rails (1.5.0)
+    turbo-rails (2.0.3)
       actionpack (>= 6.0.0)
       activejob (>= 6.0.0)
       railties (>= 6.0.0)
-    turbo_power (0.5.0)
-      turbo-rails (~> 1.3)
+    turbo_power (0.6.1)
+      turbo-rails (>= 1.3.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
@@ -748,7 +749,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yard (0.9.34)
-    zeitwerk (2.6.12)
+    zeitwerk (2.6.13)
 
 PLATFORMS
   ruby
@@ -757,7 +758,7 @@ DEPENDENCIES
   aggregate_assertions (~> 0.2.0)
   amazing_print (~> 1.4)
   autoprefixer-rails (~> 10.4)
-  avo (~> 2.47)
+  avo (~> 3.4)
   aws-sdk-s3 (~> 1.143)
   aws-sdk-sqs (~> 1.70)
   bcrypt (~> 3.1)
@@ -881,7 +882,7 @@ CHECKSUMS
   ast (2.4.2) sha256=1e280232e6a33754cde542bc5ef85520b74db2aac73ec14acef453784447cc12
   attr_required (1.0.2) sha256=f0ebfc56b35e874f4d0ae799066dbc1f81efefe2364ca3803dc9ea6a4de6cb99
   autoprefixer-rails (10.4.16.0) sha256=40c4b14d6f26f66026cd0d4631baf18d6c56aab425b36059c8abbda17f19a706
-  avo (2.47.0) sha256=92913a585a4a2d276ea1800864053c4d989453deb0ce0ba737aeece7f6c46ded
+  avo (3.4.1) sha256=28c251cf0b35bf31b0002769f4b008208b442d16faf584532dd3fbc9b016ddae
   awrence (1.2.1) sha256=dd1d214c12a91f449d1ef81d7ee3babc2816944e450752e7522c65521872483e
   aws-eventstream (1.3.0) sha256=f1434cc03ab2248756eb02cfa45e900e59a061d7fbdc4a9fd82a5dd23d796d3f
   aws-partitions (1.887.0) sha256=f451bcde8cf105f2cfef0d074d0a6658109b403206c48afd41ab2b1d1f9b2c0e
@@ -971,7 +972,7 @@ CHECKSUMS
   importmap-rails (2.0.1) sha256=e739a6e70c09f797688c6983fa79567ec1edc9becc30d55b3f7cc897b1825586
   inline_svg (1.9.0) sha256=f44c5e3d2e401fd619ad3047b7c8cee384517d855edb1d1fb1a248d3cae535d6
   io-console (0.7.2) sha256=f0dccff252f877a4f60d04a4dc6b442b185ebffb4b320ab69212a92b48a7a221
-  irb (1.11.1) sha256=0700d626c92f7d47d12e73932ddb0c11b73c1f00608f5eae78dbc44968690842
+  irb (1.11.2) sha256=a05f07e81d32dc79d78b0019283b9877463da0d40253774d1fe89f9586ae1cb9
   jmespath (1.6.2) sha256=238d774a58723d6c090494c8879b5e9918c19485f7e840f2c1c7532cf84ebcb1
   job-iteration (1.4.1) sha256=7243c40e4decc3d49529867e9c504afaea332976c967ffdebed9ff863c6424af
   json (2.7.1) sha256=187ea312fb58420ff0c40f40af1862651d4295c8675267c6a1c353f1a0ac3265
@@ -1030,7 +1031,7 @@ CHECKSUMS
   openssl (3.2.0) sha256=3c4bb8760977b4becd2819c6c2569bcf5c6f48b32b9f7a4ce1fd37f996378d14
   openssl-signature_algorithm (1.3.0) sha256=a3b40b5e8276162d4a6e50c7c97cdaf1446f9b2c3946a6fa2c14628e0c957e80
   optimist (3.1.0) sha256=81886f53ee8919f330aa30076d320d88eef9bc85aae2275376b4afb007c69260
-  pagy (6.4.2) sha256=92f3bac9f6f3c5e897457c9e5c47ba024a86cdeaf13ef281e29a7e69fdba4d5a
+  pagy (7.0.2) sha256=e1f83b3b07d97836120c91f0dc6b68110648ca66911b67e01241864114fe5112
   parallel (1.24.0) sha256=5bf38efb9b37865f8e93d7a762727f8c5fc5deb19949f4040c76481d5eee9397
   parser (3.3.0.5) sha256=7748313e505ca87045dc0465c776c802043f777581796eb79b1654c5d19d2687
   pg (1.5.4) sha256=04f7b247151c639a0b955d8e5a9a41541343f4640aa3c2bdf749a872c339d25d
@@ -1122,8 +1123,8 @@ CHECKSUMS
   timeout (0.4.1) sha256=6f1f4edd4bca28cffa59501733a94215407c6960bd2107331f0280d4abdebb9a
   toxiproxy (2.0.2) sha256=2e3b53604fb921d40da3db8f78a52b3133fcae33e93d440725335b15974e440a
   tpm-key_attestation (0.12.0) sha256=e133d80cf24fef0e7a7dfad00fd6aeff01fc79875fbfc66cd8537bbd622b1e6d
-  turbo-rails (1.5.0) sha256=b426cc762fb0940277729b3f1751a9f0bd269f5613c1d62ac73e5f0be7c7a83e
-  turbo_power (0.5.0) sha256=869726c3a4308b038d6244f7a80eb1331bdd3171fa320dddcff71899fcae24fb
+  turbo-rails (2.0.3) sha256=f1bf7e814f7117836c54c6e122a285a48adfb4891ab7d3b8b5e84e20f40251ea
+  turbo_power (0.6.1) sha256=88cdb19fdf50bb5507ff35659af9455b1a29cf51c050df6e4d6b8b97d6aa90f6
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
   unicode-display_width (2.5.0) sha256=7e7681dcade1add70cb9fda20dd77f300b8587c81ebbd165d14fd93144ff0ab4
   unpwn (1.0.0) sha256=6239d17d46a882b3719b24fb79c78a34caff89d57ab0f5e546be5b5c882bc7d3
@@ -1143,7 +1144,7 @@ CHECKSUMS
   xml-simple (1.1.9) sha256=d21131e519c86f1a5bc2b6d2d57d46e6998e47f18ed249b25cad86433dbd695d
   xpath (3.2.0) sha256=6dfda79d91bb3b949b947ecc5919f042ef2f399b904013eb3ef6d20dd3a4082e
   yard (0.9.34) sha256=5a8e04114d7f15f77814973ea56b7c38282126fb2930eb82851ffed0b9cd7e04
-  zeitwerk (2.6.12) sha256=561e12975d0332fd3b62cc859aff3bab432e5f320689c8a10cd4674b5c0439be
+  zeitwerk (2.6.13) sha256=2db861b021d020f48b5bf51613f355fcd041bf0a27ad8c748fa88fa974c5c7d4
 
 BUNDLED WITH
    2.5.4
