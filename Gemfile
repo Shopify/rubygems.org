@@ -56,7 +56,7 @@ gem "discard", "~> 1.3"
 gem "user_agent_parser", "~> 2.16"
 
 # Admin dashboard
-gem "avo", "~> 2.47"
+gem "avo", "~> 3.4"
 gem "view_component", "~> 3.10"
 gem "pundit", "~> 2.3"
 gem "chartkick", "~> 5.0"
