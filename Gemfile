@@ -51,7 +51,7 @@ gem "browser", "~> 5.3", ">= 5.3.1"
 gem "bcrypt", "~> 3.1"
 gem "maintenance_tasks", "~> 2.5"
 gem "strong_migrations", "~> 1.7"
-gem "phlex-rails", "~> 1.1"
+gem "phlex-rails", "~> 1.2"
 gem "discard", "~> 1.3"
 gem "user_agent_parser", "~> 2.16"
 
