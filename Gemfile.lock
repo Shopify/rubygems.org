@@ -131,7 +131,7 @@ GEM
     base64 (0.2.0)
     bcrypt (3.1.20)
     benchmark-ips (2.12.0)
-    bigdecimal (3.1.6)
+    bigdecimal (3.1.8)
     bindata (2.4.15)
     bitarray (1.2.0)
     bloomer (1.0.0)
@@ -219,8 +219,7 @@ GEM
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
       railties (>= 3.2)
-    drb (2.2.0)
-      ruby2_keywords
+    drb (2.2.1)
     dry-initializer (3.1.1)
     email_validator (2.2.4)
       activemodel
@@ -288,7 +287,7 @@ GEM
     httparty (0.21.0)
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
-    i18n (1.14.1)
+    i18n (1.14.5)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.0.1)
       actionpack (>= 6.0.0)
@@ -388,7 +387,7 @@ GEM
     method_source (1.0.0)
     mini_histogram (0.3.1)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.5)
+    mini_portile2 (2.8.6)
     minitest (5.22.0)
     minitest-gcstats (1.3.0)
       minitest (~> 5.0)
@@ -415,7 +414,7 @@ GEM
     net-smtp (0.4.0.1)
       net-protocol
     nio4r (2.7.0)
-    nokogiri (1.16.2)
+    nokogiri (1.16.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     oauth2 (2.0.9)
@@ -440,7 +439,7 @@ GEM
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
-    omniauth-rails_csrf_protection (1.0.1)
+    omniauth-rails_csrf_protection (1.0.2)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
     openid_connect (2.3.0)
@@ -893,7 +892,7 @@ CHECKSUMS
   base64 (0.2.0) sha256=0f25e9b21a02a0cc0cea8ef92b2041035d39350946e8789c562b2d1a3da01507
   bcrypt (3.1.20) sha256=8410f8c7b3ed54a3c00cd2456bf13917d695117f033218e2483b2e40b0784099
   benchmark-ips (2.12.0) sha256=09dd4d5be05db42470e7e7b01be7310564073a054e35d9d9ec7840c523f3dbcb
-  bigdecimal (3.1.6) sha256=bcbc27d449cf8ed1b1814d21308f49c9d22ce73e33fff0d228e38799c02eab01
+  bigdecimal (3.1.8) sha256=a89467ed5a44f8ae01824af49cbc575871fa078332e8f77ea425725c1ffe27be
   bindata (2.4.15) sha256=e567e4278223e041caf4e623de870b2df8a93479d8f13e2b478bad45e0fbc413
   bitarray (1.2.0) sha256=7f9f31fadbd87bf51544cf13058e81cd6ec408ff40f127902cef3d6767b23f11
   bloomer (1.0.0) sha256=57a0d3a78628db9a92c6723f06c67697e420abcdb05aa757c6dfae607251d272
@@ -932,7 +931,7 @@ CHECKSUMS
   domain_name (0.6.20231109) sha256=5127a1521ecca79d54accefc393f6d19db8600c6224416004414f7eaa28aecbe
   dotenv (2.8.1) sha256=c5944793349ae03c432e1780a2ca929d60b88c7d14d52d630db0508c3a8a17d8
   dotenv-rails (2.8.1) sha256=b05b81b7f4e51d1359e218d92279db1d84b12440f7118c9df19b5dfffb620f6c
-  drb (2.2.0) sha256=e9e4af1cded3306cfe37e064a0086e302d5f40df9cb4d161d059a6bb3a75d40f
+  drb (2.2.1) sha256=e9d472bf785f558b96b25358bae115646da0dbfd45107ad858b0bc0d935cb340
   dry-initializer (3.1.1) sha256=4d267dea367ccabe498b259c62b909b99d577d6db547d9510561999403546dec
   email_validator (2.2.4) sha256=5ab238095bec7aef9389f230e9e0c64c5081cdf91f19d6c5cecee0a93af20604
   erb (4.0.3) sha256=351a013ffee7e4e40b593df76dd4d0b2bd612e14dbff1d66273221d0cff6a49a
@@ -967,7 +966,7 @@ CHECKSUMS
   http-form_data (2.3.0) sha256=cc4eeb1361d9876821e31d7b1cf0b68f1cf874b201d27903480479d86448a5f3
   http_accept_language (2.1.1) sha256=0043f0d55a148cf45b604dbdd197cb36437133e990016c68c892d49dbea31634
   httparty (0.21.0) sha256=00ef7bf9a71f30a3bff88edeb5b16a34bea883ab67c246b3f0db2d6794fe1214
-  i18n (1.14.1) sha256=9d03698903547c060928e70a9bc8b6b87fda674453cda918fc7ab80235ae4a61
+  i18n (1.14.5) sha256=26dcbc05e364b57e27ab430148b3377bc413987d34cc042336271d8f42e9d1b9
   importmap-rails (2.0.1) sha256=e739a6e70c09f797688c6983fa79567ec1edc9becc30d55b3f7cc897b1825586
   inline_svg (1.9.0) sha256=f44c5e3d2e401fd619ad3047b7c8cee384517d855edb1d1fb1a248d3cae535d6
   io-console (0.7.2) sha256=f0dccff252f877a4f60d04a4dc6b442b185ebffb4b320ab69212a92b48a7a221
@@ -1002,7 +1001,7 @@ CHECKSUMS
   method_source (1.0.0) sha256=d779455a2b5666a079ce58577bfad8534f571af7cec8107f4dce328f0981dede
   mini_histogram (0.3.1) sha256=6a114b504e4618b0e076cc672996036870f7cc6f16b8e5c25c0c637726d2dd94
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
-  mini_portile2 (2.8.5) sha256=7a37db8ae758086c3c3ac3a59c036704d331e965d5e106635e4a42d6e66089ce
+  mini_portile2 (2.8.6) sha256=4e2ab09b924906fd42c0b6eb72816db6a435d0404e9cbdcc5d722c133b493991
   minitest (5.22.0) sha256=5f36c875f57facb59228473c060ca34a968c57edf2e858bdbc890ca6821c6043
   minitest-gcstats (1.3.0) sha256=c1bef6374d53771a6f7776f7a9c9fac5d1231fc83dfff5acea16fed66b886afd
   minitest-reporters (1.6.1) sha256=f8fe74e46ab40dada29402f55ca236368d0af65afc410db4219189b7a1c0fc38
@@ -1017,14 +1016,14 @@ CHECKSUMS
   net-protocol (0.2.2) sha256=aa73e0cba6a125369de9837b8d8ef82a61849360eba0521900e2c3713aa162a8
   net-smtp (0.4.0.1) sha256=098d28fab9d9bc280a2cfada77692cdca89c83c6789bdbb8d8429f97f1bf5a33
   nio4r (2.7.0) sha256=9586a685eca8246d6406e712a525e705d15bb88f709d78fc3f141e864df97276
-  nokogiri (1.16.2) sha256=68922ee5cde27497d995c46f2821957bae961947644eed2822d173daf7567f9c
+  nokogiri (1.16.4) sha256=62c116c3a14b4ed4e1faec786da266c4bd4c717a0bd04a9916164a7046040f45
   oauth2 (2.0.9) sha256=b21f9defcf52dc1610e0dfab4c868342173dcd707fd15c777d9f4f04e153f7fb
   observer (0.1.2) sha256=d8a3107131ba661138d748e7be3dbafc0d82e732fffba9fccb3d7829880950ac
   octokit (8.1.0) sha256=82229ce9b54e910e27ae75ff21e54bc97072913b5af06750999966e6817af8cd
   omniauth (2.1.2) sha256=def03277298b8f8a5d3ff16cdb2eb5edb9bffed60ee7dda24cc0c89b3ae6a0ce
   omniauth-github (2.0.1) sha256=8ff8e70ac6d6db9d52485eef52cfa894938c941496e66b52b5e2773ade3ccad4
   omniauth-oauth2 (1.8.0) sha256=b2f8e9559cc7e2d4efba57607691d6d2b634b879fc5b5b6ccfefa3da85089e78
-  omniauth-rails_csrf_protection (1.0.1) sha256=fc546aeb7d43b7b9d7737051c380156e61c8f080b898cd4934d523eaa7e59acf
+  omniauth-rails_csrf_protection (1.0.2) sha256=1170fd672aff092b9b7ebebc1453559f073ed001e3ce62a1df616e32f8dc5fe0
   openid_connect (2.3.0) sha256=0dbb9cefeb11e0a65e706349266355bbbb060382ae138fc9e199ab1aa622744c
   opensearch-ruby (3.1.0) sha256=fc6147c682be51356140a8163e46713018b5220bde3f80ba0b36a0fd1feffdb6
   openssl (3.2.0) sha256=3c4bb8760977b4becd2819c6c2569bcf5c6f48b32b9f7a4ce1fd37f996378d14
