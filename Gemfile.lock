@@ -272,7 +272,7 @@ GEM
     hashie (5.0.0)
     heapy (0.2.0)
       thor
-    high_voltage (3.1.2)
+    high_voltage (4.0.0)
     honeybadger (5.4.1)
     htmlbeautifier (1.4.2)
     htmlentities (4.3.4)
@@ -784,7 +784,7 @@ DEPENDENCIES
   google-protobuf (~> 3.25)
   gravtastic (~> 3.2)
   groupdate (~> 6.2)
-  high_voltage (~> 3.1)
+  high_voltage (~> 4.0)
   honeybadger (~> 5.4)
   http_accept_language (~> 2.1)
   importmap-rails (~> 2.0)
@@ -958,7 +958,7 @@ CHECKSUMS
   hashdiff (1.0.1) sha256=2cd4d04f5080314ecc8403c4e2e00dbaa282dff395e2d031bc16c8d501bdd6db
   hashie (5.0.0) sha256=9d6c4e51f2a36d4616cbc8a322d619a162d8f42815a792596039fc95595603da
   heapy (0.2.0) sha256=74141e845d61ffc7c1e8bf8b127c8cf94544ec7a1181aec613288682543585ea
-  high_voltage (3.1.2) sha256=7786716114cc21b3754e537818a6d9b2c91aa1126aa77272977d50598e556c2f
+  high_voltage (4.0.0) sha256=477b561c75d0de44ce6e96c91bafcab141d680a49f098f7854b3e5f8596b8a0c
   honeybadger (5.4.1) sha256=aea65109e148db2b0a0916e9600ecb7e0f11c9ee753c1c71764cb0ade13e0b1a
   htmlbeautifier (1.4.2) sha256=9de0c98480fe80d795ed5734a11f183563cd969686f25a04609c0f5a446fa5f8
   htmlentities (4.3.4) sha256=125a73c6c9f2d1b62100b7c3c401e3624441b663762afa7fe428476435a673da
