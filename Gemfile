@@ -116,7 +116,7 @@ end
 group :test do
   gem "minitest", "~> 5.22", require: false
   gem "capybara", "~> 3.40"
-  gem "launchy", "~> 2.5"
+  gem "launchy", "~> 3.0"
   gem "rack-test", "~> 2.1", require: "rack/test"
   gem "rails-controller-testing", "~> 1.0"
   gem "mocha", "~> 2.0", require: false
