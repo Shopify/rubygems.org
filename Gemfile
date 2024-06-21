@@ -91,7 +91,7 @@ group :development, :test do
   gem "toxiproxy", "~> 2.0"
   gem "factory_bot_rails", "~> 6.4"
   gem "dotenv-rails", "~> 2.8"
-  gem "lookbook", "~> 2.2"
+  gem "lookbook", "~> 2.3"
 
   gem "brakeman", "~> 6.1", require: false
 
