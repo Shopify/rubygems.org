@@ -64,7 +64,7 @@ gem "groupdate", "~> 6.2"
 
 # Logging
 gem "amazing_print", "~> 1.4"
-gem "rails_semantic_logger", "~> 4.14"
+gem "rails_semantic_logger", "~> 4.15"
 gem "pp", "0.5.0"
 
 # Former default gems
