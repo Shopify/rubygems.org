@@ -131,7 +131,7 @@ GEM
     base64 (0.2.0)
     bcrypt (3.1.20)
     benchmark-ips (2.12.0)
-    bigdecimal (3.1.6)
+    bigdecimal (3.1.8)
     bindata (2.4.15)
     bitarray (1.2.0)
     bloomer (1.0.0)
@@ -168,7 +168,7 @@ GEM
       railties (>= 5.0)
     coderay (1.1.3)
     compact_index (0.15.0)
-    concurrent-ruby (1.2.3)
+    concurrent-ruby (1.3.3)
     connection_pool (2.4.1)
     cose (1.3.0)
       cbor (~> 0.5.9)
@@ -219,8 +219,7 @@ GEM
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
       railties (>= 3.2)
-    drb (2.2.0)
-      ruby2_keywords
+    drb (2.2.1)
     dry-initializer (3.1.1)
     email_validator (2.2.4)
       activemodel
@@ -288,7 +287,7 @@ GEM
     httparty (0.21.0)
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
-    i18n (1.14.1)
+    i18n (1.14.5)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.0.1)
       actionpack (>= 6.0.0)
@@ -678,8 +677,8 @@ GEM
     stimulus-rails (1.3.3)
       railties (>= 6.0.0)
     stringio (3.1.0)
-    strong_migrations (1.7.0)
-      activerecord (>= 5.2)
+    strong_migrations (2.0.0)
+      activerecord (>= 6.1)
     swd (2.0.3)
       activesupport (>= 3)
       attr_required (>= 0.0.5)
@@ -846,7 +845,7 @@ DEPENDENCIES
   sprockets-rails (~> 3.4)
   statsd-instrument (~> 3.5)
   stimulus-rails (~> 1.3)
-  strong_migrations (~> 1.7)
+  strong_migrations (~> 2.0)
   tailwindcss-rails (~> 2.3)
   terser (~> 1.2)
   toxiproxy (~> 2.0)
@@ -893,7 +892,7 @@ CHECKSUMS
   base64 (0.2.0) sha256=0f25e9b21a02a0cc0cea8ef92b2041035d39350946e8789c562b2d1a3da01507
   bcrypt (3.1.20) sha256=8410f8c7b3ed54a3c00cd2456bf13917d695117f033218e2483b2e40b0784099
   benchmark-ips (2.12.0) sha256=09dd4d5be05db42470e7e7b01be7310564073a054e35d9d9ec7840c523f3dbcb
-  bigdecimal (3.1.6) sha256=bcbc27d449cf8ed1b1814d21308f49c9d22ce73e33fff0d228e38799c02eab01
+  bigdecimal (3.1.8) sha256=a89467ed5a44f8ae01824af49cbc575871fa078332e8f77ea425725c1ffe27be
   bindata (2.4.15) sha256=e567e4278223e041caf4e623de870b2df8a93479d8f13e2b478bad45e0fbc413
   bitarray (1.2.0) sha256=7f9f31fadbd87bf51544cf13058e81cd6ec408ff40f127902cef3d6767b23f11
   bloomer (1.0.0) sha256=57a0d3a78628db9a92c6723f06c67697e420abcdb05aa757c6dfae607251d272
@@ -911,7 +910,7 @@ CHECKSUMS
   clearance (2.6.2) sha256=6dd69ebcdb4767ca6ca9e2e2ac31c00412f2cf4b1a4dae58c821d36bd455c3c7
   coderay (1.1.3) sha256=dc530018a4684512f8f38143cd2a096c9f02a1fc2459edcfe534787a7fc77d4b
   compact_index (0.15.0) sha256=5c6c404afca8928a7d9f4dde9524f6e1610db17e675330803055db282da84a8b
-  concurrent-ruby (1.2.3) sha256=82fdd3f8a0816e28d513e637bb2b90a45d7b982bdf4f3a0511722d2e495801e2
+  concurrent-ruby (1.3.3) sha256=4f9cd28965c4dcf83ffd3ea7304f9323277be8525819cb18a3b61edcb56a7c6a
   connection_pool (2.4.1) sha256=0f40cf997091f1f04ff66da67eabd61a9fe0d4928b9a3645228532512fab62f4
   cose (1.3.0) sha256=63247c66a5bc76e53926756574fe3724cc0a88707e358c90532ae2a320e98601
   crack (0.4.5) sha256=798416fb29b8c9f655d139d5559169b39c4a0a3b8f8f39b7f670eec1af9b21b3
@@ -932,7 +931,7 @@ CHECKSUMS
   domain_name (0.6.20231109) sha256=5127a1521ecca79d54accefc393f6d19db8600c6224416004414f7eaa28aecbe
   dotenv (2.8.1) sha256=c5944793349ae03c432e1780a2ca929d60b88c7d14d52d630db0508c3a8a17d8
   dotenv-rails (2.8.1) sha256=b05b81b7f4e51d1359e218d92279db1d84b12440f7118c9df19b5dfffb620f6c
-  drb (2.2.0) sha256=e9e4af1cded3306cfe37e064a0086e302d5f40df9cb4d161d059a6bb3a75d40f
+  drb (2.2.1) sha256=e9d472bf785f558b96b25358bae115646da0dbfd45107ad858b0bc0d935cb340
   dry-initializer (3.1.1) sha256=4d267dea367ccabe498b259c62b909b99d577d6db547d9510561999403546dec
   email_validator (2.2.4) sha256=5ab238095bec7aef9389f230e9e0c64c5081cdf91f19d6c5cecee0a93af20604
   erb (4.0.3) sha256=351a013ffee7e4e40b593df76dd4d0b2bd612e14dbff1d66273221d0cff6a49a
@@ -967,7 +966,7 @@ CHECKSUMS
   http-form_data (2.3.0) sha256=cc4eeb1361d9876821e31d7b1cf0b68f1cf874b201d27903480479d86448a5f3
   http_accept_language (2.1.1) sha256=0043f0d55a148cf45b604dbdd197cb36437133e990016c68c892d49dbea31634
   httparty (0.21.0) sha256=00ef7bf9a71f30a3bff88edeb5b16a34bea883ab67c246b3f0db2d6794fe1214
-  i18n (1.14.1) sha256=9d03698903547c060928e70a9bc8b6b87fda674453cda918fc7ab80235ae4a61
+  i18n (1.14.5) sha256=26dcbc05e364b57e27ab430148b3377bc413987d34cc042336271d8f42e9d1b9
   importmap-rails (2.0.1) sha256=e739a6e70c09f797688c6983fa79567ec1edc9becc30d55b3f7cc897b1825586
   inline_svg (1.9.0) sha256=f44c5e3d2e401fd619ad3047b7c8cee384517d855edb1d1fb1a248d3cae535d6
   io-console (0.7.2) sha256=f0dccff252f877a4f60d04a4dc6b442b185ebffb4b320ab69212a92b48a7a221
@@ -1113,7 +1112,7 @@ CHECKSUMS
   statsd-instrument (3.6.1) sha256=fdaf73665c9a4d99aeddcda2e70fc266935919225dc0bf01257234f59f8f55df
   stimulus-rails (1.3.3) sha256=4d1f9ab1d64e605f4c9cdd4cc530a9538b510606d32d02249d106256845c562c
   stringio (3.1.0) sha256=c1f6263ae03a15025e51194ab19b06b15e06adcaaedb7f5f6c06ab60f5d67718
-  strong_migrations (1.7.0) sha256=c60e164ef24a80db2b5c40353a8f9225a636e8ab52be42a47cd1923b88c9829c
+  strong_migrations (2.0.0) sha256=88750f294403e18ec674eda6901f2fc195f553ed6a7928c52e8a3f5b57ff501d
   swd (2.0.3) sha256=4cdbe2a4246c19f093fce22e967ec3ebdd4657d37673672e621bf0c7eb770655
   tailwindcss-rails (2.3.0) sha256=eb194b760eb637f01490f8ad30147d93f402346babfc6eeac04039cff8169ad9
   terser (1.2.0) sha256=a25e6213233ad332378fd2add7d79a55bf31a383cc732d17f116450774d05303
