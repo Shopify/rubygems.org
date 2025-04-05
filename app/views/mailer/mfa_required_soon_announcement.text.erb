@@ -7,13 +7,8 @@ Next week, on August 15, 2022, we will begin requiring maintainers like yourself
 If you don't have MFA enabled by this date, a number of operations will be restricted.
 These restrictions include editing profile pages on the web, signing in on the command line, and performing privileged actions (ie. push, yank, add/remove owners) (https://guides.rubygems.org/mfa-requirement-opt-in/#privileged-operations).
 
-<% if @user.mfa_disabled? %> 
+<% if @user.mfa_disabled? %>
 To avoid any disruptions with your RubyGems account, please enable multi-factor authentication 🙏.
-<% elsif @user.mfa_ui_only? %>
-We're notifying you of this policy because you have MFA enabled only for the UI.
-Please upgrade your RubyGems account to a stronger MFA level 🙏.
-
-We recommend setting the MFA level to "UI and API". However, "UI and gem signin" is acceptable too (https://guides.rubygems.org/setting-up-multifactor-authentication/#authentication-levels).
 <% end %>
 
 ❤️ Thank you for making the RubyGems ecosystem more secure
