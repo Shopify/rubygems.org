@@ -19,7 +19,7 @@ gem "faraday-restrict-ip-addresses", "~> 0.3.0", require: "faraday/restrict_ip_a
 gem "flipper", "~> 1.3"
 gem "flipper-active_record", "~> 1.3"
 gem "flipper-ui", "~> 1.3"
-gem "good_job", "~> 3.99"
+gem "good_job", "~> 4.12"
 gem "gravtastic", "~> 3.2"
 gem "honeybadger", "~> 6.1.0", require: false
 gem "http_accept_language", "~> 2.1"
