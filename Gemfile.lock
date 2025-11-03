@@ -482,7 +482,7 @@ GEM
       bigdecimal (~> 3.1)
     multipart-post (2.4.1)
     mutex_m (0.2.0)
-    net-http (0.6.0)
+    net-http (0.7.0)
       uri
     net-imap (0.5.9)
       date
@@ -800,7 +800,8 @@ GEM
     shoulda-context (3.0.0.rc1)
     shoulda-matchers (6.5.0)
       activesupport (>= 5.2.0)
-    sigstore (0.2.1)
+    sigstore (0.2.2)
+      logger
       net-http
       protobug_sigstore_protos (~> 0.1.0)
       uri
@@ -857,7 +858,7 @@ GEM
     unpwn (1.0.1)
       bloomer (~> 1.0)
       pwned (~> 2.0)
-    uri (1.0.3)
+    uri (1.1.0)
     user_agent_parser (2.20.0)
     useragent (0.16.11)
     validate_url (1.0.15)
@@ -1014,7 +1015,7 @@ DEPENDENCIES
   shoryuken (~> 6.2)
   shoulda-context (~> 3.0.0.rc1)
   shoulda-matchers (~> 6.5)
-  sigstore (~> 0.2.1)
+  sigstore (~> 0.2.2)
   simplecov (~> 0.22)
   simplecov-cobertura (~> 3.1)
   statsd-instrument (~> 3.9)
@@ -1208,7 +1209,7 @@ CHECKSUMS
   multi_xml (0.7.1) sha256=4fce100c68af588ff91b8ba90a0bb3f0466f06c909f21a32f4962059140ba61b
   multipart-post (2.4.1) sha256=9872d03a8e552020ca096adadbf5e3cb1cd1cdd6acd3c161136b8a5737cdb4a8
   mutex_m (0.2.0) sha256=b6ef0c6c842ede846f2ec0ade9e266b1a9dac0bc151682b04835e8ebd54840d5
-  net-http (0.6.0) sha256=9621b20c137898af9d890556848c93603716cab516dc2c89b01a38b894e259fb
+  net-http (0.7.0) sha256=4db7d9f558f8ffd4dcf832d0aefd02320c569c7d4f857def49e585069673a425
   net-imap (0.5.9) sha256=d95905321e1bd9f294ffc7ff8697be218eee1ec96c8504c0960964d0a0be33fc
   net-pop (0.1.2) sha256=848b4e982013c15b2f0382792268763b748cce91c9e91e36b0f27ed26420dff3
   net-protocol (0.2.2) sha256=aa73e0cba6a125369de9837b8d8ef82a61849360eba0521900e2c3713aa162a8
@@ -1329,7 +1330,7 @@ CHECKSUMS
   shoryuken (6.2.1) sha256=95ddc0a717624a54e799d25a0a05100cb5a0c3728a96211935c214faaf16b3b6
   shoulda-context (3.0.0.rc1) sha256=6e0d9d52ab798c13bc2b490c8537d4bf30cfd318a1ea839c39a66d1d293c6a1a
   shoulda-matchers (6.5.0) sha256=ef6b572b2bed1ac4aba6ab2c5ff345a24b6d055a93a3d1c3bfc86d9d499e3f44
-  sigstore (0.2.1) sha256=58031c34c7899dd6aac43c54d0ab1a5282a551804013d4b7cb6930a32cbc8775
+  sigstore (0.2.2) sha256=062d14c1490721e21eb1c33e93b5c48cd9167f79499033fb035c98efbc3dc0a1
   simplecov (0.22.0) sha256=fe2622c7834ff23b98066bb0a854284b2729a569ac659f82621fc22ef36213a5
   simplecov-cobertura (3.1.0) sha256=6d7f38aa32c965ca2174b2e5bd88cb17138eaf629518854976ac50e628925dc5
   simplecov-html (0.13.2) sha256=bd0b8e54e7c2d7685927e8d6286466359b6f16b18cb0df47b508e8d73c777246
@@ -1358,7 +1359,7 @@ CHECKSUMS
   unicode-display_width (3.1.5) sha256=bf566817855ee7ee3adcf7bace0d5906cb14401417db59193f8a5fcedf02dd4e
   unicode-emoji (4.0.4) sha256=2c2c4ef7f353e5809497126285a50b23056cc6e61b64433764a35eff6c36532a
   unpwn (1.0.1) sha256=103b3cc9ee9fb3dd68b88b73778bd17a9bfe7cfe12fc7053c2bf9f06caa2c155
-  uri (1.0.3) sha256=e9f2244608eea2f7bc357d954c65c910ce0399ca5e18a7a29207ac22d8767011
+  uri (1.1.0) sha256=e23a2061c1e924efa2cc3016f517f888e7c866c0d7f6531f5cded089f2b9e625
   user_agent_parser (2.20.0) sha256=4bd9b667923ee4c7ca0abbe07135e49d9acd6534200b156b89c5e082acbe6ca6
   useragent (0.16.11) sha256=700e6413ad4bb954bb63547fa098dddf7b0ebe75b40cc6f93b8d54255b173844
   validate_url (1.0.15) sha256=72fe164c0713d63a9970bd6700bea948babbfbdcec392f2342b6704042f57451
