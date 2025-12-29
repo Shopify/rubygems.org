@@ -7,7 +7,7 @@ gem "rails-i18n", "~> 8.0.2"
 
 gem "aws-sdk-s3", "~> 1.199"
 gem "aws-sdk-sqs", "~> 1.104"
-gem "bootsnap", "~> 1.18"
+gem "bootsnap", "~> 1.20"
 gem "clearance", "~> 2.10"
 gem "dalli", "~> 3.2"
 gem "datadog", "~> 2.21"
