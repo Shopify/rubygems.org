@@ -416,6 +416,7 @@ en:
     index:
       title: Organizations
       no_organizations: You are not a member of any organizations.
+      create_new_organization: Create new organization
     show:
       organization: Organization
       gems: Gems
