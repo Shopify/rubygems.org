@@ -137,8 +137,8 @@ GEM
       rails (>= 6.0.0)
       zeitwerk
     aws-eventstream (1.4.0)
-    aws-partitions (1.1162.0)
-    aws-sdk-core (3.232.0)
+    aws-partitions (1.1209.0)
+    aws-sdk-core (3.241.4)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -169,7 +169,7 @@ GEM
       erubi (~> 1.4)
       parser (>= 2.4)
       smart_properties
-    bigdecimal (3.2.3)
+    bigdecimal (4.0.1)
     bindata (2.5.1)
     bitarray (1.3.1)
     bloomer (1.0.0)
@@ -207,7 +207,7 @@ GEM
       railties (>= 5.0)
     coderay (1.1.3)
     compact_index (0.15.0)
-    concurrent-ruby (1.3.5)
+    concurrent-ruby (1.3.6)
     connection_pool (2.5.4)
     cose (1.3.1)
       cbor (~> 0.5.9)
@@ -478,8 +478,8 @@ GEM
       ruby2_keywords (>= 0.0.5)
     msgpack (1.8.0)
     multi_json (1.17.0)
-    multi_xml (0.7.1)
-      bigdecimal (~> 3.1)
+    multi_xml (0.8.1)
+      bigdecimal (>= 3.1, < 5)
     multipart-post (2.4.1)
     mutex_m (0.2.0)
     net-http (0.6.0)
@@ -793,10 +793,11 @@ GEM
       websocket (~> 1.0)
     semantic_logger (4.17.0)
       concurrent-ruby (~> 1.0)
-    shoryuken (6.2.1)
-      aws-sdk-core (>= 2)
+    shoryuken (7.0.0)
+      aws-sdk-sqs (>= 1.66.0)
       concurrent-ruby
       thor
+      zeitwerk (~> 2.6)
     shoulda-context (3.0.0.rc1)
     shoulda-matchers (6.5.0)
       activesupport (>= 5.2.0)
@@ -837,7 +838,7 @@ GEM
     tailwindcss-ruby (4.1.11-x86_64-darwin)
     tailwindcss-ruby (4.1.11-x86_64-linux-gnu)
     tailwindcss-ruby (4.1.11-x86_64-linux-musl)
-    thor (1.4.0)
+    thor (1.5.0)
     timeout (0.4.3)
     toxiproxy (2.0.2)
     tpm-key_attestation (0.14.1)
@@ -1011,7 +1012,7 @@ DEPENDENCIES
   ruby-magic (~> 0.6)
   searchkick (~> 5.5)
   selenium-webdriver (~> 4.35)
-  shoryuken (~> 6.2)
+  shoryuken (~> 7.0)
   shoulda-context (~> 3.0.0.rc1)
   shoulda-matchers (~> 6.5)
   sigstore (~> 0.2.1)
@@ -1062,8 +1063,8 @@ CHECKSUMS
   avo-pro (3.24.1) sha256=ddcfc95b40bf1d29fadccc5995f45a3f7288bad35ab7daf110a0382616b0cff0
   avo_upgrade (0.1.1) sha256=8d841083b9956392f5c8fe195f25bec0d139e3646d276f8a59e66b7d2e9ebf30
   aws-eventstream (1.4.0) sha256=116bf85c436200d1060811e6f5d2d40c88f65448f2125bc77ffce5121e6e183b
-  aws-partitions (1.1162.0) sha256=73050b50a186fc3b9c9c4a1eebfab214f0a3af77bf39b5cd5cc7a3e33403365a
-  aws-sdk-core (3.232.0) sha256=05291ae0da4fb69e9b6494fcc2d839584e8345714a93cd01f0f1bf11475619f2
+  aws-partitions (1.1209.0) sha256=c60a2e305dfdd9e21ecb92f8f78befe95c31eaa984750a733b16903928922981
+  aws-sdk-core (3.241.4) sha256=a42ccba8c24ea9800e7b6c40aa201c967458f7c460044a6eebf64fbf1226e4fd
   aws-sdk-kms (1.112.0) sha256=aa68feb901545a7fc14be327735740b89f90cfee825a46ddea601c7c80c922d4
   aws-sdk-s3 (1.199.0) sha256=0d36a53d068257d0de2cf17d935224a73d540fae71016f7bb6d3ae5fee2c3fa8
   aws-sdk-sqs (1.104.0) sha256=5f4de801f826264b5b79be19a63be17f8d46fea9cd453c01ffa9926d85302ee9
@@ -1073,7 +1074,7 @@ CHECKSUMS
   benchmark (0.4.1) sha256=d4ef40037bba27f03b28013e219b950b82bace296549ec15a78016552f8d2cce
   benchmark-ips (2.14.0) sha256=b72bc8a65d525d5906f8cd94270dccf73452ee3257a32b89fbd6684d3e8a9b1d
   better_html (2.2.0) sha256=e68ab66ab09696b708333bbf35e8aa3c107500ba7892f528e2111624bdd8cf76
-  bigdecimal (3.2.3) sha256=ffd11d1ac67a0d3b2f44aec0a6487210b3f813f363dd11f1fcccf5ba00da4e1b
+  bigdecimal (4.0.1) sha256=8b07d3d065a9f921c80ceaea7c9d4ae596697295b584c296fe599dd0ad01c4a7
   bindata (2.5.1) sha256=53186a1ec2da943d4cb413583d680644eb810aacbf8902497aac8f191fad9e58
   bitarray (1.3.1) sha256=6ec714933c4a6100b31dcb49a68135a0409524a1834c9d614b0bd929e3da0743
   bloomer (1.0.0) sha256=57a0d3a78628db9a92c6723f06c67697e420abcdb05aa757c6dfae607251d272
@@ -1091,7 +1092,7 @@ CHECKSUMS
   clearance (2.10.0) sha256=4772760301f23728fe5e47419a9f4c3c6407eecef991e3e4cc1641b4652bbcbd
   coderay (1.1.3) sha256=dc530018a4684512f8f38143cd2a096c9f02a1fc2459edcfe534787a7fc77d4b
   compact_index (0.15.0) sha256=5c6c404afca8928a7d9f4dde9524f6e1610db17e675330803055db282da84a8b
-  concurrent-ruby (1.3.5) sha256=813b3e37aca6df2a21a3b9f1d497f8cbab24a2b94cab325bffe65ee0f6cbebc6
+  concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   connection_pool (2.5.4) sha256=e9e1922327416091f3f6542f5f4446c2a20745276b9aa796dd0bb2fd0ea1e70a
   cose (1.3.1) sha256=d5d4dbcd6b035d513edc4e1ab9bc10e9ce13b4011c96e3d1b8fe5e6413fd6de5
   crack (1.0.0) sha256=c83aefdb428cdc7b66c7f287e488c796f055c0839e6e545fec2c7047743c4a49
@@ -1205,7 +1206,7 @@ CHECKSUMS
   mocha (2.7.1) sha256=8f7d538d5d3ebc75fc788b3d92fbab913a93a78462d2a3ce99d1bdde7af7f851
   msgpack (1.8.0) sha256=e64ce0212000d016809f5048b48eb3a65ffb169db22238fb4b72472fecb2d732
   multi_json (1.17.0) sha256=76581f6c96aebf2e85f8a8b9854829e0988f335e8671cd1a56a1036eb75e4a1b
-  multi_xml (0.7.1) sha256=4fce100c68af588ff91b8ba90a0bb3f0466f06c909f21a32f4962059140ba61b
+  multi_xml (0.8.1) sha256=addba0290bac34e9088bfe73dc4878530297a82a7bbd66cb44dcd0a4b86edf5a
   multipart-post (2.4.1) sha256=9872d03a8e552020ca096adadbf5e3cb1cd1cdd6acd3c161136b8a5737cdb4a8
   mutex_m (0.2.0) sha256=b6ef0c6c842ede846f2ec0ade9e266b1a9dac0bc151682b04835e8ebd54840d5
   net-http (0.6.0) sha256=9621b20c137898af9d890556848c93603716cab516dc2c89b01a38b894e259fb
@@ -1326,7 +1327,7 @@ CHECKSUMS
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   selenium-webdriver (4.35.0) sha256=6fc920cec4b9e6263afeb4941289d8deb0853acbc49e0d6f7de91c86986d359b
   semantic_logger (4.17.0) sha256=c54b60d8596abe2e22bd4f20648d4f6c46e4287fba357779c7932335c8d130e9
-  shoryuken (6.2.1) sha256=95ddc0a717624a54e799d25a0a05100cb5a0c3728a96211935c214faaf16b3b6
+  shoryuken (7.0.0) sha256=ad2ef4c91dee07990eccf19bf69cd67fc6f2cd874c12ea55edc82ffdd7903db4
   shoulda-context (3.0.0.rc1) sha256=6e0d9d52ab798c13bc2b490c8537d4bf30cfd318a1ea839c39a66d1d293c6a1a
   shoulda-matchers (6.5.0) sha256=ef6b572b2bed1ac4aba6ab2c5ff345a24b6d055a93a3d1c3bfc86d9d499e3f44
   sigstore (0.2.1) sha256=58031c34c7899dd6aac43c54d0ab1a5282a551804013d4b7cb6930a32cbc8775
@@ -1348,7 +1349,7 @@ CHECKSUMS
   tailwindcss-ruby (4.1.11-x86_64-darwin) sha256=9e613bd5e09b807a1a850ad01cae054ddc40ae72ca1b70d05cfa26c1c1e9a638
   tailwindcss-ruby (4.1.11-x86_64-linux-gnu) sha256=5633d76566839bc675960cd841d30795a3189b81c53a8c49bcf1629210b7a3b1
   tailwindcss-ruby (4.1.11-x86_64-linux-musl) sha256=6a9845bc086a846c9b1b0d70c0e469d34a3a9b0a820df6ee94b7a81715fb1439
-  thor (1.4.0) sha256=8763e822ccb0f1d7bee88cde131b19a65606657b847cc7b7b4b82e772bcd8a3d
+  thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   timeout (0.4.3) sha256=9509f079b2b55fe4236d79633bd75e34c1c1e7e3fb4b56cb5fda61f80a0fe30e
   toxiproxy (2.0.2) sha256=2e3b53604fb921d40da3db8f78a52b3133fcae33e93d440725335b15974e440a
   tpm-key_attestation (0.14.1) sha256=7fd4e4653a7afd0a386632ddfb05d10ecfdd47678299c5e69165bc9ae111193f
