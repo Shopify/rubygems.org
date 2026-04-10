@@ -60,7 +60,7 @@ class Pusher
 
     return notify("There was a problem saving your gem: #{rubygem.all_errors(version)}", 403) unless rubygem.valid? && version.valid?
 
-    unless version.full_name == spec.original_name && version.gem_full_name == spec.full_name
+    unless version.content_addressable? || (version.full_name == spec.original_name && version.gem_full_name == spec.full_name)
       return notify("There was a problem saving your gem: the uploaded spec has malformed platform attributes", 409)
     end
 
@@ -129,14 +129,27 @@ class Pusher
         pusher_api_key: api_key
       )
 
+    # Set required_ruby_version early so skinny_binary? check works in find
+    version.required_ruby_version = spec.required_ruby_version.to_s
+
     unless @rubygem.new_record?
       # Return success for idempotent pushes
       return notify("Gem was already pushed: #{version.to_title}", 200) if version.indexed?
 
       # If the gem is yanked, we can't repush it
       # Additionally, we don't allow overwriting existing versions
-      if (existing = @rubygem.versions.find_by(number: version.number, platform: version.platform))
-        return republish_notification(existing)
+      # However, skinny binaries (targeting a single Ruby minor version) are allowed
+      # to coexist with other versions of the same (number, platform) as long as they
+      # target a different Ruby minor version
+      existing_versions = @rubygem.versions.where(number: version.number, platform: version.platform)
+      if existing_versions.exists?
+        if version.skinny_binary?
+          new_minor = Version.targeted_ruby_minor_version(spec.required_ruby_version.to_s)
+          duplicate = existing_versions.find { |v| Version.targeted_ruby_minor_version(v.required_ruby_version) == new_minor }
+          return republish_notification(duplicate) if duplicate
+        else
+          return republish_notification(existing_versions.first)
+        end
       end
 
       if @rubygem.name != name && @rubygem.indexed_versions?

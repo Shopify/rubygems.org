@@ -433,6 +433,32 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     raw.unpack1("m0").unpack1("H*")
   end
 
+  # Class-level helper for checking if a required_ruby_version string targets a single minor version.
+  # Used by GemInfo to filter compact index results without loading Version objects.
+  def self.targets_single_ruby_minor_version?(required_ruby_version)
+    targeted_ruby_minor_version(required_ruby_version).present?
+  end
+
+  # Returns the single Ruby minor version (e.g., "3.4") targeted by the requirement, or nil if
+  # the requirement covers zero or multiple minor versions.
+  def self.targeted_ruby_minor_version(required_ruby_version)
+    return nil if required_ruby_version.blank?
+
+    requirement = Gem::Requirement.new(*required_ruby_version.split(", "))
+    matched = ruby_minor_versions.select { |v| requirement.satisfied_by?(v) }
+    return nil unless matched.size == 1
+
+    v = matched.first
+    "#{v.segments[0]}.#{v.segments[1]}"
+  end
+
+  # Dynamically generates Ruby minor versions from 2.0 up to current major + 1.
+  # This avoids needing to update a static list when new Ruby versions are released.
+  def self.ruby_minor_versions
+    max_major = Gem.ruby_version.segments[0] + 1
+    (2..max_major).flat_map { |major| (0..9).map { |minor| Gem::Version.new("#{major}.#{minor}.0") } }
+  end
+
   def metadata_uri_set?
     Links::LINKS.any? { |_, long| metadata.key? long }
   end
@@ -454,6 +480,39 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     "#{full_name}.gem"
   end
 
+  # Returns true if this version is stored with a content-addressable filename (sha-based)
+  # rather than a platform-based filename. Determined by checking the stored full_name.
+  def content_addressable?
+    platformed? && !full_name.end_with?("-#{platform}")
+  end
+
+  # A "skinny binary" is a platformed gem that targets a single Ruby minor version.
+  # This is the opposite of a "fat binary" which bundles .so files for multiple Ruby versions.
+  def skinny_binary?
+    platformed? && targets_single_ruby_minor_version?
+  end
+
+  # Returns the first 10 hex characters of the sha256 digest, used for content-addressable filenames.
+  def sha256_short
+    sha256_hex&.slice(0, 10)
+  end
+
+  private def targets_single_ruby_minor_version?
+    self.class.targets_single_ruby_minor_version?(required_ruby_version)
+  end
+
+  # Returns true if another skinny binary for the same (rubygem, number, platform) already targets
+  # the same Ruby minor version.
+  private def skinny_binary_duplicate_minor_version?
+    my_minor = self.class.targeted_ruby_minor_version(required_ruby_version)
+    return false if my_minor.nil?
+
+    Version.where(rubygem_id: rubygem_id, number: number, platform: platform)
+      .where.not(id: id)
+      .pluck(:required_ruby_version)
+      .any? { |rrv| self.class.targeted_ruby_minor_version(rrv) == my_minor }
+  end
+
   private
 
   def update_prerelease
@@ -461,11 +520,18 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def platform_and_number_are_unique
-    return unless Version.exists?(rubygem_id: rubygem_id, number: number, platform: platform)
-    errors.add(:base, "A version already exists with this number or platform.")
+    if skinny_binary?
+      # Skinny binaries can coexist with same (number, platform) but not targeting the same Ruby minor version
+      return unless skinny_binary_duplicate_minor_version?
+      errors.add(:base, "A skinny binary already exists for this number, platform, and Ruby minor version.")
+    else
+      return unless Version.exists?(rubygem_id: rubygem_id, number: number, platform: platform)
+      errors.add(:base, "A version already exists with this number or platform.")
+    end
   end
 
   def gem_platform_and_number_are_unique
+    return if skinny_binary? # Skinny binaries can coexist with same (number, gem_platform)
     platforms = Version.where(rubygem_id: rubygem_id, number: number, gem_platform: gem_platform).pluck(:platform)
     return if platforms.empty?
     errors.add(:base, "A version already exists with this number and resolved platform #{platforms}")
@@ -488,7 +554,12 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def full_nameify!
     return if rubygem.nil?
     self.full_name = "#{rubygem.name}-#{number}"
-    full_name << "-#{platform}" if platformed?
+    if platformed? && sha256_short.present?
+      # Content-addressable: all new platformed gems use sha-based filenames
+      full_name << "-#{sha256_short}"
+    elsif platformed?
+      full_name << "-#{platform}"
+    end
   end
 
   def gem_full_nameify!
@@ -530,6 +601,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def unique_canonical_number
+    return if skinny_binary? # Skinny binaries can share canonical numbers
     version = Version.find_by(canonical_number: canonical_number, rubygem_id: rubygem_id, platform: platform)
     errors.add(:canonical_number, "has already been taken. Existing version: #{version.number}") unless version.nil?
   end

@@ -18,6 +18,18 @@ class GemInfo
     end
   end
 
+  def compact_index_info_v2
+    if @cached && (info = Rails.cache.read("info_v2/#{@rubygem_name}"))
+      StatsD.increment "compact_index.memcached.info_v2.hit"
+      info
+    else
+      StatsD.increment "compact_index.memcached.info_v2.miss"
+      compute_compact_index_info_v2.tap do |compact_index_info|
+        Rails.cache.write("info_v2/#{@rubygem_name}", compact_index_info)
+      end
+    end
+  end
+
   def info_checksum
     compact_index_info = CompactIndex.info(compute_compact_index_info)
     Digest::MD5.hexdigest(compact_index_info)
@@ -92,40 +104,84 @@ class GemInfo
 
   private
 
-  DEPENDENCY_NAMES_INDEX = 8
+  V1_DEPENDENCY_NAMES_INDEX = 8
+  V1_DEPENDENCY_REQUIREMENTS_INDEX = 7
 
-  DEPENDENCY_REQUIREMENTS_INDEX = 7
+  V2_FULL_NAME_INDEX = 7
+  V2_DEPENDENCY_NAMES_INDEX = 9
+  V2_DEPENDENCY_REQUIREMENTS_INDEX = 8
 
   def compute_compact_index_info
-    requirements_and_dependencies.map do |r|
-      deps = []
-      if r[DEPENDENCY_REQUIREMENTS_INDEX]
-        reqs = r[DEPENDENCY_REQUIREMENTS_INDEX].split("@")
-        dep_names = r[DEPENDENCY_NAMES_INDEX].split(",")
-        raise "BUG: different size of reqs and dep_names." unless reqs.size == dep_names.size
-        dep_names.zip(reqs).each do |name, req|
-          deps << CompactIndex::Dependency.new(name, req) unless name == "0"
-        end
-      end
-
+    v1_requirements_and_dependencies.filter_map do |r|
       name, platform, checksum, info_checksum, ruby_version, rubygems_version, = r
+
+      # V1 compact index excludes skinny binaries (platformed gems targeting a single Ruby minor version)
+      next if platform != "ruby" && Version.targets_single_ruby_minor_version?(ruby_version)
+
+      deps = parse_dependencies(r, V1_DEPENDENCY_REQUIREMENTS_INDEX, V1_DEPENDENCY_NAMES_INDEX)
       CompactIndex::GemVersion.new(name, platform, Version._sha256_hex(checksum), info_checksum, deps, ruby_version, rubygems_version)
     end
   end
 
-  def requirements_and_dependencies
-    group_by_columns = "number, platform, sha256, info_checksum, required_ruby_version, required_rubygems_version, versions.created_at"
+  def compute_compact_index_info_v2
+    v2_requirements_and_dependencies.map do |r|
+      name, platform, checksum, info_checksum, ruby_version, rubygems_version, _created_at, full_name = r
+      deps = parse_dependencies(r, V2_DEPENDENCY_REQUIREMENTS_INDEX, V2_DEPENDENCY_NAMES_INDEX)
 
-    dep_req_agg = "string_agg(dependencies.requirements, '@' ORDER BY rubygems_dependencies.name, dependencies.id)"
+      sha256_hex = Version._sha256_hex(checksum)
+      is_platformed = platform != "ruby"
+      is_content_addressable = is_platformed && !full_name.end_with?("-#{platform}")
 
-    dep_name_agg = "string_agg(coalesce(rubygems_dependencies.name, '0'), ',' ORDER BY rubygems_dependencies.name) AS dep_name"
+      if is_content_addressable
+        # New-style: content-addressable filename with sha-based identifier
+        short_sha = sha256_hex&.slice(0, 10)
+        CompactIndex::GemVersion.new(name, short_sha, sha256_hex, info_checksum, deps, ruby_version, rubygems_version, platform)
+      else
+        # Old-style or source gem: use platform as identifier
+        CompactIndex::GemVersion.new(name, platform, sha256_hex, info_checksum, deps, ruby_version, rubygems_version)
+      end
+    end
+  end
 
+  def parse_dependencies(r, req_index, names_index)
+    deps = []
+    if r[req_index]
+      reqs = r[req_index].split("@")
+      dep_names = r[names_index].split(",")
+      raise "BUG: different size of reqs and dep_names." unless reqs.size == dep_names.size
+      dep_names.zip(reqs).each do |name, req|
+        deps << CompactIndex::Dependency.new(name, req) unless name == "0"
+      end
+    end
+    deps
+  end
+
+  def base_query
     Rubygem.joins("LEFT JOIN versions ON versions.rubygem_id = rubygems.id
         LEFT JOIN dependencies ON dependencies.version_id = versions.id
         LEFT JOIN rubygems rubygems_dependencies
           ON rubygems_dependencies.id = dependencies.rubygem_id
           AND dependencies.scope = 'runtime'")
       .where("rubygems.name = ? AND versions.indexed = true", @rubygem_name)
+  end
+
+  def v1_requirements_and_dependencies
+    group_by_columns = "number, platform, sha256, info_checksum, required_ruby_version, required_rubygems_version, versions.created_at"
+    dep_req_agg = "string_agg(dependencies.requirements, '@' ORDER BY rubygems_dependencies.name, dependencies.id)"
+    dep_name_agg = "string_agg(coalesce(rubygems_dependencies.name, '0'), ',' ORDER BY rubygems_dependencies.name) AS dep_name"
+
+    base_query
+      .group(Arel.sql(group_by_columns))
+      .order(Arel.sql("versions.created_at, number, platform, dep_name"))
+      .pluck(Arel.sql("#{group_by_columns}, #{dep_req_agg}, #{dep_name_agg}"))
+  end
+
+  def v2_requirements_and_dependencies
+    group_by_columns = "number, platform, sha256, info_checksum, required_ruby_version, required_rubygems_version, versions.created_at, versions.full_name"
+    dep_req_agg = "string_agg(dependencies.requirements, '@' ORDER BY rubygems_dependencies.name, dependencies.id)"
+    dep_name_agg = "string_agg(coalesce(rubygems_dependencies.name, '0'), ',' ORDER BY rubygems_dependencies.name) AS dep_name"
+
+    base_query
       .group(Arel.sql(group_by_columns))
       .order(Arel.sql("versions.created_at, number, platform, dep_name"))
       .pluck(Arel.sql("#{group_by_columns}, #{dep_req_agg}, #{dep_name_agg}"))

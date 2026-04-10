@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Api::CompactIndexController < Api::BaseController
-  before_action :find_rubygem_by_name, only: [:info]
+  before_action :find_rubygem_by_name, only: [:info, :info_v2]
 
   def names
     cache_expiry_headers
@@ -24,6 +24,14 @@ class Api::CompactIndexController < Api::BaseController
     cache_expiry_headers
     return unless stale?(@rubygem)
     info_params = GemInfo.new(@rubygem.name).compact_index_info
+    render_range CompactIndex.info(info_params)
+  end
+
+  def info_v2
+    set_surrogate_key "info_v2/* gem/#{@rubygem.name} info_v2/#{@rubygem.name}"
+    cache_expiry_headers
+    return unless stale?(@rubygem)
+    info_params = GemInfo.new(@rubygem.name).compact_index_info_v2
     render_range CompactIndex.info(info_params)
   end
 
