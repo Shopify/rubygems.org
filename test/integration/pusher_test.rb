@@ -603,4 +603,95 @@ class PusherIntegrationTest < ActiveSupport::TestCase
       RubygemFs.mock!
     end
   end
+
+  def push_binary(platform:, ruby_version:, name: "sqlite3", version: "2.9.0")
+    spec = new_gemspec(name, version, "summary", platform, ruby_version: ruby_version)
+    cutter = Pusher.new(@api_key, build_gem(spec))
+    cutter.process
+    cutter
+  end
+
+  context "content addressable (skinny/fat binary) gems" do
+    should "address a skinny binary (~> X.Y.Z) by content as name-version-sha" do
+      cutter = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.0")
+
+      assert_equal 200, cutter.code
+      version = cutter.version
+
+      assert_predicate version, :content_addressed?
+      assert_equal "3.3", version.ruby_minor
+      assert_match(/\Asqlite3-2\.9\.0-[0-9a-f]{10}\z/, version.full_name)
+      assert_equal version.full_name, version.gem_full_name
+      assert_equal "x86_64-linux", version.platform
+    end
+
+    should "keep a fat binary (ruby range) addressed as name-version-platform" do
+      cutter = push_binary(platform: "x86_64-linux", ruby_version: [">= 3.2", "< 4.1"])
+
+      assert_equal 200, cutter.code
+      version = cutter.version
+
+      refute_predicate version, :content_addressed?
+      assert_equal "", version.ruby_minor
+      assert_equal "sqlite3-2.9.0-x86_64-linux", version.full_name
+    end
+
+    should "treat ~> 3.3 (major-only pin) as a fat binary, not content addressed" do
+      cutter = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3")
+
+      assert_equal 200, cutter.code
+      refute_predicate cutter.version, :content_addressed?
+      assert_equal "sqlite3-2.9.0-x86_64-linux", cutter.version.full_name
+    end
+
+    should "address source (ruby platform) gems the classic way even with a ~> X.Y.Z ruby" do
+      cutter = push_binary(platform: "ruby", ruby_version: "~> 3.3.0")
+
+      assert_equal 200, cutter.code
+      refute_predicate cutter.version, :content_addressed?
+      assert_equal "sqlite3-2.9.0", cutter.version.full_name
+    end
+
+    should "accept multiple skinny binaries targeting different ruby minors" do
+      first  = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.0")
+      second = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.4.0")
+
+      assert_equal 200, first.code
+      assert_equal 200, second.code
+
+      versions = Rubygem.find_by(name: "sqlite3").versions.where(number: "2.9.0", platform: "x86_64-linux")
+
+      assert_equal 2, versions.count
+      assert_equal %w[3.3 3.4], versions.pluck(:ruby_minor).sort
+      assert_equal 2, versions.pluck(:full_name).uniq.size
+    end
+
+    should "reject a second skinny binary that targets the same ruby minor (no duplicates)" do
+      first = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.0")
+      dup   = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.5") # same minor 3.3
+
+      assert_equal 200, first.code
+      assert_equal 403, dup.code
+      assert_match(/Ruby version \(3\.3\)/, dup.message)
+      assert_equal 1, Rubygem.find_by(name: "sqlite3").versions.where(number: "2.9.0", platform: "x86_64-linux").count
+    end
+
+    should "allow a skinny binary to coexist with a fat binary on the same platform" do
+      fat    = push_binary(platform: "x86_64-linux", ruby_version: [">= 3.2", "< 4.1"])
+      skinny = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.0")
+
+      assert_equal 200, fat.code
+      assert_equal 200, skinny.code
+      assert_equal 2, Rubygem.find_by(name: "sqlite3").versions.where(number: "2.9.0", platform: "x86_64-linux").count
+    end
+
+    should "reject a second fat binary on the same platform" do
+      first  = push_binary(platform: "x86_64-linux", ruby_version: [">= 3.2", "< 4.1"])
+      second = push_binary(platform: "x86_64-linux", ruby_version: ">= 3.0")
+
+      assert_equal 200, first.code
+      assert_equal 409, second.code
+      assert_match(/Repushing of gem versions is not allowed/, second.message)
+    end
+  end
 end

@@ -149,6 +149,7 @@ class PusherTest < ActiveSupport::TestCase
       spec.expects(:original_platform).returns "ruby"
       spec.expects(:platform).returns "ruby"
       spec.expects(:cert_chain).returns nil
+      spec.stubs(:required_ruby_version).returns(Gem::Requirement.default)
       @cutter.stubs(:spec).returns spec
       @cutter.stubs(:spec_contents).returns "spec"
       @cutter.stubs(:size).returns 5
@@ -194,6 +195,7 @@ class PusherTest < ActiveSupport::TestCase
       spec.stubs(:platform).returns "ruby"
       spec.stubs(:cert_chain).returns nil
       spec.stubs(:metadata).returns({})
+      spec.stubs(:required_ruby_version).returns(Gem::Requirement.default)
       @cutter.stubs(:spec).returns spec
       @cutter.stubs(:spec_contents).returns "spec"
       @cutter.find
@@ -214,6 +216,7 @@ class PusherTest < ActiveSupport::TestCase
       spec.expects(:platform).returns "ruby"
       spec.expects(:original_platform).returns "ruby"
       spec.expects(:cert_chain).returns nil
+      spec.stubs(:required_ruby_version).returns(Gem::Requirement.default)
       @cutter.stubs(:spec).returns spec
       @cutter.stubs(:spec_contents).returns "spec"
 
@@ -234,6 +237,7 @@ class PusherTest < ActiveSupport::TestCase
       spec.stubs(:platform).returns "ruby"
       spec.stubs(:cert_chain).returns nil
       spec.stubs(:metadata).returns({})
+      spec.stubs(:required_ruby_version).returns(Gem::Requirement.default)
       @cutter.stubs(:spec).returns spec
       @cutter.stubs(:spec_contents).returns "spec"
       @cutter.find
@@ -255,6 +259,7 @@ class PusherTest < ActiveSupport::TestCase
       spec.stubs(:original_platform).returns "universal-darwin-6000"
       spec.stubs(:platform).returns Gem::Platform.new("universal-darwin-6000")
       spec.stubs(:cert_chain).returns nil
+      spec.stubs(:required_ruby_version).returns(Gem::Requirement.default)
       @cutter.stubs(:spec).returns spec
       @cutter.stubs(:spec_contents).returns "spec"
 

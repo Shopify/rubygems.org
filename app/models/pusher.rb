@@ -60,7 +60,7 @@ class Pusher
 
     return notify("There was a problem saving your gem: #{rubygem.all_errors(version)}", 403) unless rubygem.valid? && version.valid?
 
-    unless version.full_name == spec.original_name && version.gem_full_name == spec.full_name
+    unless valid_platform_attributes?
       return notify("There was a problem saving your gem: the uploaded spec has malformed platform attributes", 409)
     end
 
@@ -129,15 +129,24 @@ class Pusher
         pusher_api_key: api_key
       )
 
+    # Needed before validation so content-addressable (skinny) binaries can be
+    # classified and named. It is set again from the spec during #save.
+    version.required_ruby_version = spec.required_ruby_version.to_s
+
     unless @rubygem.new_record?
       # Return success for idempotent pushes
       return notify("Gem was already pushed: #{version.to_title}", 200) if version.indexed?
 
       # If the gem is yanked, we can't repush it
-      # Additionally, we don't allow overwriting existing versions
-      if (existing = @rubygem.versions.find_by(number: version.number, platform: version.platform))
-        return republish_notification(existing)
-      end
+      # Additionally, we don't allow overwriting existing versions.
+      #
+      # Content-addressable (skinny) binaries are addressed by content, so a
+      # byte-identical re-push is caught by find_or_initialize_by above. A
+      # different binary that targets the same Ruby minor is rejected by the
+      # uniqueness validations during #save, so we only guard the classic
+      # name-version-platform address here.
+      existing = existing_conflicting_version(version)
+      return republish_notification(existing) if existing
 
       if @rubygem.name != name && @rubygem.indexed_versions?
         return notify("Unable to change case of gem name with indexed versions\n" \
@@ -200,6 +209,32 @@ class Pusher
   end
 
   private
+
+  # Content-addressable (skinny) binaries are addressed by content (name-version-sha)
+  # rather than by platform, so the classic full_name == original_name equality no
+  # longer holds. We instead verify the platform columns match the spec directly.
+  def valid_platform_attributes?
+    if version.content_addressed?
+      version.platform == spec.original_platform.to_s && version.gem_platform == spec.platform.to_s
+    else
+      version.full_name == spec.original_name && version.gem_full_name == spec.full_name
+    end
+  end
+
+  # The existing version (if any) whose address conflicts with this push.
+  #
+  # A content-addressable push only conflicts with a byte-identical gem, which
+  # find_or_initialize_by has already loaded; a same-minor-different-content push
+  # is rejected by the uniqueness validations. A classic (source/fat) push conflicts
+  # with any other source/fat gem (ruby_minor: "") for the same number+platform, but
+  # is allowed to coexist with skinny binaries.
+  def existing_conflicting_version(version)
+    if version.content_addressed?
+      version.persisted? ? version : nil
+    else
+      @rubygem.versions.find_by(number: version.number, platform: version.platform, ruby_minor: "")
+    end
+  end
 
   def after_write
     GemCachePurger.call(rubygem.name)
