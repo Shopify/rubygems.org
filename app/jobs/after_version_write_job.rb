@@ -20,6 +20,7 @@ class AfterVersionWriteJob < ApplicationJob
 
       version.info_checksum = gem_info.info_checksum(version: 1)
       version.info_checksum_v2 = gem_info.info_checksum(version: 2)
+      version.info_checksum_v3 = gem_info.info_checksum(version: 3)
       version.save(validate: false)
 
       SetLinksetHomeJob.perform_later(version:)
