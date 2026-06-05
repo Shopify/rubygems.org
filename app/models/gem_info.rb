@@ -50,19 +50,19 @@ class GemInfo
     checksum_column = config[:checksum_column]
     yanked_checksum_column = config[:yanked_checksum_column]
 
-    query = ["(SELECT r.name, v.created_at as date, v.#{checksum_column} as info_checksum, v.number, v.platform
+    query = ["(SELECT r.name, v.created_at as date, v.#{checksum_column} as info_checksum, v.number, v.platform, v.sha256, v.required_ruby_version
               FROM rubygems AS r, versions AS v
               WHERE v.rubygem_id = r.id AND
                     v.created_at > ?)
               UNION
-              (SELECT r.name, v.yanked_at as date, v.#{yanked_checksum_column} as info_checksum, '-'||v.number, v.platform
+              (SELECT r.name, v.yanked_at as date, v.#{yanked_checksum_column} as info_checksum, '-'||v.number, v.platform, v.sha256, v.required_ruby_version
               FROM rubygems AS r, versions AS v
               WHERE v.rubygem_id = r.id AND
                     v.indexed is false AND
                     v.yanked_at > ?)
               ORDER BY date, number, platform, name", date, date]
 
-    map_gem_versions(execute_raw_sql(query).map { |v| [v["name"], [v]] })
+    map_gem_versions(execute_raw_sql(query).map { |v| [v["name"], [v]] }, version)
   end
 
   def self.compact_index_public_versions(updated_at, version: 1)
@@ -72,7 +72,7 @@ class GemInfo
 
     query = ["SELECT r.name, v.indexed, COALESCE(v.yanked_at, v.created_at) as stamp,
                      v.sha256, COALESCE(v.#{yanked_checksum_column}, v.#{checksum_column}) as info_checksum,
-                     v.number, v.platform
+                     v.number, v.platform, v.required_ruby_version
               FROM rubygems AS r, versions AS v
               WHERE v.rubygem_id = r.id AND
                     (v.created_at <= ? OR v.yanked_at <= ?)
@@ -87,7 +87,7 @@ class GemInfo
     end
     versions_by_gem.reject! { |_, versions| versions.empty? }
 
-    map_gem_versions(versions_by_gem)
+    map_gem_versions(versions_by_gem, version)
   end
 
   def self.execute_raw_sql(query)
@@ -95,19 +95,36 @@ class GemInfo
     ActiveRecord::Base.connection.execute(sanitized_sql)
   end
 
-  def self.map_gem_versions(versions_by_gem)
-    versions_by_gem.map do |gem_name, versions|
-      compact_index_versions = versions.map do |version|
+  def self.map_gem_versions(versions_by_gem, serving_version = 1)
+    versions_by_gem.filter_map do |gem_name, versions|
+      compact_index_versions = versions.filter_map do |version|
+        content_address = content_address_for_version(version["platform"], version["required_ruby_version"], version["sha256"])
+        # Skinny (content-addressable) binaries are listed only in the v2 index;
+        # the v1 index lists source and fat binaries so older clients are unaffected.
+        next if content_address && serving_version < 2
+
         CompactIndex::GemVersion.new(version["number"],
           version["platform"],
           version["sha256"],
-          version["info_checksum"])
+          version["info_checksum"],
+          nil, nil, nil,
+          content_address)
       end
+      next if compact_index_versions.empty?
       CompactIndex::Gem.new(gem_name, compact_index_versions)
     end
   end
 
-  private_class_method :map_gem_versions, :execute_raw_sql
+  # Class-level twin of #content_address_for, for the /versions file path which
+  # works from raw SQL rows. Returns the 10-char content address for skinny
+  # binaries, or nil for source/fat binaries.
+  def self.content_address_for_version(platform, required_ruby_version, sha256)
+    return if platform.blank? || platform == "ruby" || sha256.blank?
+    return unless Version.skinny_ruby_minor(required_ruby_version)
+    Version._sha256_hex(sha256)[0, 10]
+  end
+
+  private_class_method :map_gem_versions, :execute_raw_sql, :content_address_for_version
 
   private
 
@@ -123,25 +140,46 @@ class GemInfo
   end
 
   def compute_compact_index_info(version:)
-    requirements_and_dependencies.map do |row|
-      dependencies = []
-      if row[DEPENDENCY_REQUIREMENTS_INDEX]
-        reqs = row[DEPENDENCY_REQUIREMENTS_INDEX].split("@")
-        dep_names = row[DEPENDENCY_NAMES_INDEX].split(",")
-        raise "BUG: different size of reqs and dep_names." unless reqs.size == dep_names.size
-        dep_names.zip(reqs).each do |name, req|
-          dependencies << CompactIndex::Dependency.new(name, req) unless name == "0"
-        end
-      end
-
+    version_class = VERSIONS.dig(version, :klass)
+    requirements_and_dependencies.filter_map do |row|
       number, platform, checksum, info_checksum, ruby_version, rubygems_version, created_at, = row
-      version_class = VERSIONS.dig(version, :klass)
       checksum = Version._sha256_hex(checksum)
+      content_address = content_address_for(platform:, ruby_version:, checksum:)
+
+      # Skinny (content-addressable) binaries are served only from the v2 index.
+      # The v1 index carries source and fat binaries so older clients (which would
+      # misread the content address as a platform) are unaffected.
+      next if content_address && version < 2
+
       created_at = created_at&.utc&.iso8601
-      args = { number:, platform:, checksum:, info_checksum:, dependencies:, ruby_version:, rubygems_version:, created_at: }
-      args = args.slice(*version_class.members)
-      version_class.new(**args)
+      args = { number:, platform:, checksum:, info_checksum:, dependencies: build_dependencies(row),
+               ruby_version:, rubygems_version:, created_at:, content_address: }
+      version_class.new(**args.slice(*version_class.members))
     end
+  end
+
+  def build_dependencies(row)
+    dependencies = []
+    if row[DEPENDENCY_REQUIREMENTS_INDEX]
+      reqs = row[DEPENDENCY_REQUIREMENTS_INDEX].split("@")
+      dep_names = row[DEPENDENCY_NAMES_INDEX].split(",")
+      raise "BUG: different size of reqs and dep_names." unless reqs.size == dep_names.size
+      dep_names.zip(reqs).each do |name, req|
+        dependencies << CompactIndex::Dependency.new(name, req) unless name == "0"
+      end
+    end
+    dependencies
+  end
+
+  # Skinny (content-addressable) binaries are addressed by content in the compact
+  # index: the version string becomes "<number>-<sha10>" and the platform is moved
+  # into the requirements section. Returns the 10-char content address (matching
+  # Version#full_name), or nil for source and fat binaries which keep the classic
+  # number[-platform] addressing.
+  def content_address_for(platform:, ruby_version:, checksum:)
+    return if platform.blank? || platform == "ruby"
+    return unless Version.skinny_ruby_minor(ruby_version)
+    checksum[0, 10]
   end
 
   def requirements_and_dependencies

@@ -45,8 +45,17 @@ class Api::CompactIndexController < Api::BaseController
   private
 
   def compact_index_serving_version
-    # Compact index responses are cached by URL, so this flag must only be toggled globally.
-    @compact_index_serving_version ||= FeatureFlag.enabled?(FeatureFlag::SERVE_COMPACT_INDEX_V2) ? 2 : 1
+    # The /v2/* routes pin the content-addressable index via a route default.
+    # Otherwise fall back to the global flag for the legacy endpoints. Responses
+    # are cached by URL, so the served version is stable per URL.
+    @compact_index_serving_version ||=
+      if params.key?(:compact_index_version)
+        params[:compact_index_version].to_i
+      elsif FeatureFlag.enabled?(FeatureFlag::SERVE_COMPACT_INDEX_V2)
+        2
+      else
+        1
+      end
   end
 
   def compact_index_config

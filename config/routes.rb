@@ -137,6 +137,15 @@ Rails.application.routes.draw do
   get '/info/:gem_name' => 'api/compact_index#info', as: :info,
       constraints: { gem_name: Patterns::ROUTE_PATTERN }
   get '/names' => 'api/compact_index#names'
+
+  # Content-addressable compact index. Serves "skinny" precompiled binaries
+  # addressed by content (name-version-<sha>) with the platform/ruby moved into
+  # the requirements section. The legacy endpoints above serve source and fat
+  # binaries only, so older clients are unaffected.
+  get '/v2/versions' => 'api/compact_index#versions', defaults: { compact_index_version: 2 }
+  get '/v2/info/:gem_name' => 'api/compact_index#info', as: :info_v2,
+      constraints: { gem_name: Patterns::ROUTE_PATTERN }, defaults: { compact_index_version: 2 }
+  get '/v2/names' => 'api/compact_index#names', defaults: { compact_index_version: 2 }
   ################################################################################
   # API v0
 
