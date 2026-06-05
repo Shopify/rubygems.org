@@ -68,4 +68,35 @@ module CompactIndex
       line
     end
   end
+
+  GemVersionV3 = Struct.new(:number, :platform, :checksum, :info_checksum,
+                          :dependencies, :ruby_version, :rubygems_version,
+                          :created_at, :ruby_minor) do
+    include GemVersionMethods
+
+    def to_line
+      line = super
+      line << ",created_at:#{created_at}" if created_at
+      line << ",platform:#{platform}" if platformed?
+      line
+    end
+
+    def platformed?
+      platform && platform != "ruby"
+    end
+
+    def content_addressed?
+      platformed? && ruby_minor.present?
+    end
+
+    def number_and_platform
+      return number unless platformed?
+
+      if content_addressed?
+        "#{number}-#{checksum&.first(10)}"
+      else
+        "#{number}-#{platform}"
+      end
+    end
+  end
 end
