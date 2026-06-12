@@ -71,13 +71,22 @@ module CompactIndex
 
   GemVersionV3 = Struct.new(:number, :platform, :checksum, :info_checksum,
                           :dependencies, :ruby_version, :rubygems_version,
-                          :created_at, :ruby_minor) do
+                          :created_at, :ruby_minor, :system_requirements) do
     include GemVersionMethods
 
     def to_line
       line = super
       line << ",created_at:#{created_at}" if created_at
       line << ",platform:#{platform}" if platformed?
+      # Named system requirements (glibc, libstdcxx, ...) apply to any precompiled
+      # binary — fat or skinny. Clients compare each against the host and fall back
+      # to a source build when unsatisfied. Rendered like ruby:/rubygems: — each as
+      # a `name:requirement` token.
+      if system_requirements.present? && platformed?
+        system_requirements.each do |name, requirement|
+          line << ",#{name}:#{join_multiple(requirement)}"
+        end
+      end
       line
     end
 

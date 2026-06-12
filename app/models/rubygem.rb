@@ -310,6 +310,7 @@ class Rubygem < ApplicationRecord
       save!
       version.update_attributes_from_gem_specification!(spec)
       version.update_dependencies!(spec)
+      version.update_system_requirements!(spec)
     end
   end
 

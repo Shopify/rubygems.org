@@ -136,9 +136,11 @@ class GemInfo
 
   private
 
-  DEPENDENCY_NAMES_INDEX = 9
+  DEPENDENCY_NAMES_INDEX = 10
 
-  DEPENDENCY_REQUIREMENTS_INDEX = 8
+  DEPENDENCY_REQUIREMENTS_INDEX = 9
+
+  SYSTEM_REQUIREMENTS_INDEX = 11
 
   # Marshal.load of pre-deploy cache entries fails when GemVersion grows a Struct field.
   def read_cache(cache_key)
@@ -150,7 +152,7 @@ class GemInfo
   def compute_compact_index_info(version:)
     version_class = VERSIONS.dig(version, :klass)
     requirements_and_dependencies.filter_map do |row|
-      number, platform, checksum, info_checksum, ruby_version, rubygems_version, created_at, ruby_minor, = row
+      number, platform, checksum, info_checksum, ruby_version, rubygems_version, created_at, ruby_minor, _version_id, = row
 
       # Skinny (content-addressable) binaries are served only from the v3
       # (content-addressable) index. The legacy v1/v2 indexes carry source and
@@ -167,9 +169,19 @@ class GemInfo
         end
       end
 
+      # Parse the aggregated "name:requirement\nname:requirement" system
+      # requirements (newline-delimited so requirement strings may contain commas).
+      system_requirements = {}
+      if (raw_system_requirements = row[SYSTEM_REQUIREMENTS_INDEX])
+        raw_system_requirements.split("\n").each do |pair|
+          name, requirement = pair.split(":", 2)
+          system_requirements[name] = requirement if name && requirement
+        end
+      end
+
       checksum = Version._sha256_hex(checksum)
       created_at = created_at&.utc&.iso8601
-      args = { number:, platform:, checksum:, info_checksum:, dependencies:, ruby_version:, rubygems_version:, created_at:, ruby_minor: }
+      args = { number:, platform:, checksum:, info_checksum:, dependencies:, ruby_version:, rubygems_version:, created_at:, ruby_minor:, system_requirements: }
       args = args.slice(*version_class.members)
       version_class.new(**args)
     end
@@ -186,11 +198,17 @@ class GemInfo
   end
 
   def fetch_requirements_and_dependencies
-    group_by_columns = "number, platform, sha256, info_checksum, required_ruby_version, required_rubygems_version, versions.created_at, ruby_minor"
+    # versions.id is grouped so the correlated system_requirements subquery is valid.
+    group_by_columns = "number, platform, sha256, info_checksum, required_ruby_version, required_rubygems_version, versions.created_at, ruby_minor, versions.id"
 
     dep_req_agg = "string_agg(dependencies.requirements, '@' ORDER BY rubygems_dependencies.name, dependencies.id)"
 
     dep_name_agg = "string_agg(coalesce(rubygems_dependencies.name, '0'), ',' ORDER BY rubygems_dependencies.name) AS dep_name"
+
+    # Aggregated via a correlated subquery to avoid a cartesian product with the
+    # dependencies join. Newline-delimited; each entry is "name:requirement".
+    system_req_agg = "(SELECT string_agg(sr.name || ':' || sr.requirement, E'\\n' ORDER BY sr.name) " \
+                     "FROM system_requirements sr WHERE sr.version_id = versions.id)"
 
     Rubygem.joins("LEFT JOIN versions ON versions.rubygem_id = rubygems.id
         LEFT JOIN dependencies ON dependencies.version_id = versions.id
@@ -200,6 +218,6 @@ class GemInfo
       .where("rubygems.name = ? AND versions.indexed = true", @rubygem_name)
       .group(Arel.sql(group_by_columns))
       .order(Arel.sql("versions.created_at, number, platform, dep_name"))
-      .pluck(Arel.sql("#{group_by_columns}, #{dep_req_agg}, #{dep_name_agg}"))
+      .pluck(Arel.sql("#{group_by_columns}, #{dep_req_agg}, #{dep_name_agg}, #{system_req_agg}"))
   end
 end
