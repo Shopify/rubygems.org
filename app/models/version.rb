@@ -16,6 +16,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   has_one :deletion, dependent: :delete, inverse_of: :version, required: false
   has_one :yanker, through: :deletion, source: :user, inverse_of: :yanked_versions, required: false
   has_many :attestations, dependent: :destroy, inverse_of: :version
+  has_many :system_requirements, dependent: :destroy, inverse_of: :version
 
   before_validation :set_canonical_number, if: :number_changed?
   before_validation :set_ruby_minor
@@ -315,6 +316,26 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
       # ActiveRecord can't chain a nested error here, so we have to add and reraise
       e.record.errors.errors.each do |error|
         errors.import(error, attribute: "dependency.#{error.attribute}")
+      end
+      raise
+    end
+  end
+
+  # spec.metadata keys carrying a system requirement, written by
+  # Gem::Specification#add_system_requirement, e.g.
+  #   spec.metadata["system_requirement_glibc"] = ">= 2.34"
+  SYSTEM_REQUIREMENT_METADATA_PREFIX = "system_requirement_"
+
+  def update_system_requirements!(spec)
+    (spec.metadata || {}).each do |key, value|
+      next unless key.to_s.start_with?(SYSTEM_REQUIREMENT_METADATA_PREFIX)
+      next if value.blank?
+
+      name = key.to_s.delete_prefix(SYSTEM_REQUIREMENT_METADATA_PREFIX)
+      system_requirements.create!(name: name, requirement: value.to_s)
+    rescue ActiveRecord::RecordInvalid => e
+      e.record.errors.errors.each do |error|
+        errors.import(error, attribute: "system_requirement.#{error.attribute}")
       end
       raise
     end
