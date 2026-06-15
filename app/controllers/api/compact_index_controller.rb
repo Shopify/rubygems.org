@@ -11,6 +11,13 @@ class Api::CompactIndexController < Api::BaseController
       info_prefix: "v2/info",
       versions_file_location_key: "versions_file_location_v2",
       versions_surrogate_key: "v2/versions"
+    }.freeze,
+    # The public "/v2" endpoint serves the content-addressable index, which is
+    # internally the v3 format (v3/* storage prefixes, versions_file_location_v3).
+    3 => {
+      info_prefix: "v3/info",
+      versions_file_location_key: "versions_file_location_v3",
+      versions_surrogate_key: "v3/versions"
     }.freeze
   }.freeze
 
@@ -45,8 +52,17 @@ class Api::CompactIndexController < Api::BaseController
   private
 
   def compact_index_serving_version
-    # Compact index responses are cached by URL, so this flag must only be toggled globally.
-    @compact_index_serving_version ||= FeatureFlag.enabled?(FeatureFlag::SERVE_COMPACT_INDEX_V2) ? 2 : 1
+    # The public /v2/* routes serve the content-addressable index (internally v3),
+    # pinned via a route default. The legacy routes fall back to the global flag.
+    # Responses are cached by URL, so the served version is stable per URL.
+    @compact_index_serving_version ||=
+      if params.key?(:compact_index_version)
+        params[:compact_index_version].to_i
+      elsif FeatureFlag.enabled?(FeatureFlag::SERVE_COMPACT_INDEX_V2)
+        2
+      else
+        1
+      end
   end
 
   def compact_index_config

@@ -22,6 +22,7 @@ class UploadNamesFileJob < ApplicationJob
 
     upload_names_file(response_body, key: "names", surrogate_key: "names s3-compact-index s3-names")
     upload_names_file(response_body, key: "v2/names", surrogate_key: "v2/names s3-compact-index s3-v2/names")
+    upload_names_file(response_body, key: "v3/names", surrogate_key: "v3/names s3-compact-index s3-v3/names")
   end
 
   private
