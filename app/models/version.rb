@@ -18,7 +18,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   has_many :attestations, dependent: :destroy, inverse_of: :version
 
   before_validation :set_canonical_number, if: :number_changed?
-  before_validation :set_ruby_minor
+  before_validation :set_ruby_abi
   before_validation :full_nameify!
   before_validation :gem_full_nameify!
   before_save :create_link_verifications, if: :metadata_changed?
@@ -458,18 +458,18 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   # A "skinny" binary is a precompiled (platformed) gem whose required Ruby version
   # pins exactly one MAJOR.MINOR series via a single pessimistic (`~>`) requirement,
   # e.g. `~> 3.3.0`. These are content-addressable: multiple of them may coexist for
-  # the same number+platform as long as each targets a distinct Ruby minor series.
+  # the same number+platform as long as each targets a distinct Ruby ABI series.
   #
   # Anything broader (`~> 3.3`, `>= 3.2, < 4.1`, blank, multiple clauses) is a "fat"
   # binary and keeps the classic name-version-platform addressing.
   def content_addressed?
-    platformed? && ruby_minor_series.present?
+    platformed? && ruby_abi_series.present?
   end
 
   # The MAJOR.MINOR series a skinny binary targets, or nil for fat/source gems.
-  def ruby_minor_series
+  def ruby_abi_series
     return nil unless platformed?
-    self.class.skinny_ruby_minor(required_ruby_version)
+    self.class.skinny_ruby_abi(required_ruby_version)
   end
 
   # The content address fragment used in the gem file name for skinny binaries:
@@ -479,8 +479,8 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   # Parses a required_ruby_version string and returns the single "MAJOR.MINOR"
-  # series it pins, or nil if it does not pin exactly one minor series.
-  def self.skinny_ruby_minor(required_ruby_version)
+  # series it pins, or nil if it does not pin exactly one ABI.
+  def self.skinny_ruby_abi(required_ruby_version)
     return nil if required_ruby_version.blank?
 
     requirement = Gem::Requirement.new(required_ruby_version.to_s.split(",").map(&:strip))
@@ -491,7 +491,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     return nil unless operator == "~>"
 
     segments = version.segments
-    # `~> 3.3.0` pins minor 3.3; `~> 3.3` only pins major 3 (spans many minors).
+    # `~> 3.3.0` pins ABI 3.3; `~> 3.3` only pins major 3 (spans many versions).
     return nil unless segments.size >= 3
 
     segments.first(2).join(".")
@@ -506,16 +506,16 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def platform_and_number_are_unique
-    return unless Version.exists?(rubygem_id: rubygem_id, number: number, platform: platform, ruby_minor: ruby_minor)
+    return unless Version.exists?(rubygem_id: rubygem_id, number: number, platform: platform, ruby_abi: ruby_abi)
     if content_addressed?
-      errors.add(:base, "A version already exists with this number, platform, and Ruby version (#{ruby_minor_series}).")
+      errors.add(:base, "A version already exists with this number, platform, and Ruby ABI (#{ruby_abi_series}).")
     else
       errors.add(:base, "A version already exists with this number or platform.")
     end
   end
 
   def gem_platform_and_number_are_unique
-    platforms = Version.where(rubygem_id: rubygem_id, number: number, gem_platform: gem_platform, ruby_minor: ruby_minor).pluck(:platform)
+    platforms = Version.where(rubygem_id: rubygem_id, number: number, gem_platform: gem_platform, ruby_abi: ruby_abi).pluck(:platform)
     return if platforms.empty?
     errors.add(:base, "A version already exists with this number and resolved platform #{platforms}")
   end
@@ -536,10 +536,10 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   # Content-addressable (skinny) binaries are addressed by content: their file name
   # is name-version-<sha10> so multiple binaries for the same number+platform that
-  # target different Ruby minors never collide. Source and fat binaries keep the
+  # target different Ruby ABIs never collide. Source and fat binaries keep the
   # classic name-version[-platform] addressing.
-  def set_ruby_minor
-    self.ruby_minor = ruby_minor_series.to_s
+  def set_ruby_abi
+    self.ruby_abi = ruby_abi_series.to_s
   end
 
   def full_nameify!
@@ -595,7 +595,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def unique_canonical_number
-    version = Version.find_by(canonical_number: canonical_number, rubygem_id: rubygem_id, platform: platform, ruby_minor: ruby_minor)
+    version = Version.find_by(canonical_number: canonical_number, rubygem_id: rubygem_id, platform: platform, ruby_abi: ruby_abi)
     errors.add(:canonical_number, "has already been taken. Existing version: #{version.number}") unless version.nil?
   end
 

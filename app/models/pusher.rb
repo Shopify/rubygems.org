@@ -142,7 +142,7 @@ class Pusher
       #
       # Content-addressable (skinny) binaries are addressed by content, so a
       # byte-identical re-push is caught by find_or_initialize_by above. A
-      # different binary that targets the same Ruby minor is rejected by the
+      # different binary that targets the same Ruby ABI is rejected by the
       # uniqueness validations during #save, so we only guard the classic
       # name-version-platform address here.
       existing = existing_conflicting_version(version)
@@ -224,15 +224,15 @@ class Pusher
   # The existing version (if any) whose address conflicts with this push.
   #
   # A content-addressable push only conflicts with a byte-identical gem, which
-  # find_or_initialize_by has already loaded; a same-minor-different-content push
+  # find_or_initialize_by has already loaded; a same-ABI-different-content push
   # is rejected by the uniqueness validations. A classic (source/fat) push conflicts
-  # with any other source/fat gem (ruby_minor: "") for the same number+platform, but
+  # with any other source/fat gem (ruby_abi: "") for the same number+platform, but
   # is allowed to coexist with skinny binaries.
   def existing_conflicting_version(version)
     if version.content_addressed?
       version.persisted? ? version : nil
     else
-      @rubygem.versions.find_by(number: version.number, platform: version.platform, ruby_minor: "")
+      @rubygem.versions.find_by(number: version.number, platform: version.platform, ruby_abi: "")
     end
   end
 

@@ -619,7 +619,7 @@ class PusherIntegrationTest < ActiveSupport::TestCase
       version = cutter.version
 
       assert_predicate version, :content_addressed?
-      assert_equal "3.3", version.ruby_minor
+      assert_equal "3.3", version.ruby_abi
       assert_match(/\Asqlite3-2\.9\.0-[0-9a-f]{10}\z/, version.full_name)
       assert_equal version.full_name, version.gem_full_name
       assert_equal "x86_64-linux", version.platform
@@ -632,7 +632,7 @@ class PusherIntegrationTest < ActiveSupport::TestCase
       version = cutter.version
 
       refute_predicate version, :content_addressed?
-      assert_equal "", version.ruby_minor
+      assert_equal "", version.ruby_abi
       assert_equal "sqlite3-2.9.0-x86_64-linux", version.full_name
     end
 
@@ -652,7 +652,7 @@ class PusherIntegrationTest < ActiveSupport::TestCase
       assert_equal "sqlite3-2.9.0", cutter.version.full_name
     end
 
-    should "accept multiple skinny binaries targeting different ruby minors" do
+    should "accept multiple skinny binaries targeting different ruby ABIs" do
       first  = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.0")
       second = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.4.0")
 
@@ -662,17 +662,17 @@ class PusherIntegrationTest < ActiveSupport::TestCase
       versions = Rubygem.find_by(name: "sqlite3").versions.where(number: "2.9.0", platform: "x86_64-linux")
 
       assert_equal 2, versions.count
-      assert_equal %w[3.3 3.4], versions.pluck(:ruby_minor).sort
+      assert_equal %w[3.3 3.4], versions.pluck(:ruby_abi).sort
       assert_equal 2, versions.pluck(:full_name).uniq.size
     end
 
-    should "reject a second skinny binary that targets the same ruby minor (no duplicates)" do
+    should "reject a second skinny binary that targets the same ruby ABI (no duplicates)" do
       first = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.0")
-      dup   = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.5") # same minor 3.3
+      dup   = push_binary(platform: "x86_64-linux", ruby_version: "~> 3.3.5") # same ABI 3.3
 
       assert_equal 200, first.code
       assert_equal 403, dup.code
-      assert_match(/Ruby version \(3\.3\)/, dup.message)
+      assert_match(/Ruby ABI \(3\.3\)/, dup.message)
       assert_equal 1, Rubygem.find_by(name: "sqlite3").versions.where(number: "2.9.0", platform: "x86_64-linux").count
     end
 

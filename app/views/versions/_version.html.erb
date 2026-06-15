@@ -4,8 +4,8 @@
   <% if version.platformed? %>
     <span class="gem__version__date platform"><%= version.platform %></span>
   <% end %>
-  <% if version.ruby_minor.present? %>
-    <span class="gem__version__date ruby"><%= t('.ruby', version: version.ruby_minor) %></span>
+  <% if version.ruby_abi.present? %>
+    <span class="gem__version__date ruby"><%= t('.ruby', version: version.ruby_abi) %></span>
   <% end %>
 
   <span class="gem__version__date">(<%= number_to_human_size(version.size) %>)</span>

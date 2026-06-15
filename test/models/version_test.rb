@@ -7,19 +7,19 @@ class VersionTest < ActiveSupport::TestCase
   should have_many :dependencies
 
   context "content addressable binaries" do
-    context ".skinny_ruby_minor" do
+    context ".skinny_ruby_abi" do
       should "return the MAJOR.MINOR for a single ~> X.Y.Z pin" do
-        assert_equal "3.3", Version.skinny_ruby_minor("~> 3.3.0")
-        assert_equal "3.4", Version.skinny_ruby_minor("~> 3.4.5")
-        assert_equal "3.3", Version.skinny_ruby_minor("~> 3.3.0.1")
+        assert_equal "3.3", Version.skinny_ruby_abi("~> 3.3.0")
+        assert_equal "3.4", Version.skinny_ruby_abi("~> 3.4.5")
+        assert_equal "3.3", Version.skinny_ruby_abi("~> 3.3.0.1")
       end
 
-      should "return nil for anything that does not pin exactly one minor" do
-        assert_nil Version.skinny_ruby_minor("~> 3.3")       # major-only pin
-        assert_nil Version.skinny_ruby_minor(">= 3.2, < 4.1") # range
-        assert_nil Version.skinny_ruby_minor(">= 3.0")
-        assert_nil Version.skinny_ruby_minor("")
-        assert_nil Version.skinny_ruby_minor(nil)
+      should "return nil for anything that does not pin exactly one ABI" do
+        assert_nil Version.skinny_ruby_abi("~> 3.3")       # major-only pin
+        assert_nil Version.skinny_ruby_abi(">= 3.2, < 4.1") # range
+        assert_nil Version.skinny_ruby_abi(">= 3.0")
+        assert_nil Version.skinny_ruby_abi("")
+        assert_nil Version.skinny_ruby_abi(nil)
       end
     end
 
@@ -27,14 +27,14 @@ class VersionTest < ActiveSupport::TestCase
       version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3.0")
 
       assert_predicate version, :content_addressed?
-      assert_equal "3.3", version.ruby_minor_series
+      assert_equal "3.3", version.ruby_abi_series
     end
 
     should "classify ~> X.Y (major-only) as a fat binary" do
       version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3")
 
       refute_predicate version, :content_addressed?
-      assert_nil version.ruby_minor_series
+      assert_nil version.ruby_abi_series
     end
 
     should "classify a ruby range as a fat binary" do
@@ -47,7 +47,7 @@ class VersionTest < ActiveSupport::TestCase
       version = build(:version, platform: "ruby", required_ruby_version: "~> 3.3.0")
 
       refute_predicate version, :content_addressed?
-      assert_nil version.ruby_minor_series
+      assert_nil version.ruby_abi_series
     end
 
     should "address a skinny binary by content in full_name and gem_full_name" do
@@ -56,7 +56,7 @@ class VersionTest < ActiveSupport::TestCase
 
       assert_match(/\A#{version.rubygem.name}-#{version.number}-[0-9a-f]{10}\z/, version.full_name)
       assert_equal version.full_name, version.gem_full_name
-      assert_equal "3.3", version.ruby_minor
+      assert_equal "3.3", version.ruby_abi
     end
 
     should "keep classic platform addressing for fat binaries" do
@@ -64,7 +64,7 @@ class VersionTest < ActiveSupport::TestCase
       version.validate
 
       assert_equal "#{version.rubygem.name}-#{version.number}-x86_64-linux", version.full_name
-      assert_equal "", version.ruby_minor
+      assert_equal "", version.ruby_abi
     end
   end
 
