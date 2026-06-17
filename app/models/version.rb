@@ -4,6 +4,8 @@ require "digest/sha2"
 
 class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   RUBYGEMS_IMPORT_DATE = Date.parse("2009-07-25")
+  # RubyGems version required to resolve ruby_abi (skinny precompiled) binaries.
+  RUBY_ABI_RUBYGEMS_VERSION = "4.1.0.dev"
 
   belongs_to :rubygem, touch: true
   has_many :dependencies, lambda {
@@ -19,6 +21,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   before_validation :set_canonical_number, if: :number_changed?
   before_validation :set_ruby_abi
+  before_validation :enforce_ruby_abi_rubygems_version
   before_validation :full_nameify!
   before_validation :gem_full_nameify!
   before_save :create_link_verifications, if: :metadata_changed?
@@ -540,6 +543,33 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   # classic name-version[-platform] addressing.
   def set_ruby_abi
     self.ruby_abi = ruby_abi_series.to_s
+  end
+
+  # Skinny (ruby_abi) binaries require a RubyGems new enough to understand
+  # ABI-aware resolution. Persist that floor on the version's
+  # required_rubygems_version, but never downgrade a higher existing requirement.
+  def enforce_ruby_abi_rubygems_version
+    return if ruby_abi.blank?
+
+    floor = Gem::Version.new(RUBY_ABI_RUBYGEMS_VERSION)
+    current = required_rubygems_version_floor
+    return if current && current >= floor
+
+    self.required_rubygems_version = ">= #{RUBY_ABI_RUBYGEMS_VERSION}"
+  end
+
+  # The lowest RubyGems version the current required_rubygems_version allows,
+  # or nil when there is no effective lower bound (blank or ">= 0").
+  def required_rubygems_version_floor
+    return nil if required_rubygems_version.blank? || required_rubygems_version == ">= 0"
+
+    Gem::Requirement.new(required_rubygems_version.to_s.split(",").map(&:strip))
+      .requirements
+      .select { |op, _v| [">=", ">", "~>", "="].include?(op) }
+      .map { |_op, v| v }
+      .min
+  rescue Gem::Requirement::BadRequirementError, ArgumentError
+    nil
   end
 
   def full_nameify!

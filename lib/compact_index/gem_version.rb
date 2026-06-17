@@ -59,13 +59,24 @@ module CompactIndex
 
   GemVersionV2 = Struct.new(:number, :platform, :checksum, :info_checksum,
                             :dependencies, :ruby_version, :rubygems_version,
-                            :created_at) do
+                            :created_at, :ruby_abi) do
     include GemVersionMethods
 
     def to_line
       line = super
       line << ",created_at:#{created_at}" if created_at
+      line << ",platform:#{platform}" if ruby_abi.present?
       line
+    end
+
+    # Skinny (content-addressable) binaries pin a single Ruby ABI and are
+    # addressed by content (number-<sha8>); fat/source gems keep classic addressing.
+    def number_and_platform
+      if ruby_abi.present?
+        "#{number}-#{checksum&.first(8)}"
+      else
+        super
+      end
     end
   end
 end
