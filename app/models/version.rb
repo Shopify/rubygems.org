@@ -6,6 +6,10 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   RUBYGEMS_IMPORT_DATE = Date.parse("2009-07-25")
   # RubyGems version required to resolve ruby_abi (skinny precompiled) binaries.
   RUBY_ABI_RUBYGEMS_VERSION = "4.1.0.dev"
+  # Default width (hex chars of the SHA256) for a skinny binary's content
+  # address. Widened per-gem only when two distinct content-addressed binaries
+  # of the same name+number share this prefix (see #content_address).
+  DEFAULT_CONTENT_ADDRESS_LENGTH = 8
 
   belongs_to :rubygem, touch: true
   has_many :dependencies, lambda {
@@ -475,10 +479,35 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     self.class.skinny_ruby_abi(required_ruby_version)
   end
 
-  # The content address fragment used in the gem file name for skinny binaries:
-  # the first 10 hex characters of the gem's SHA256.
+  # The content address fragment used in the gem file name and compact index
+  # token for skinny binaries: a hex prefix of the gem's SHA256.
+  #
+  # Defaults to DEFAULT_CONTENT_ADDRESS_LENGTH chars, widened just enough so it
+  # stays unique among existing content-addressed binaries of the same name and
+  # number. Only this (newer) binary grows; already-published siblings keep
+  # their addresses, so existing download paths and index tokens never change.
   def content_address
-    sha256_hex&.first(10)
+    return unless sha256_hex
+
+    digest   = sha256_hex
+    siblings = colliding_content_address_digests
+    length   = DEFAULT_CONTENT_ADDRESS_LENGTH
+    length += 1 while length < digest.length && siblings.any? { |d| d.first(length) == digest.first(length) }
+    digest.first(length)
+  end
+
+  # Full SHA256 hex digests of other content-addressed binaries that share this
+  # gem's name and number, against which our content address must stay unique.
+  # (A shared prefix is ambiguous on its own, so collisions are resolved by
+  # comparing full digests.)
+  def colliding_content_address_digests
+    return [] if rubygem_id.blank? || number.blank?
+
+    scope = Version.where(rubygem_id: rubygem_id, number: number)
+                   .where.not(ruby_abi: [nil, ""])
+                   .where.not(sha256: [nil, sha256])
+    scope = scope.where.not(id: id) if id
+    scope.pluck(:sha256).map { |s| self.class._sha256_hex(s) }
   end
 
   # Parses a required_ruby_version string and returns the single "MAJOR.MINOR"
