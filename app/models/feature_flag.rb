@@ -3,6 +3,9 @@
 class FeatureFlag
   ORGANIZATIONS = :organizations
   SERVE_COMPACT_INDEX_V2 = :serve_compact_index_v2
+  # Path-based locales. Must be toggled globally only: responses are cached by
+  # URL, so this cannot vary per-actor without fragmenting/poisoning the cache.
+  PATH_BASED_LOCALES = :path_based_locales
 
   class << self
     def enabled?(flag_name, actor = nil)
