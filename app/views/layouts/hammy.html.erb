@@ -220,6 +220,13 @@
           </div>
         </div>
       </div>
+      <% if LocaleRouting.path_based? %>
+        <div class="footer__language_selector">
+          <% I18n.available_locales.each do |language| %>
+            <%= link_to I18n.t(:locale_name, locale: language), locale_switch_path(language), class: "hover:text-neutral-600" %>
+          <% end %>
+        </div>
+      <% end %>
     </footer>
   </div>
 </body>
