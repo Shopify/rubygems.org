@@ -2,11 +2,6 @@
 
 Rails.application.routes.draw do
   ################################################################################
-  # Root
-
-  root to: 'home#index'
-
-  ################################################################################
   # API
 
   namespace :api do
@@ -156,8 +151,10 @@ Rails.application.routes.draw do
   end
 
   ################################################################################
-  # UI
-  scope constraints: { format: :html }, defaults: { format: 'html' } do
+  # UI (optionally locale-prefixed: /de/..., /ja/...; the default locale is unprefixed)
+  scope "(:locale)", locale: LocaleRouting::PATH_CONSTRAINT, constraints: { format: :html }, defaults: { format: 'html' } do
+    root to: 'home#index'
+
     resource :search, only: :show do
       get :advanced
     end
@@ -223,7 +220,7 @@ Rails.application.routes.draw do
       resources :trusted_publishers, controller: 'oidc/rubygem_trusted_publishers', only: %i[index create destroy new]
 
       collection do
-        get "transfer", to: redirect("/gems/transfer/organization")
+        get "transfer", to: redirect(&LocaleRouting.localized_redirect("/gems/transfer/organization"))
         delete "transfer", to: "rubygems/transfers#destroy"
 
         namespace :transfer do
@@ -285,7 +282,7 @@ Rails.application.routes.draw do
     get '/sign_up' => 'users#new', as: 'sign_up'
 
     namespace :organizations, as: :organization do
-      get "onboarding", to: redirect("/organizations/onboarding/name")
+      get "onboarding", to: redirect(&LocaleRouting.localized_redirect("/organizations/onboarding/name"))
       delete "onboarding", to: "onboarding#destroy"
 
       namespace :onboarding do

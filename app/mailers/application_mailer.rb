@@ -7,6 +7,8 @@ class ApplicationMailer < ActionMailer::Base
   default from: Gemcutter::MAIL_SENDER
   default_url_options[:host] = Gemcutter::HOST
   default_url_options[:protocol] = Gemcutter::PROTOCOL
+  # Emails have no request locale; always generate unprefixed (default-locale) URLs.
+  default_url_options[:locale] = nil
 
   layout "mailer"
 
