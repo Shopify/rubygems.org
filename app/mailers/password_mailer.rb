@@ -3,21 +3,25 @@
 class PasswordMailer < ApplicationMailer
   def change_password(user)
     @user = user
-    mail from: Clearance.configuration.mailer_sender,
-         to: @user.email,
-         subject: I18n.t("clearance.models.clearance_mailer.change_password") do |format|
-           format.html
-           format.text
-         end
+    with_locale_for(@user) do
+      mail from: Clearance.configuration.mailer_sender,
+           to: @user.email,
+           subject: I18n.t("clearance.models.clearance_mailer.change_password") do |format|
+             format.html
+             format.text
+           end
+    end
   end
 
   def compromised_password_reset(user)
     @user = user
-    mail from: Clearance.configuration.mailer_sender,
-         to: @user.email,
-         subject: I18n.t("password_mailer.compromised_password_reset.subject", host: Gemcutter::HOST_DISPLAY) do |format|
-           format.html
-           format.text
-         end
+    with_locale_for(@user) do
+      mail from: Clearance.configuration.mailer_sender,
+           to: @user.email,
+           subject: I18n.t("password_mailer.compromised_password_reset.subject", host: Gemcutter::HOST_DISPLAY) do |format|
+             format.html
+             format.text
+           end
+    end
   end
 end

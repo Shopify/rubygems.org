@@ -7,21 +7,25 @@ class WebHooksMailer < ApplicationMailer
     @url = url
     @failure_count = failure_count
 
-    mail to: @user.email,
-         subject: t("mailer.web_hook_deleted.subject", host: Gemcutter::HOST_DISPLAY) do |format|
-           format.html
-           format.text
-         end
+    with_locale_for(@user) do
+      mail to: @user.email,
+           subject: t("mailer.web_hook_deleted.subject", host: Gemcutter::HOST_DISPLAY) do |format|
+             format.html
+             format.text
+           end
+    end
   end
 
   def webhook_disabled(web_hook)
     @web_hook = web_hook
     @delete_command = "gem install gemcutter && gem webhook#{" #{web_hook.rubygem.name}" unless web_hook.global?} --remove '#{web_hook.url}'"
 
-    mail to: web_hook.user.email,
-         subject: t("mailer.web_hook_disabled.subject", host: Gemcutter::HOST_DISPLAY) do |format|
-           format.html
-           format.text
-         end
+    with_locale_for(web_hook.user) do
+      mail to: web_hook.user.email,
+           subject: t("mailer.web_hook_disabled.subject", host: Gemcutter::HOST_DISPLAY) do |format|
+             format.html
+             format.text
+           end
+    end
   end
 end

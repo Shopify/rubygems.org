@@ -8,6 +8,8 @@ class OrganizationMailer < ApplicationMailer
     @organization = membership.organization
     @accept_url = organization_invitation_url(organization_id: @organization, host: Gemcutter::HOST)
 
-    mail(to: @user.email, subject: "You've been invited to join #{@organization.handle}")
+    with_locale_for(@user) do
+      mail(to: @user.email, subject: "You've been invited to join #{@organization.handle}")
+    end
   end
 end

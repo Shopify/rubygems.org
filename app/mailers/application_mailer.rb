@@ -27,4 +27,15 @@ class ApplicationMailer < ActionMailer::Base
         mailer: mailer_name)
     end
   end
+
+  private
+
+  # Render an email (subject AND body) in the recipient's saved locale. The whole
+  # mail(...) call must be wrapped because the subject's I18n.t is evaluated
+  # eagerly as an argument. Falls back to the default locale when the recipient
+  # has no preference. NOTE: links stay default-locale for now (mailer URLs are
+  # generated with locale: nil); localizing them is a follow-up.
+  def with_locale_for(user, &)
+    I18n.with_locale((user&.locale).presence || I18n.default_locale, &)
+  end
 end
