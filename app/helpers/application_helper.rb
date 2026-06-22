@@ -55,8 +55,16 @@ module ApplicationHelper
     gem.downloads * 1.0 / count * 100
   end
 
+  # Locale-aware "is this the current page?". Always pass a route helper (e.g.
+  # rubygems_path), never a string literal: the helper carries the active locale
+  # prefix, so current_page? still matches under /de, /ja, etc. A raw
+  # `request.path_info == '/gems'` check silently breaks on localized URLs.
   def active_status(path)
-    "is-active" if request.path_info == path
+    "is-active" if current_page?(path)
+  end
+
+  def home_page?
+    current_page?(root_path)
   end
 
   # replacement for Kaminari::ActionViewExtension#paginate
