@@ -1,4 +1,8 @@
 <% @title = @reserved_gem %>
+<%# Reserved namespaces have no real content: opt out of canonical/hreflang and noindex. %>
+<% content_for :canonical do %>
+  <meta name="robots" content="noindex" />
+<% end %>
 <div class="t-body">
   <p><%= t '.reserved_namespace' %></p>
 </div>

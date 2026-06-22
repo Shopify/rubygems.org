@@ -1,6 +1,7 @@
 <% @title = @rubygem.name %>
 
-<% content_for :head do %>
+<%# Yanked/reserved gem pages opt out of the default canonical/hreflang tags and are noindex. %>
+<% content_for :canonical do %>
   <meta name="robots" content="noindex" />
 <% end %>
 
