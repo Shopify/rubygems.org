@@ -163,20 +163,37 @@ class SessionsController < Clearance::SessionsController
   end
 
   def url_after_create(_authentication_method: nil)
-    if session.delete(:password_compromised)
-      user = current_user
-      initiate_compromised_password_reset!(user)
-      sign_out
-      reset_session
-      session[:compromised_password_user_id] = user.id
-      compromised_password_path
-    elsif current_user.mfa_recommended_not_yet_enabled?
-      new_totp_path
-    elsif current_user.mfa_recommended_weak_level_enabled?
-      edit_settings_path
-    else
-      dashboard_path
-    end
+    path =
+      if session.delete(:password_compromised)
+        user = current_user
+        initiate_compromised_password_reset!(user)
+        sign_out
+        reset_session
+        session[:compromised_password_user_id] = user.id
+        compromised_password_path
+      elsif current_user.mfa_recommended_not_yet_enabled?
+        new_totp_path
+      elsif current_user.mfa_recommended_weak_level_enabled?
+        edit_settings_path
+      else
+        dashboard_path
+      end
+
+    preferred_locale_path(path)
+  end
+
+  # Apply the signed-in user's saved locale preference to the post-sign-in
+  # destination by prefixing the localized path (e.g. /dashboard -> /de/dashboard).
+  # No-op when the feature is off, the user signed out (compromised flow), or the
+  # preference is the default/blank locale.
+  def preferred_locale_path(path)
+    return path unless LocaleRouting.path_based?
+
+    locale = LocaleRouting.locale_param(current_user&.locale)
+    return path if locale.blank?
+    return path if path.start_with?("/#{locale}/", "/#{locale}?") || path == "/#{locale}"
+
+    "/#{locale}#{path == '/' ? '' : path}"
   end
 
   def check_password_compromised

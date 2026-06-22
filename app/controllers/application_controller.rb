@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
   end
 
   around_action :switch_locale
+  after_action :remember_user_locale
   before_action :reject_null_char_param
   before_action :reject_path_params_param
   before_action :reject_null_char_cookie
@@ -77,6 +78,22 @@ class ApplicationController < ActionController::Base
     # the request render in the default locale rather than 500 (preserves the old
     # "never raises" behavior of the route-level redirect).
     nil
+  end
+
+  # Remember a signed-in user's last-used locale so it can be applied at their
+  # next sign-in. Only on GETs (so a sign-in POST, whose path has no locale,
+  # doesn't clobber the preference before we apply it) and only when it changed.
+  # Safe to persist on a read because signed-in responses are not shared-cached.
+  def remember_user_locale
+    return unless request.get? && signed_in?
+
+    # Store nil for the default locale so "no preference" and "prefers English"
+    # are the same state (and English browsing doesn't stamp every user with a
+    # value or churn writes).
+    preferred = LocaleRouting.default_locale?(I18n.locale) ? nil : I18n.locale.to_s
+    return if current_user.locale == preferred
+
+    current_user.update_column(:locale, preferred) # rubocop:disable Rails/SkipsModelValidations
   end
 
   def set_user_tag

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_195603) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "pg_catalog.plpgsql"
@@ -663,6 +663,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_195603) do
     t.string "full_name"
     t.string "handle"
     t.boolean "hide_email", default: true
+    t.string "locale"
     t.integer "mail_fails", default: 0
     t.string "mfa_hashed_recovery_codes", default: [], array: true
     t.integer "mfa_level", default: 0

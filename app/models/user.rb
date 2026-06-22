@@ -81,6 +81,9 @@ class User < ApplicationRecord
   validates :handle, format: { with: Patterns::HANDLE_PATTERN }, length: { within: 2..40 }, allow_nil: true
   validate :unique_with_org_handle
 
+  # Preferred UI locale (nil = no preference). Constrained to supported locales.
+  validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }, allow_nil: true
+
   validates :twitter_username, format: {
     with: /\A[a-zA-Z0-9_]*\z/,
     message: "can only contain letters, numbers, and underscores"
