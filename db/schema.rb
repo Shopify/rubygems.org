@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_195603) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_04_133906) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "pg_catalog.plpgsql"
@@ -714,6 +714,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_195603) do
     t.string "required_ruby_version"
     t.string "required_rubygems_version", limit: 255
     t.text "requirements"
+    t.string "ruby_abi", default: "", null: false
     t.integer "rubygem_id"
     t.string "sha256"
     t.integer "size"
@@ -726,7 +727,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_195603) do
     t.index "lower((full_name)::text)", name: "index_versions_on_lower_full_name"
     t.index "lower((gem_full_name)::text)", name: "index_versions_on_lower_gem_full_name"
     t.index ["built_at"], name: "index_versions_on_built_at"
-    t.index ["canonical_number", "rubygem_id", "platform"], name: "index_versions_on_canonical_number_and_rubygem_id_and_platform", unique: true
+    t.index ["canonical_number", "rubygem_id", "platform", "ruby_abi"], name: "index_versions_on_canonical_rubygem_platform_ruby_abi", unique: true
     t.index ["created_at"], name: "index_versions_on_created_at"
     t.index ["full_name"], name: "index_versions_on_full_name"
     t.index ["indexed", "yanked_at"], name: "index_versions_on_indexed_and_yanked_at"
@@ -735,7 +736,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_195603) do
     t.index ["prerelease"], name: "index_versions_on_prerelease"
     t.index ["pusher_api_key_id"], name: "index_versions_on_pusher_api_key_id"
     t.index ["pusher_id"], name: "index_versions_on_pusher_id"
-    t.index ["rubygem_id", "number", "platform"], name: "index_versions_on_rubygem_id_and_number_and_platform", unique: true
+    t.index ["rubygem_id", "number", "platform", "ruby_abi"], name: "index_versions_on_rubygem_number_platform_ruby_abi", unique: true
     t.index ["rubygem_id", "position", "created_at"], name: "index_versions_on_rubygem_id_and_position_and_created_at", order: { created_at: :desc }, where: "(indexed = true)", include: ["full_name", "number", "platform"]
   end
 

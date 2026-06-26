@@ -6,6 +6,68 @@ class VersionTest < ActiveSupport::TestCase
   should belong_to :rubygem
   should have_many :dependencies
 
+  context "content addressable binaries" do
+    context ".skinny_ruby_abi" do
+      should "return the MAJOR.MINOR for a single ~> X.Y.Z pin" do
+        assert_equal "3.3", Version.skinny_ruby_abi("~> 3.3.0")
+        assert_equal "3.4", Version.skinny_ruby_abi("~> 3.4.5")
+        assert_equal "3.3", Version.skinny_ruby_abi("~> 3.3.0.1")
+      end
+
+      should "return nil for anything that does not pin exactly one ABI" do
+        assert_nil Version.skinny_ruby_abi("~> 3.3")       # major-only pin
+        assert_nil Version.skinny_ruby_abi(">= 3.2, < 4.1") # range
+        assert_nil Version.skinny_ruby_abi(">= 3.0")
+        assert_nil Version.skinny_ruby_abi("")
+        assert_nil Version.skinny_ruby_abi(nil)
+      end
+    end
+
+    should "classify a single ~> X.Y.Z platform gem as a content-addressed skinny binary" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3.0")
+
+      assert_predicate version, :content_addressed?
+      assert_equal "3.3", version.ruby_abi_series
+    end
+
+    should "classify ~> X.Y (major-only) as a fat binary" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3")
+
+      refute_predicate version, :content_addressed?
+      assert_nil version.ruby_abi_series
+    end
+
+    should "classify a ruby range as a fat binary" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: ">= 3.2, < 4.1")
+
+      refute_predicate version, :content_addressed?
+    end
+
+    should "never treat a source (ruby platform) gem as content addressed" do
+      version = build(:version, platform: "ruby", required_ruby_version: "~> 3.3.0")
+
+      refute_predicate version, :content_addressed?
+      assert_nil version.ruby_abi_series
+    end
+
+    should "address a skinny binary by content in full_name and gem_full_name" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3.0")
+      version.validate
+
+      assert_match(/\A#{version.rubygem.name}-#{version.number}-[0-9a-f]{10}\z/, version.full_name)
+      assert_equal version.full_name, version.gem_full_name
+      assert_equal "3.3", version.ruby_abi
+    end
+
+    should "keep classic platform addressing for fat binaries" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: ">= 3.2, < 4.1")
+      version.validate
+
+      assert_equal "#{version.rubygem.name}-#{version.number}-x86_64-linux", version.full_name
+      assert_equal "", version.ruby_abi
+    end
+  end
+
   context "#as_json" do
     setup do
       @version = build(:version, summary: "some words", created_at: Time.now.in_time_zone)
