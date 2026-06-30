@@ -68,6 +68,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validate :metadata_links_format, if: -> { validation_context == :create || metadata_changed? }
   validate :metadata_attribute_length
   validate :no_dashes_in_version_number, on: :create
+  validate :sha256_presence_for_content_addressable_version
 
   class AuthorType < ActiveModel::Type::String
     def cast_value(value)
