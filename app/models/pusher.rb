@@ -4,6 +4,8 @@ require "digest/sha2"
 require "gem_validator"
 
 class Pusher
+  SKINNY_GEM_REQUIRED_RUBYGEMS_VERSION = ">= 4.1.0.dev"
+
   include TraceTagger
   include SemanticLogger::Loggable
 
@@ -28,6 +30,7 @@ class Pusher
         find &&
         authorize &&
         verify_gem_scope &&
+        verify_skinny_gem_push &&
         verify_mfa_requirement &&
         validate &&
         save
@@ -48,6 +51,13 @@ class Pusher
     notify("This API key cannot perform the specified action on this gem.", 403)
   end
 
+  def verify_skinny_gem_push
+    return true unless version.content_addressable?
+    return true if FeatureFlag.enabled?(FeatureFlag::SKINNY_GEM_PUSHES, owner)
+
+    notify("You are not allowed to push skinny gems", 403)
+  end
+
   def verify_mfa_requirement
     (!api_key.user? || owner.mfa_enabled?) || !(version_mfa_required? || rubygem.metadata_mfa_required?) ||
       notify("Rubygem requires owners to enable MFA. You must enable MFA before pushing new version.", 403)
@@ -60,7 +70,7 @@ class Pusher
 
     return notify("There was a problem saving your gem: #{rubygem.all_errors(version)}", 403) unless rubygem.valid? && version.valid?
 
-    unless version.full_name == spec.original_name && version.gem_full_name == spec.full_name
+    unless uploaded_spec_matches_version?
       return notify("There was a problem saving your gem: the uploaded spec has malformed platform attributes", 409)
     end
 
@@ -89,7 +99,7 @@ class Pusher
     notify("There was a problem saving your gem. Please try again.", 500)
   else
     after_write
-    notify("Successfully registered gem: #{version.to_title}", 200)
+    notify("Successfully registered gem: #{pushed_version_title}", 200)
     true
   end
 
@@ -204,6 +214,33 @@ class Pusher
 
   private
 
+  def uploaded_spec_matches_version?
+    unless version.content_addressable?
+      return version.full_name == spec.original_name && version.gem_full_name == spec.full_name
+    end
+
+    uploaded_spec_name(version.platform) == spec.original_name &&
+      uploaded_spec_name(version.gem_platform) == spec.full_name
+  end
+
+  def uploaded_spec_name(platform)
+    name = "#{rubygem.name}-#{version.number}"
+    name << "-#{platform}" unless platform == "ruby"
+    name
+  end
+
+  def pushed_version_title
+    return version.to_title unless version.content_addressable?
+
+    "#{version.rubygem.name} (#{version.number}-#{version.platform}, Ruby ABI #{version.ruby_abi})"
+  end
+
+  def normalize_skinny_gem_metadata!
+    return unless version.content_addressable?
+
+    version.update!(required_rubygems_version: SKINNY_GEM_REQUIRED_RUBYGEMS_VERSION)
+  end
+
   def after_write
     GemCachePurger.call(rubygem.name)
     RackAttackReset.gem_push_backoff(@request.remote_ip, owner.to_gid) if @request&.remote_ip.present?
@@ -223,6 +260,7 @@ class Pusher
   def update
     rubygem.disown if rubygem.versions.indexed.none?
     rubygem.update_attributes_from_gem_specification!(version, spec)
+    normalize_skinny_gem_metadata!
 
     if rubygem.unowned?
       if api_key.user?

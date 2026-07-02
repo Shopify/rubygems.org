@@ -50,6 +50,7 @@ class PusherTest < ActiveSupport::TestCase
         @cutter.stubs(:authorize).returns true
         @cutter.stubs(:verify_mfa_requirement).returns true
         @cutter.stubs(:verify_gem_scope).returns true
+        @cutter.stubs(:verify_skinny_gem_push).returns true
         @cutter.stubs(:validate).returns true
         @cutter.stubs(:verify_sigstore).returns true
         @cutter.stubs(:sign_sigstore).returns true
@@ -91,6 +92,19 @@ class PusherTest < ActiveSupport::TestCase
         @cutter.process
       end
 
+      should "not attempt to check mfa requirement if skinny gem push check failed" do
+        @cutter.stubs(:pull_spec).returns true
+        @cutter.stubs(:find).returns true
+        @cutter.stubs(:authorize).returns true
+        @cutter.stubs(:verify_gem_scope).returns true
+        @cutter.stubs(:verify_skinny_gem_push).returns false
+        @cutter.stubs(:verify_mfa_requirement).never
+        @cutter.stubs(:validate).never
+        @cutter.stubs(:save).never
+
+        @cutter.process
+      end
+
       should "not attempt to check mfa requirement if scoped to another gem" do
         @cutter.stubs(:pull_spec).returns true
         @cutter.stubs(:find).returns true
@@ -108,6 +122,7 @@ class PusherTest < ActiveSupport::TestCase
         @cutter.stubs(:find).returns true
         @cutter.stubs(:authorize).returns true
         @cutter.stubs(:verify_gem_scope).returns true
+        @cutter.stubs(:verify_skinny_gem_push).returns true
         @cutter.stubs(:verify_mfa_requirement).returns false
         @cutter.stubs(:validate).never
         @cutter.stubs(:save).never
@@ -120,6 +135,7 @@ class PusherTest < ActiveSupport::TestCase
         @cutter.stubs(:find).returns true
         @cutter.stubs(:authorize).returns true
         @cutter.stubs(:verify_gem_scope).returns true
+        @cutter.stubs(:verify_skinny_gem_push).returns true
         @cutter.stubs(:verify_mfa_requirement).returns true
         @cutter.stubs(:validate).returns false
         @cutter.stubs(:save).never
@@ -270,6 +286,60 @@ class PusherTest < ActiveSupport::TestCase
 
       assert_equal "universal-darwin-6000", @cutter.version.platform
       assert_equal "universal-darwin-6000", @cutter.version.gem_platform
+    end
+  end
+
+  context "verifying skinny gem pushes" do
+    should "allow non-skinny versions without the feature flag" do
+      version = build(:version, platform: "ruby", ruby_abi: nil)
+      @cutter.stubs(:version).returns version
+
+      assert @cutter.verify_skinny_gem_push
+    end
+
+    should "reject skinny versions without the feature flag" do
+      version = build(:version, platform: "arm64-darwin-25", ruby_abi: "3.4")
+      @cutter.stubs(:version).returns version
+
+      refute @cutter.verify_skinny_gem_push
+
+      assert_equal "You are not allowed to push skinny gems", @cutter.message
+      assert_equal 403, @cutter.code
+    end
+
+    should "allow skinny versions when the feature flag is enabled for the owner" do
+      version = build(:version, platform: "arm64-darwin-25", ruby_abi: "3.4")
+      @cutter.stubs(:version).returns version
+
+      with_feature(FeatureFlag::SKINNY_GEM_PUSHES, actor: @user) do
+        assert @cutter.verify_skinny_gem_push
+      end
+    end
+  end
+
+  context "validating uploaded spec platform attributes" do
+    should "allow content-addressable versions whose uploaded spec keeps platform identity" do
+      rubygem = create(:rubygem, name: "sandworm")
+      version = create(
+        :version,
+        rubygem: rubygem,
+        number: "1.0.0",
+        platform: "arm64-darwin-25",
+        gem_platform: "arm64-darwin-25",
+        required_ruby_version: "~> 3.4.0",
+        sha256: Digest::SHA2.base64digest("sandworm-1.0.0-arm64-darwin-25-3.4")
+      )
+      spec = mock
+      spec.stubs(:cert_chain).returns([])
+      spec.stubs(:original_name).returns("sandworm-1.0.0-arm64-darwin-25")
+      spec.stubs(:full_name).returns("sandworm-1.0.0-arm64-darwin-25")
+
+      @cutter.stubs(:rubygem).returns rubygem
+      @cutter.stubs(:version).returns version
+      @cutter.stubs(:spec).returns spec
+
+      assert_predicate version, :content_addressable?
+      assert @cutter.validate
     end
   end
 

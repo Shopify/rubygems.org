@@ -2,6 +2,7 @@
 
 class FeatureFlag
   ORGANIZATIONS = :organizations
+  SKINNY_GEM_PUSHES = :skinny_gem_pushes
 
   class << self
     def enabled?(flag_name, actor = nil)

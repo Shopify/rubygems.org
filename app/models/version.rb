@@ -68,7 +68,6 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validate :metadata_links_format, if: -> { validation_context == :create || metadata_changed? }
   validate :metadata_attribute_length
   validate :no_dashes_in_version_number, on: :create
-  validate :sha256_presence_for_content_addressable_version
 
   class AuthorType < ActiveModel::Type::String
     def cast_value(value)
@@ -493,17 +492,11 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     nil
   end
 
-  private
-
   def content_addressable?
-    platformed? && ruby_abi.present? && sha256.present?
+    platformed? && ruby_abi.present?
   end
 
-  def sha256_presence_for_content_addressable_version
-    return unless platformed? && ruby_abi.present?
-
-    errors.add(:sha256, "can't be blank") if sha256.blank?
-  end
+  private
 
   def set_ruby_abi
     self.ruby_abi = Version.ruby_abi_for(required_ruby_version)
