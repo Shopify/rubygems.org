@@ -44,7 +44,8 @@ class GemInfoTest < ActiveSupport::TestCase
         gem_platform: "x86_64-linux-musl",
         required_ruby_version: "~> 3.2.0",
         sha256: Digest::SHA2.base64digest("single-abi-2.9.0-x86_64-linux-musl"),
-        info_checksum_v2: "single-abi-info-checksum"
+        info_checksum_v2: "single-abi-info-checksum",
+        ruby_abi: "3.2"
       )
 
       info = GemInfo.new("single-abi-info").compact_index_info
@@ -163,7 +164,8 @@ class GemInfoTest < ActiveSupport::TestCase
         required_ruby_version: "~> 3.2.0",
         sha256: Digest::SHA2.base64digest("skinny-2.9.0-x86_64-linux-musl"),
         created_at: 2.days.ago,
-        info_checksum_v2: "skinny-info"
+        info_checksum_v2: "skinny-info",
+        ruby_abi: "3.2"
       )
 
       versions = GemInfo.compact_index_versions(3.days.ago)
@@ -221,7 +223,8 @@ class GemInfoTest < ActiveSupport::TestCase
         required_ruby_version: "~> 3.2.0",
         sha256: Digest::SHA2.base64digest("skinny-public-2.9.0-x86_64-linux-musl"),
         created_at: @ts,
-        info_checksum_v2: "skinny-public-info"
+        info_checksum_v2: "skinny-public-info",
+        ruby_abi: "3.2"
       )
 
       versions = GemInfo.compact_index_public_versions(@ts)
