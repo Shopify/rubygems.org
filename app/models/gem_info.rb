@@ -50,12 +50,12 @@ class GemInfo
     checksum_column = config[:checksum_column]
     yanked_checksum_column = config[:yanked_checksum_column]
 
-    query = ["(SELECT r.name, v.created_at as date, v.#{checksum_column} as info_checksum, v.number, v.platform
+    query = ["(SELECT r.name, v.created_at as date, v.#{checksum_column} as info_checksum, v.number, v.platform, v.ruby_abi, v.full_name
               FROM rubygems AS r, versions AS v
               WHERE v.rubygem_id = r.id AND
                     v.created_at > ?)
               UNION
-              (SELECT r.name, v.yanked_at as date, v.#{yanked_checksum_column} as info_checksum, '-'||v.number, v.platform
+              (SELECT r.name, v.yanked_at as date, v.#{yanked_checksum_column} as info_checksum, '-'||v.number, v.platform, v.ruby_abi, v.full_name
               FROM rubygems AS r, versions AS v
               WHERE v.rubygem_id = r.id AND
                     v.indexed is false AND
@@ -72,7 +72,7 @@ class GemInfo
 
     query = ["SELECT r.name, v.indexed, COALESCE(v.yanked_at, v.created_at) as stamp,
                      v.sha256, COALESCE(v.#{yanked_checksum_column}, v.#{checksum_column}) as info_checksum,
-                     v.number, v.platform
+                     v.number, v.platform, v.ruby_abi, v.full_name
               FROM rubygems AS r, versions AS v
               WHERE v.rubygem_id = r.id AND
                     (v.created_at <= ? OR v.yanked_at <= ?)
@@ -98,10 +98,14 @@ class GemInfo
   def self.map_gem_versions(versions_by_gem)
     versions_by_gem.map do |gem_name, versions|
       compact_index_versions = versions.map do |version|
-        CompactIndex::GemVersion.new(version["number"],
-          version["platform"],
-          version["sha256"],
-          version["info_checksum"])
+        CompactIndex::GemVersion.new(
+          number: version["number"],
+          platform: version["platform"],
+          checksum: version["sha256"],
+          info_checksum: version["info_checksum"],
+          ruby_abi: version["ruby_abi"],
+          content_address: version["ruby_abi"].present? ? version["full_name"]&.split("-")&.last : nil
+        )
       end
       CompactIndex::Gem.new(gem_name, compact_index_versions)
     end
@@ -111,9 +115,9 @@ class GemInfo
 
   private
 
-  DEPENDENCY_NAMES_INDEX = 8
+  DEPENDENCY_NAMES_INDEX = 10
 
-  DEPENDENCY_REQUIREMENTS_INDEX = 7
+  DEPENDENCY_REQUIREMENTS_INDEX = 9
 
   # Marshal.load of pre-deploy cache entries fails when GemVersion grows a Struct field.
   def read_cache(cache_key)
@@ -134,11 +138,21 @@ class GemInfo
         end
       end
 
-      number, platform, checksum, info_checksum, ruby_version, rubygems_version, created_at, = row
+      number, platform, checksum, info_checksum, ruby_version, rubygems_version, created_at, ruby_abi, full_name, = row
       version_class = VERSIONS.dig(version, :klass)
       checksum = Version._sha256_hex(checksum)
       created_at = created_at&.utc&.iso8601
-      args = { number:, platform:, checksum:, info_checksum:, dependencies:, ruby_version:, rubygems_version:, created_at: }
+      content_address = ruby_abi.present? ? full_name&.split("-")&.last : nil
+      args = { number:,
+              platform:,
+              checksum:,
+              info_checksum:,
+              dependencies:,
+              ruby_version:,
+              rubygems_version:,
+              created_at:,
+              ruby_abi:,
+              content_address: }
       args = args.slice(*version_class.members)
       version_class.new(**args)
     end
@@ -153,7 +167,7 @@ class GemInfo
     checksum_column = VERSIONS.fetch(version).fetch(:checksum_column)
     group_by_columns = [
       "number", "platform", "sha256", checksum_column,
-      "required_ruby_version", "required_rubygems_version", "versions.created_at"
+      "required_ruby_version", "required_rubygems_version", "versions.created_at", "ruby_abi", "full_name"
     ]
 
     dep_req_agg = "string_agg(dependencies.requirements, '@' ORDER BY rubygems_dependencies.name, dependencies.id)"
