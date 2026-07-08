@@ -65,7 +65,10 @@ module CompactIndex
     def to_line
       line = super
       line << ",created_at:#{created_at}" if created_at
-      line << ",platform:#{platform}" if ruby_abi.present?
+      # RFC: the real platform is an equality requirement (`platform:= <plat>`),
+      # mirroring the ruby:/rubygems: requirement grammar so clients parse it as
+      # an exact match (and leaves room for future `>=`-style dimensions).
+      line << ",platform:= #{platform}" if ruby_abi.present?
       line
     end
 

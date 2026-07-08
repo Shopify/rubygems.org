@@ -438,6 +438,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def self._sha256_hex(raw)
+    return if raw.nil?
     raw.unpack1("m0").unpack1("H*")
   end
 
