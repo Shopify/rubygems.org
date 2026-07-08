@@ -54,9 +54,31 @@ class VersionTest < ActiveSupport::TestCase
       version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3.0")
       version.validate
 
-      assert_match(/\A#{version.rubygem.name}-#{version.number}-[0-9a-f]{10}\z/, version.full_name)
+      assert_match(/\A#{version.rubygem.name}-#{version.number}-[0-9a-f]{#{Version::DEFAULT_CONTENT_ADDRESS_LENGTH}}\z/, version.full_name)
       assert_equal version.full_name, version.gem_full_name
       assert_equal "3.3", version.ruby_abi
+      assert_equal version.sha256_hex.first(Version::DEFAULT_CONTENT_ADDRESS_LENGTH), version.content_address
+    end
+
+    should "widen the content address only enough to disambiguate a colliding sibling" do
+      rubygem = create(:rubygem)
+      # An existing skinny binary of the same name+number, targeting a different ABI.
+      existing = create(:version, rubygem:, number: "1.0.0", platform: "x86_64-linux",
+        required_ruby_version: "~> 3.3.0")
+      prefix = existing.sha256_hex.first(Version::DEFAULT_CONTENT_ADDRESS_LENGTH)
+
+      # A new skinny binary whose digest shares the default-width prefix.
+      newcomer = build(:version, rubygem:, number: "1.0.0", platform: "x86_64-linux",
+        required_ruby_version: "~> 3.4.0")
+      collide = prefix + (existing.sha256_hex[Version::DEFAULT_CONTENT_ADDRESS_LENGTH] == "a" ? "b" : "a") + existing.sha256_hex[(Version::DEFAULT_CONTENT_ADDRESS_LENGTH + 1)..]
+      newcomer.sha256 = [[collide].pack("H*")].pack("m0")
+      newcomer.validate
+
+      # Existing keeps its default-width address; the newcomer grows past the
+      # shared prefix so the two never share a full_name.
+      assert_equal prefix, existing.content_address
+      assert_equal Version::DEFAULT_CONTENT_ADDRESS_LENGTH + 1, newcomer.content_address.length
+      refute_equal existing.content_address, newcomer.content_address
     end
 
     should "keep classic platform addressing for fat binaries" do
@@ -65,6 +87,42 @@ class VersionTest < ActiveSupport::TestCase
 
       assert_equal "#{version.rubygem.name}-#{version.number}-x86_64-linux", version.full_name
       assert_equal "", version.ruby_abi
+    end
+  end
+
+  context "#enforce_ruby_abi_rubygems_version" do
+    should "raise required_rubygems_version to the abi floor for skinny binaries" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3.0",
+        required_rubygems_version: ">= 1.3.2")
+      version.validate
+
+      assert_equal "3.3", version.ruby_abi
+      assert_equal ">= 4.1.0.dev", version.required_rubygems_version
+    end
+
+    should "raise required_rubygems_version when it is blank" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3.0",
+        required_rubygems_version: "")
+      version.validate
+
+      assert_equal ">= 4.1.0.dev", version.required_rubygems_version
+    end
+
+    should "not downgrade a higher existing required_rubygems_version" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: "~> 3.3.0",
+        required_rubygems_version: ">= 4.2.0")
+      version.validate
+
+      assert_equal ">= 4.2.0", version.required_rubygems_version
+    end
+
+    should "not touch required_rubygems_version for non-abi (fat/source) gems" do
+      version = build(:version, platform: "x86_64-linux", required_ruby_version: ">= 3.2, < 4.1",
+        required_rubygems_version: ">= 1.3.2")
+      version.validate
+
+      assert_equal "", version.ruby_abi
+      assert_equal ">= 1.3.2", version.required_rubygems_version
     end
   end
 
