@@ -34,6 +34,48 @@ class GemInfoTest < ActiveSupport::TestCase
       @expected_info_checksum = Digest::MD5.hexdigest(CompactIndex.info(@expected_info))
     end
 
+    should "include Ruby ABI and content address in info version targeting a single Ruby ABI" do
+      rubygem = create(:rubygem, name: "single-abi-info")
+      version = create(
+        :version,
+        rubygem: rubygem,
+        number: "2.9.0",
+        platform: "x86_64-linux-musl",
+        gem_platform: "x86_64-linux-musl",
+        required_ruby_version: "~> 3.2.0",
+        sha256: Digest::SHA2.base64digest("single-abi-2.9.0-x86_64-linux-musl"),
+        info_checksum_v2: "single-abi-info-checksum"
+      )
+
+      info = GemInfo.new("single-abi-info").compact_index_info
+      compact_index_version = info.first
+
+      assert_equal "3.2", compact_index_version.ruby_abi
+      assert_equal version.full_name.split("-").last, compact_index_version.content_address
+    end
+
+    should "return platform identity without Ruby ABI or content address for versions targeting multiple Ruby ABIs" do
+      rubygem = create(:rubygem, name: "multi-abi")
+      create(
+        :version,
+        rubygem: rubygem,
+        number: "2.9.0",
+        platform: "x86_64-linux-musl",
+        gem_platform: "x86_64-linux-musl",
+        required_ruby_version: ">= 3.2.0",
+        sha256: Digest::SHA2.base64digest("multi-abi-2.9.0-x86_64-linux-musl"),
+        info_checksum_v2: "multi-abi-info-checksum"
+      )
+
+      info = GemInfo.new("multi-abi").compact_index_info
+      compact_index_version = info.first
+
+      assert_equal "2.9.0", compact_index_version.number
+      assert_equal "x86_64-linux-musl", compact_index_version.platform
+      assert_nil compact_index_version.ruby_abi
+      assert_nil compact_index_version.content_address
+    end
+
     should "return v2 gem version and dependency with created_at" do
       info = GemInfo.new("example").compact_index_info
 
@@ -110,6 +152,27 @@ class GemInfoTest < ActiveSupport::TestCase
          CompactIndex::Gem.new("foo", [CompactIndex::GemVersion.new("2.0.0", "ruby", nil, "v2qw2dwe")])]
     end
 
+    should "include Ruby ABI and content address for created versions" do
+      rubygem = create(:rubygem, name: "skinny")
+      version = create(
+        :version,
+        rubygem: rubygem,
+        number: "2.9.0",
+        platform: "x86_64-linux-musl",
+        gem_platform: "x86_64-linux-musl",
+        required_ruby_version: "~> 3.2.0",
+        sha256: Digest::SHA2.base64digest("skinny-2.9.0-x86_64-linux-musl"),
+        created_at: 2.days.ago,
+        info_checksum_v2: "skinny-info"
+      )
+
+      versions = GemInfo.compact_index_versions(3.days.ago)
+      gem = versions.find { |compact_index_gem| compact_index_gem.name == "skinny" }
+
+      assert_equal "3.2", gem.versions.first.ruby_abi
+      assert_equal version.full_name.split("-").last, gem.versions.first.content_address
+    end
+
     should "return all versions created after given date using v2 checksum" do
       versions = GemInfo.compact_index_versions(4.days.ago)
 
@@ -145,6 +208,27 @@ class GemInfoTest < ActiveSupport::TestCase
       )]
 
       assert_equal expected_versions, versions
+    end
+
+    should "include Ruby ABI and content address for public versions" do
+      rubygem = create(:rubygem, name: "skinny-public")
+      version = create(
+        :version,
+        rubygem: rubygem,
+        number: "2.9.0",
+        platform: "x86_64-linux-musl",
+        gem_platform: "x86_64-linux-musl",
+        required_ruby_version: "~> 3.2.0",
+        sha256: Digest::SHA2.base64digest("skinny-public-2.9.0-x86_64-linux-musl"),
+        created_at: @ts,
+        info_checksum_v2: "skinny-public-info"
+      )
+
+      versions = GemInfo.compact_index_public_versions(@ts)
+      gem = versions.find { |compact_index_gem| compact_index_gem.name == "skinny-public" }
+
+      assert_equal "3.2", gem.versions.first.ruby_abi
+      assert_equal version.full_name.split("-").last, gem.versions.first.content_address
     end
 
     should "not return yanked versions" do
