@@ -595,28 +595,56 @@ class VersionTest < ActiveSupport::TestCase
       end
     end
 
-    context ".content_address_in" do
-      setup do
-        @abi_args = { ruby_abi: "3.4", platform: "x86_64-linux" }
+    context "#content_addressify!" do
+      should "store the content address for versions targeting a single Ruby ABI" do
+        version = create(:version, rubygem: create(:rubygem, name: "addressed"), number: "1.0.0",
+                         platform: "x86_64-linux", gem_platform: "x86_64-linux",
+                         required_ruby_version: "~> 3.4.0", ruby_abi: "3.4",
+                         sha256: Digest::SHA2.base64digest("addressed-1.0.0"))
+
+        assert_equal version.sha256_hex.first(Version::DEFAULT_CONTENT_ADDRESS_LENGTH), version.content_address
       end
 
-      should "extract the content address from the last segment" do
-        assert_equal "abcd1234", Version.content_address_in("foo-1.0.0-abcd1234", **@abi_args)
+      should "not store a content address for versions supporting multiple Ruby ABIs" do
+        version = create(:version, rubygem: create(:rubygem, name: "plain"), number: "1.0.0",
+                         platform: "x86_64-linux", gem_platform: "x86_64-linux",
+                         required_ruby_version: ">= 3.2")
+
+        assert_nil version.content_address
       end
 
-      should "reject candidates that do not look like a content address" do
-        assert_nil Version.content_address_in("foo-1.0.0-x86_64-linux", **@abi_args)
-        assert_nil Version.content_address_in("foo-1.0.0", **@abi_args)
-        assert_nil Version.content_address_in(nil, **@abi_args)
+      should "not store a content address for unplatformed versions" do
+        version = create(:version, rubygem: create(:rubygem, name: "unplat"), number: "20260101",
+                         platform: "ruby", gem_platform: "ruby",
+                         required_ruby_version: "~> 3.2.0", ruby_abi: "3.2")
+
+        assert_nil version.content_address
       end
 
-      should "return nil without a Ruby ABI" do
-        assert_nil Version.content_address_in("foo-1.0.0-abcd1234", ruby_abi: nil, platform: "x86_64-linux")
+      should "not attempt to derive a content address without a rubygem" do
+        version = Version.new(number: "1.0.0", platform: "x86_64-linux", gem_platform: "x86_64-linux",
+                              ruby_abi: "3.4", sha256: Digest::SHA2.base64digest("orphan-1.0.0"))
+
+        refute_predicate version, :valid?
+        assert_nil version.content_address
       end
 
-      should "return nil for versions without a platform" do
-        assert_nil Version.content_address_in("foo-20260101", ruby_abi: "3.4", platform: "ruby")
-        assert_nil Version.content_address_in("foo-20260101", ruby_abi: "3.4", platform: nil)
+      should "not use an assigned content address for versions that are not content addressable" do
+        version = create(:version, rubygem: create(:rubygem, name: "hijack"), number: "1.0.0",
+                         platform: "ruby", gem_platform: "ruby", content_address: "abcd1234")
+
+        assert_equal "hijack-1.0.0", version.full_name
+      end
+
+      should "reject content addresses that do not match the address format" do
+        version = build(:version, rubygem: create(:rubygem, name: "badaddr"), number: "1.0.0",
+                        platform: "x86_64-linux", gem_platform: "x86_64-linux",
+                        required_ruby_version: "~> 3.4.0", ruby_abi: "3.4",
+                        sha256: Digest::SHA2.base64digest("badaddr-1.0.0"))
+        version.content_address = "not hex!"
+
+        refute_predicate version, :valid?
+        assert_includes version.errors[:content_address], "is invalid"
       end
     end
 
@@ -951,7 +979,7 @@ class VersionTest < ActiveSupport::TestCase
 
     should "give content address, platform and Ruby ABI for #to_title" do
       rubygem = create(:rubygem, name: "nokogiri")
-      version = build(
+      version = create(
         :version,
         rubygem: rubygem,
         number: "1.18.9",

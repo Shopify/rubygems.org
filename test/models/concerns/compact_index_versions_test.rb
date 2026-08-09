@@ -27,7 +27,7 @@ class CompactIndexVersionsTest < ActiveSupport::TestCase
       gem = versions.find { |compact_index_gem| compact_index_gem.name == "skinny" }
 
       assert_equal "3.2", gem.versions.first.ruby_abi
-      assert_equal version.full_name.split("-").last, gem.versions.first.content_address
+      assert_equal version.content_address, gem.versions.first.content_address
     end
 
     should "return no content address for unplatformed versions" do
@@ -98,7 +98,7 @@ class CompactIndexVersionsTest < ActiveSupport::TestCase
       gem = versions.find { |compact_index_gem| compact_index_gem.name == "skinny-public" }
 
       assert_equal "3.2", gem.versions.first.ruby_abi
-      assert_equal version.full_name.split("-").last, gem.versions.first.content_address
+      assert_equal version.content_address, gem.versions.first.content_address
     end
 
     should "not return version updated after timestamp" do

@@ -52,7 +52,7 @@ class GemInfoTest < ActiveSupport::TestCase
       compact_index_version = info.first
 
       assert_equal "3.2", compact_index_version.ruby_abi
-      assert_equal version.full_name.split("-").last, compact_index_version.content_address
+      assert_equal version.content_address, compact_index_version.content_address
     end
 
     should "return no content address for unplatformed versions" do
