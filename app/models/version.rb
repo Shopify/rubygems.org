@@ -264,11 +264,11 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def previous
-    rubygem.versions.find_by(position: position + 1)
+    rubygem.versions.where(position: position + 1).order(:id).first
   end
 
   def next
-    rubygem.versions.find_by(position: position - 1)
+    rubygem.versions.where(position: position - 1).order(:id).first
   end
 
   def yanked?
