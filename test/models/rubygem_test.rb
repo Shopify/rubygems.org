@@ -80,6 +80,19 @@ class RubygemTest < ActiveSupport::TestCase
       assert_equal version3_ruby, @rubygem.most_recent_version
     end
 
+    should "find versions by number, platform and Ruby ABI" do
+      plain = create(:version, rubygem: @rubygem, number: "1.0.0", platform: "x86_64-linux-musl", gem_platform: "x86_64-linux-musl",
+                     required_ruby_version: ">= 3.2")
+      abi34 = create(:version, rubygem: @rubygem, number: "1.0.0", platform: "x86_64-linux-musl", gem_platform: "x86_64-linux-musl",
+                     required_ruby_version: "~> 3.4.0", ruby_abi: "3.4", sha256: Digest::SHA2.base64digest("abi34-1.0.0"))
+
+      assert_equal plain, @rubygem.find_version!(number: "1.0.0", platform: "x86_64-linux-musl")
+      assert_equal abi34, @rubygem.find_version!(number: "1.0.0", platform: "x86_64-linux-musl", ruby_abi: "3.4")
+      assert_raises(ActiveRecord::RecordNotFound) do
+        @rubygem.find_version!(number: "1.0.0", platform: "x86_64-linux-musl", ruby_abi: "3.2")
+      end
+    end
+
     should "mark the latest version for each Ruby ABI per platform" do
       abi32_old = create(:version, rubygem: @rubygem, number: "1.0.0", platform: "x86_64-linux-musl", gem_platform: "x86_64-linux-musl",
                          required_ruby_version: "~> 3.2.0", ruby_abi: "3.2", sha256: Digest::SHA2.base64digest("abi32-1.0.0"))
