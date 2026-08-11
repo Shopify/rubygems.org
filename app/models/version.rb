@@ -56,6 +56,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :sha256, presence: true, if: :content_addressable?
   validates :content_address, format: { with: CONTENT_ADDRESS_FORMAT }, allow_nil: true
   validates :content_address, absence: true, unless: :content_addressable?
+  validates :ruby_abi, format: { with: /\A\d+\.\d+\z/ }, allow_nil: true
 
   validates :number, :platform, :gem_platform, :full_name, :gem_full_name, :canonical_number,
     name_format: { requires_letter: false },

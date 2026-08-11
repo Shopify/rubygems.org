@@ -159,6 +159,15 @@ class VersionTest < ActiveSupport::TestCase
       refute_predicate @dup_version, :valid?
     end
 
+    should "not allow a ruby_abi that is not a Ruby minor version" do
+      version = build(:version, rubygem: @rubygem, number: "1.0.0", platform: "x86_64-linux", gem_platform: "x86_64-linux",
+                      required_ruby_version: "~> 3.4.0", ruby_abi: "banana",
+                      sha256: Digest::SHA2.base64digest("abi-format-1.0.0"))
+
+      refute_predicate version, :valid?
+      assert_includes version.errors[:ruby_abi], "is invalid"
+    end
+
     should "allow duplicate versions with different Ruby ABIs" do
       existing_version = create(:version, rubygem: @rubygem, number: "1.0.0", platform: "arm64-darwin-25",
         required_ruby_version: "~> 3.3.0", ruby_abi: "3.3")
