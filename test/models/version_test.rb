@@ -629,11 +629,13 @@ class VersionTest < ActiveSupport::TestCase
         assert_nil version.content_address
       end
 
-      should "not use an assigned content address for versions that are not content addressable" do
-        version = create(:version, rubygem: create(:rubygem, name: "hijack"), number: "1.0.0",
-                         platform: "ruby", gem_platform: "ruby", content_address: "abcd1234")
+      should "be invalid when a platformed version with no ruby_abi has a content address" do
+        version = build(:version, rubygem: create(:rubygem, name: "inconsistent"), number: "1.0.0",
+                        platform: "x86_64-linux", gem_platform: "x86_64-linux",
+                        ruby_abi: nil, content_address: "abcdef12")
 
-        assert_equal "hijack-1.0.0", version.full_name
+        refute_predicate version, :valid?
+        assert_includes version.errors[:content_address], "must be blank"
       end
 
       should "reject content addresses that do not match the address format" do
