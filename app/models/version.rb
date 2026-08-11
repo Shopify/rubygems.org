@@ -148,6 +148,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     joins(:rubygem)
       .indexed
       .release
+      .where(ruby_abi: nil)
       .order("rubygems.name asc, position desc")
       .pluck("rubygems.name", :number, :platform)
   end
@@ -156,6 +157,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     joins(:rubygem)
       .indexed
       .latest
+      .where(ruby_abi: nil)
       .order("rubygems.name asc, position desc")
       .pluck("rubygems.name", :number, :platform)
   end
@@ -164,6 +166,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     joins(:rubygem)
       .indexed
       .prerelease
+      .where(ruby_abi: nil)
       .order("rubygems.name asc, position desc")
       .pluck("rubygems.name", :number, :platform)
   end
