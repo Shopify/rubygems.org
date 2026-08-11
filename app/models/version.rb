@@ -21,6 +21,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   has_many :attestations, dependent: :destroy, inverse_of: :version
 
   before_validation :set_canonical_number, if: :number_changed?
+  before_validation :content_addressify!
   before_validation :full_nameify!
   before_validation :gem_full_nameify!
   before_save :create_link_verifications, if: :metadata_changed?
@@ -53,6 +54,8 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     allow_blank: true
   validates :sha256, :spec_sha256, format: { with: Patterns::BASE64_SHA256_PATTERN }, allow_nil: true
   validates :sha256, presence: true, if: :content_addressable?
+  validates :content_address, format: { with: CONTENT_ADDRESS_FORMAT }, allow_nil: true
+  validates :content_address, absence: true, unless: :content_addressable?
 
   validates :number, :platform, :gem_platform, :full_name, :gem_full_name, :canonical_number,
     name_format: { requires_letter: false },
@@ -490,14 +493,6 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     platform.present? && platform != "ruby"
   end
 
-  def self.content_address_in(full_name, ruby_abi:, platform:)
-    return if full_name.blank? || ruby_abi.blank?
-    return unless platformed?(platform)
-
-    candidate = full_name.split("-").last
-    candidate if candidate&.match?(CONTENT_ADDRESS_FORMAT)
-  end
-
   def normalize_content_addressable_gem_metadata!
     return unless content_addressable?
     return if required_rubygems_version_satisfies_content_addressable_floor?
@@ -577,8 +572,12 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
     self.gem_full_name = platform_identity(gem_platform)
   end
 
-  def content_address
-    Version.content_address_in(full_name, ruby_abi:, platform:) || generate_content_address
+  def content_addressify!
+    return if rubygem.nil?
+    return unless content_addressable?
+    return if sha256.blank?
+
+    self.content_address ||= generate_content_address
   end
 
   def generate_content_address
@@ -599,7 +598,7 @@ class Version < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def platform_identity(platform_value)
-    return content_addressed_full_name if content_addressable? && sha256.present?
+    return content_addressed_full_name if content_addressable? && content_address.present?
 
     identity = "#{rubygem.name}-#{number}"
     identity << "-#{platform_value}" unless platform_value == "ruby"
