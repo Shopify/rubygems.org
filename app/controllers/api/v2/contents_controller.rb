@@ -24,8 +24,8 @@ class Api::V2::ContentsController < Api::BaseController
   protected
 
   def find_version
-    version_params = params.permit(:version_number, :platform)
-    @version = @rubygem.find_public_version(version_params[:version_number], version_params[:platform])
+    version_params = params.permit(:version_number, :platform, :ruby_abi)
+    @version = @rubygem.find_public_version(version_params[:version_number], version_params[:platform], version_params[:ruby_abi].presence)
     render plain: "This version could not be found.", status: :not_found unless @version
   end
 
